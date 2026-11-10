@@ -3,12 +3,12 @@
   'use strict';
 
   var SLIDES = [
-    { id: 'intro', name: 'Введение' },
-    { id: 'tasks', name: 'Решения' },
-    { id: 'views', name: 'Представление' },
-    { id: 'scheme', name: 'Карта ↔ схема' },
-    { id: 'data', name: 'Данные' },
-    { id: 'effect', name: 'Эффект' }
+    { id: 'intro', name: 'Введение', icon: 'M11 2L4 11h5l-1 7 7-9h-5z' },
+    { id: 'tasks', name: 'Решения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' },
+    { id: 'views', name: 'Представление', icon: 'M2 4h7v12H2zM11 4h7v12h-7z' },
+    { id: 'scheme', name: 'Карта ↔ схема', icon: 'M2 5l5-2 6 2 5-2v12l-5 2-6-2-5 2zM7 3v12M13 5v12' },
+    { id: 'data', name: 'Данные', icon: 'M3 5c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM3 5v10c0 1.7 3.1 3 7 3s7-1.3 7-3V5M3 10c0 1.7 3.1 3 7 3s7-1.3 7-3' },
+    { id: 'effect', name: 'Эффект', icon: 'M3 17V3M3 17h14M6 13l3-4 3 2 4-6M13 5h3v3' }
   ];
 
   /* ---------- Карта Москвы (процедурная, условная) ---------- */
@@ -121,23 +121,19 @@
 
   /* ---------- Верхняя навигация ---------- */
   function navHTML(cur) {
-    var dim = 'rgba(255,255,255,0.16)';
-    var h = '<nav class="deck-nav" aria-label="Слайды">';
+    var h = '<nav class="deck-nav" aria-label="Слайды"><div class="deck-brand">ЦИФРОВОЙ ДВОЙНИК · ЭЛЕКТРОСНАБЖЕНИЕ</div><div class="deck-group">';
     SLIDES.forEach(function (sl, i) {
       var on = i === cur;
-      h += '<a href="#' + sl.id + '" class="deck-tab' + (on ? ' is-on' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' +
-        '<span class="deck-tab-num">0' + (i + 1) + '</span><span>' + sl.name + '</span>' +
-        '<span aria-hidden="true" class="deck-tab-l" style="background:' + (i <= cur ? '#B3263A' : dim) + '"></span>' +
-        '<span aria-hidden="true" class="deck-tab-r" style="background:' + (i < cur ? '#B3263A' : dim) + '"></span>' +
-        '<span aria-hidden="true" class="deck-tab-dot" style="background:' + (on ? '#FF2D46' : (i < cur ? '#B3263A' : '#5B677A')) + '"></span></a>';
+      h += '<a href="#' + sl.id + '" class="deck-tab' + (on ? ' is-on' : '') + '" title="' + sl.name + '" aria-label="' + sl.name + '"' + (on ? ' aria-current="page"' : '') + '>' +
+        '<svg width="22" height="22" viewBox="0 0 20 20" aria-hidden="true"><path d="' + sl.icon + '"></path></svg><span>' + sl.name + '</span></a>';
     });
     var arrow = function (href, label, d, strong) {
       return '<a href="#' + href + '" aria-label="' + label + '" class="deck-arrow' + (strong ? ' is-strong' : '') + '">' +
         '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="' + d + '"></path></svg></a>';
     };
-    h += '<div class="deck-arrows">' +
+    h += '</div><div class="deck-side"><div class="deck-count">0' + (cur + 1) + ' / 06</div><div class="deck-group">' +
       arrow(SLIDES[(cur + 5) % 6].id, 'Предыдущий слайд', 'M11 4L6 9l5 5', false) +
-      arrow(SLIDES[(cur + 1) % 6].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></nav>';
+      arrow(SLIDES[(cur + 1) % 6].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div></nav>';
     return h;
   }
 
