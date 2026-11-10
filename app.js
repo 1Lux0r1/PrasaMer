@@ -4,8 +4,8 @@
 
   var SLIDES = [
     { id: 'intro', name: 'Введение' },
-    { id: 'tasks', name: 'Задачи' },
-    { id: 'views', name: 'Два вида' },
+    { id: 'tasks', name: 'Решения' },
+    { id: 'views', name: 'Представление' },
     { id: 'scheme', name: 'Карта ↔ схема' },
     { id: 'data', name: 'Данные' },
     { id: 'effect', name: 'Эффект' }
@@ -450,6 +450,166 @@
     render();
   }
 
+  /* ---------- Слайд «Решения»: мини-экраны «Как это работает» ---------- */
+  function initSolutions(root) {
+    const $ = (sel) => root.querySelector(sel);
+    const Y = '#E6D72A', B = '#4FA3E0', GRAY = '#6b7480', MUTED = '#A7B2C2';
+    const scrim = $('#demo-scrim');
+    let opener = null;
+
+    function close() {
+      root.querySelectorAll('.demo').forEach((d) => { d.hidden = true; });
+      scrim.hidden = true;
+      if (opener) { opener.focus(); opener = null; }
+    }
+    function open(name, from) {
+      close();
+      opener = from;
+      scrim.hidden = false;
+      const d = $('#demo-' + name);
+      d.hidden = false;
+      d.querySelector('.demo-close').focus();
+    }
+    root.querySelectorAll('[data-demo]').forEach((b) => b.addEventListener('click', () => open(b.dataset.demo, b)));
+    root.querySelectorAll('.demo-close').forEach((b) => b.addEventListener('click', close));
+    scrim.addEventListener('click', close);
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    window.addEventListener('hashchange', close);
+
+    const box = (x, y, w, h, bus, label, dead) =>
+      '<rect x="' + (x - w / 2) + '" y="' + (y - h / 2) + '" width="' + w + '" height="' + h + '" style="fill:#05070b;stroke:' + (dead ? GRAY : '#8b95a3') + ';stroke-width:1.5;stroke-dasharray:5 4"></rect>' +
+      '<path d="M' + (x - w / 2 + 14) + ' ' + y + 'H' + (x + w / 2 - 14) + '" style="stroke:' + (dead ? GRAY : bus) + ';stroke-width:5;stroke-linecap:round"></path>' +
+      '<text x="' + (x - w / 2) + '" y="' + (y - h / 2 - 10) + '" style="fill:' + (dead ? MUTED : '#ffffff') + ';font-size:17px;font-weight:600">' + label + '</text>';
+    const wire = (d, color, dead, dashed) =>
+      '<path d="' + d + '" style="fill:none;stroke:' + (dead ? GRAY : color) + ';stroke-width:2.5;' + ((dead || dashed) ? 'stroke-dasharray:7 7;' : 'filter:drop-shadow(0 0 5px ' + color + ');') + '"></path>';
+
+    /* 01. Авария и переключение */
+    (function () {
+      const feeds = [{ x: 170, n: [42, 3, 0] }, { x: 470, n: [58, 5, 2] }, { x: 790, n: [37, 4, 1] }];
+      let step = 0;
+      const texts = [
+        ['Шаг 1 из 3 · Нормальный режим', 'Сеть работает штатно: все подстанции и потребители под напряжением.', 'Отключить ПС 220 кВ'],
+        ['Шаг 2 из 3 · Авария', 'Питающая подстанция отключена. Решение сразу показывает, кто остался без электроснабжения.', 'Переключить на резерв'],
+        ['Шаг 3 из 3 · Переключение', 'Часть потребителей переведена на соседний источник по резервной связи. Оставшаяся подстанция — первый приоритет восстановления.', 'Начать заново']
+      ];
+      function render() {
+        const s1dead = step > 0, dead = [step > 0, step === 1, false], tie = step === 2;
+        let o = '<svg viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="Схема участка сети: две питающие подстанции, три подстанции 110 кВ и их потребители">';
+        o += wire('M250 110V200H170V300', B, dead[0]) + wire('M290 110V200H470V300', B, step > 0) + wire('M840 110V300', B, false);
+        o += wire('M540 300H720', B, false, !tie);
+        o += '<text x="630" y="286" style="fill:' + (tie ? '#ffffff' : MUTED) + ';font-size:14px;text-anchor:middle">' + (tie ? 'резерв включён' : 'резервная связь') + '</text>';
+        o += box(270, 90, 200, 56, Y, 'ПС 220 кВ', s1dead) + box(790, 90, 200, 56, Y, 'ПС 220 кВ', false);
+        feeds.forEach((f, i) => {
+          const dd = dead[i];
+          o += wire('M' + f.x + ' 328V420', '#59C27A', dd) + box(f.x, 300, 150, 56, B, 'ПС 110 кВ', dd);
+          o += '<rect x="' + (f.x - 110) + '" y="420" width="220" height="150" rx="12" style="fill:' + (dd ? 'rgba(255,45,70,0.12)' : '#1d2636') + ';stroke:' + (dd ? '#FF2D46' : '#2d394d') + ';stroke-width:1.5"></rect>';
+          ['Жилые дома', 'Соцобъекты', 'Промышленность'].forEach((name, k) => {
+            const y = 462 + k * 40;
+            o += '<text x="' + (f.x - 90) + '" y="' + y + '" style="fill:#C5CEDB;font-size:17px">' + name + '</text>' +
+              '<text x="' + (f.x + 90) + '" y="' + y + '" style="fill:' + (dd ? '#FF8A99' : '#ffffff') + ';font-size:19px;font-weight:700;text-anchor:end">' + f.n[k] + '</text>';
+          });
+          o += '<text x="' + f.x + '" y="600" style="fill:' + (dd ? '#FF8A99' : '#5FD6A2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + (dd ? 'без питания' : 'под напряжением') + '</text>';
+        });
+        $('#outage-stage').innerHTML = o + '</svg>';
+        const sum = [0, 1, 2].map((k) => feeds.reduce((a, f, i) => a + (dead[i] ? f.n[k] : 0), 0));
+        $('#outage-n1').textContent = sum[0]; $('#outage-n2').textContent = sum[1]; $('#outage-n3').textContent = sum[2];
+        $('#outage-step').textContent = texts[step][0]; $('#outage-text').textContent = texts[step][1]; $('#outage-btn').textContent = texts[step][2];
+        $('#demo-outage').classList.toggle('is-alarm', sum[0] > 0);
+      }
+      $('#outage-btn').addEventListener('click', () => { step = (step + 1) % 3; render(); });
+      render();
+    })();
+
+    /* 02. Прогноз потребления */
+    (function () {
+      const X0 = 80, X1 = 920, Y0 = 520, Y1 = 60, MAX = 130;
+      const px = (h) => X0 + (X1 - X0) * h / 24, py = (v) => Y0 - (Y0 - Y1) * v / MAX;
+      const profile = (h) => 0.52 + 0.14 * Math.exp(-Math.pow((h - 9) / 2.6, 2)) + 0.26 * Math.exp(-Math.pow((h - 19) / 3, 2)) - 0.1 * Math.exp(-Math.pow((h - 4) / 3, 2));
+      const range = $('#forecast-range');
+      function render() {
+        const T = +range.value, m = 1 + 0.012 * Math.max(0, 5 - T) + 0.016 * Math.max(0, T - 22);
+        let d = '', peak = 0, peakH = 0;
+        for (let i = 0; i <= 96; i++) {
+          const h = i / 4, v = profile(h) * m * 100;
+          if (v > peak) { peak = v; peakH = h; }
+          d += (i ? 'L' : 'M') + px(h).toFixed(1) + ' ' + py(v).toFixed(1);
+        }
+        const over = peak > 100;
+        let o = '<svg viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="Суточный график нагрузки и линия располагаемой мощности">';
+        o += '<defs><clipPath id="fc-over"><rect x="0" y="0" width="960" height="' + py(100) + '"></rect></clipPath></defs>';
+        [0, 25, 50, 75, 100, 125].forEach((v) => {
+          o += '<path d="M' + X0 + ' ' + py(v) + 'H' + X1 + '" style="stroke:#222c3d;stroke-width:1"></path><text x="' + (X0 - 12) + '" y="' + (py(v) + 5) + '" style="fill:' + MUTED + ';font-size:15px;text-anchor:end">' + v + ' %</text>';
+        });
+        [0, 4, 8, 12, 16, 20, 24].forEach((h) => { o += '<text x="' + px(h) + '" y="' + (Y0 + 30) + '" style="fill:' + MUTED + ';font-size:15px;text-anchor:middle">' + (h < 10 ? '0' : '') + h + ':00</text>'; });
+        o += '<path d="' + d + 'L' + X1 + ' ' + Y0 + 'L' + X0 + ' ' + Y0 + 'Z" style="fill:rgba(79,163,224,0.14)"></path>';
+        o += '<path d="' + d + '" style="fill:none;stroke:' + B + ';stroke-width:3.5;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(79,163,224,0.7))"></path>';
+        o += '<path d="' + d + '" clip-path="url(#fc-over)" style="fill:none;stroke:#FF2D46;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(255,45,70,0.8))"></path>';
+        o += '<path d="M' + X0 + ' ' + py(100) + 'H' + X1 + '" style="stroke:' + Y + ';stroke-width:2;stroke-dasharray:8 6"></path><text x="' + (X0 + 10) + '" y="' + (py(100) - 10) + '" style="fill:' + Y + ';font-size:15px;font-weight:600">Располагаемая мощность</text>';
+        o += '<circle cx="' + px(peakH) + '" cy="' + py(peak) + '" r="7" style="fill:#10151f;stroke:' + (over ? '#FF2D46' : '#ffffff') + ';stroke-width:3"></circle>';
+        o += '<text x="' + px(peakH) + '" y="' + (py(peak) - 18) + '" style="fill:#ffffff;font-size:17px;font-weight:700;text-anchor:middle">пик ' + Math.round(peak) + ' %</text>';
+        $('#forecast-stage').innerHTML = o + '</svg>';
+        const hh = Math.floor(peakH), mm = Math.round((peakH - hh) * 60);
+        $('#forecast-t').textContent = (T > 0 ? '+' : (T < 0 ? '−' : '')) + Math.abs(T) + ' °C';
+        range.setAttribute('aria-valuetext', T + ' °C');
+        $('#forecast-peak').textContent = Math.round(peak) + ' %';
+        $('#forecast-peak-l').textContent = 'пик нагрузки, в ' + (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+        $('#forecast-res').textContent = Math.abs(Math.round(100 - peak)) + ' %';
+        $('#forecast-res-l').textContent = over ? 'не хватает мощности в пике' : 'запас мощности в пике';
+        const v = $('#forecast-verdict');
+        v.textContent = over ? 'Пик превышает располагаемую мощность — нужны мероприятия заранее.' : (peak > 90 ? 'Запас мал: стоит заранее подготовить резервы.' : 'Мощности достаточно.');
+        v.className = 'demo-verdict ' + (over ? 'is-bad' : (peak > 90 ? 'is-warn' : 'is-ok'));
+        $('#demo-forecast').classList.toggle('is-alarm', over);
+      }
+      range.addEventListener('input', render);
+      render();
+    })();
+
+    /* 03. Планирование застройки */
+    (function () {
+      const CAP = 80, BASE = 62;
+      const items = [
+        { name: 'Жилой квартал', mw: 12, x: 190, y: 140, on: true },
+        { name: 'Школа и детский сад', mw: 2, x: 770, y: 140, on: false },
+        { name: 'Торговый центр', mw: 8, x: 190, y: 500, on: false },
+        { name: 'Промышленный парк', mw: 25, x: 770, y: 500, on: false }
+      ];
+      const tg = $('#planning-toggles');
+      items.forEach((it) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'demo-toggle';
+        b.innerHTML = '<span class="demo-check" aria-hidden="true"></span><span class="demo-toggle-name">' + it.name + '</span><b>' + it.mw + ' МВт</b>';
+        b.addEventListener('click', () => { it.on = !it.on; render(); });
+        tg.appendChild(b);
+        it.el = b;
+      });
+      function render() {
+        const add = items.reduce((a, it) => a + (it.on ? it.mw : 0), 0), total = BASE + add, over = total > CAP;
+        let o = '<svg viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="Перспективные объекты вокруг подстанции 110 кВ">';
+        o += '<path d="M0 320H960M480 0V640M120 0L840 640M840 0L120 640" style="stroke:#1a2231;stroke-width:26"></path>';
+        items.forEach((it) => { if (it.on) o += wire('M' + it.x + ' ' + it.y + 'L480 320', over ? '#FF2D46' : '#59C27A', false, false); });
+        items.forEach((it) => {
+          const c = it.on ? (over ? '#FF2D46' : '#59C27A') : '#5B677A';
+          o += '<rect x="' + (it.x - 120) + '" y="' + (it.y - 50) + '" width="240" height="100" rx="12" style="fill:' + (it.on ? '#1d2636' : '#141b28') + ';stroke:' + c + ';stroke-width:2;' + (it.on ? '' : 'stroke-dasharray:6 6') + '"></rect>' +
+            '<text x="' + it.x + '" y="' + (it.y - 6) + '" style="fill:' + (it.on ? '#ffffff' : MUTED) + ';font-size:18px;font-weight:600;text-anchor:middle">' + it.name + '</text>' +
+            '<text x="' + it.x + '" y="' + (it.y + 24) + '" style="fill:' + (it.on ? c : MUTED) + ';font-size:17px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + it.mw + ' МВт' : 'не выбран') + '</text>';
+        });
+        o += box(480, 320, 220, 70, B, 'ПС 110 кВ', false);
+        $('#planning-stage').innerHTML = o + '</svg>';
+        items.forEach((it) => { it.el.classList.toggle('is-on', it.on); it.el.setAttribute('aria-pressed', String(it.on)); });
+        $('#planning-load').textContent = total + ' из ' + CAP + ' МВт';
+        $('#planning-base').style.width = (BASE / CAP * 100 / 1.25) + '%';
+        $('#planning-add').style.width = (Math.min(add, CAP * 1.25 - BASE) / CAP * 100 / 1.25) + '%';
+        $('#planning-add').style.background = over ? '#FF2D46' : '#59C27A';
+        const v = $('#planning-verdict');
+        v.textContent = over ? 'Резерва не хватает на ' + (total - CAP) + ' МВт — для подключения требуются допмероприятия.' : (add ? 'Резерва достаточно: после подключения останется ' + (CAP - total) + ' МВт.' : 'Свободный резерв подстанции: ' + (CAP - BASE) + ' МВт.');
+        v.className = 'demo-verdict ' + (over ? 'is-bad' : 'is-ok');
+        $('#demo-planning').classList.toggle('is-alarm', over);
+      }
+      render();
+    })();
+  }
+
   /* ---------- Запуск ---------- */
   function start() {
     document.querySelectorAll('[data-map]').forEach(function (el) {
@@ -457,6 +617,7 @@
     });
     document.querySelectorAll('[data-nav]').forEach(function (el) { el.innerHTML = navHTML(+el.dataset.nav - 1); });
     initScheme(document.getElementById('scheme'));
+    initSolutions(document.getElementById('tasks'));
 
     var stage = document.getElementById('stage');
     var fit = function () {
@@ -475,6 +636,7 @@
     window.addEventListener('hashchange', show);
     window.addEventListener('keydown', function (e) {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (document.querySelector('.demo:not([hidden])')) return; // открыт мини-экран: стрелки нужны ему
       var d = (e.key === 'ArrowRight' || e.key === 'PageDown') ? 1 : ((e.key === 'ArrowLeft' || e.key === 'PageUp') ? -1 : 0);
       if (!d) return;
       e.preventDefault();
