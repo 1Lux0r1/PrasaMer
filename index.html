@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=6db864c0">
+<link rel="stylesheet" href="styles.css?v=0bdbddff">
 </head>
 <body>
 <div id="stage">
@@ -240,16 +240,17 @@
     </header>
     <div class="demo-body">
       <div class="demo-stage" id="planning-stage"></div>
-      <aside class="demo-side">
-        <div class="demo-step">Перспективные объекты</div>
-        <p class="demo-text">Отметьте объекты, которые планируется построить, — решение сложит их нагрузку и проверит резерв ближайшей подстанции.</p>
+      <aside class="demo-side demo-side-tight">
+        <div class="demo-step">Что строим в районе</div>
         <div class="demo-toggles" id="planning-toggles"></div>
         <div class="demo-bar-wrap">
-          <div class="demo-bar-head"><span>Загрузка ПС 110 кВ</span><b id="planning-load"></b></div>
-          <div class="demo-bar"><i id="planning-base"></i><i id="planning-add"></i></div>
+          <div class="demo-bar-head"><span>Источник · ПС 110 кВ, 2×40 МВА</span><b id="planning-load"></b></div>
+          <div class="demo-bar demo-bar-src"><i id="planning-base"></i><i id="planning-add"></i></div>
         </div>
+        <div class="demo-step" id="planning-works-h"></div>
+        <ul class="demo-works" id="planning-works"></ul>
         <div class="demo-verdict" id="planning-verdict"></div>
-        <div class="demo-note">Демонстрация на условных данных.</div>
+        <div class="demo-note">Район, нагрузки и нормативы расчёта условные.</div>
       </aside>
     </div>
   </div>
@@ -518,6 +519,6 @@
 
 </section>
 </div>
-<script src="app.js?v=f63982dd"></script>
+<script src="app.js?v=c88e36ef"></script>
 </body>
 </html>

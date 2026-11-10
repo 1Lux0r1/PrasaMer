@@ -564,47 +564,121 @@
       render();
     })();
 
-    /* 03. Планирование застройки */
+    /* 03. Планирование застройки: район, новые абоненты, расчёт модернизации (данные условные) */
     (function () {
-      const CAP = 80, BASE = 62;
+      const SRC_CAP = 42, SRC_BASE = 31, SRC_NEXT = 66;      // ПС 110 кВ: допустимая нагрузка 2×40 МВА, текущая, после замены на 2×63 МВА
+      const LINE_MW = 5, TP_MW = 1.6;                        // одна КЛ 10 кВ и одна ТП 2×1000 кВА
+      const AMBER = '#F5A04A', GREEN = '#59C27A', RED = '#FF2D46';
+      const zones = {
+        n: { name: 'север', cap: 12, base: 6, km: 2.4, d: 'M170 410V250H520V150H600', tag: [300, 238] },
+        c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M170 430H600', tag: [400, 418] },
+        s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M170 450V630H640', tag: [400, 618] }
+      };
       const items = [
-        { name: 'Жилой квартал', mw: 12, x: 190, y: 140, on: true },
-        { name: 'Школа и детский сад', mw: 2, x: 770, y: 140, on: false },
-        { name: 'Торговый центр', mw: 8, x: 190, y: 500, on: false },
-        { name: 'Промышленный парк', mw: 25, x: 770, y: 500, on: false }
+        { name: 'Жилой микрорайон', mw: 9, zone: 'n', r: [600, 70, 270, 150], on: true, tap: 'M600 150' },
+        { name: 'Школа и детский сад', mw: 1.5, zone: 'n', r: [400, 96, 104, 84], on: false, tap: 'M520 180H504' },
+        { name: 'Больница', mw: 4, zone: 'c', r: [600, 330, 160, 130], on: false, tap: 'M600 430', first: true },
+        { name: 'Транспортный узел', mw: 6, zone: 'c', r: [384, 474, 136, 76], on: false, tap: 'M450 430V474' },
+        { name: 'Технопарк', mw: 12, zone: 's', r: [640, 560, 250, 130], on: false, tap: 'M640 630' }
       ];
+      const fmt = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
+      const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11) ? a : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? b : c);
+
+      /* подложка района: улицы, река, парк, существующая застройка */
+      let bg = '<rect width="1040" height="776" style="fill:#0b0f17"></rect>';
+      bg += '<path d="M-20 740C140 700 240 760 400 735S700 700 1060 750V800H-20Z" style="fill:#12283a"></path>';
+      bg += '<path d="M905 285c50-30 120-10 125 45s-40 95-95 90-80-95-30-135z" style="fill:#12241c"></path>';
+      bg += '<path d="M0 250H1040M0 430H1040M0 630H1040M170 0V776M520 0V776M880 0V776M0 40L1040 110" style="fill:none;stroke:#1a2231;stroke-width:22"></path>';
+      bg += '<path d="M0 560L1040 500" style="fill:none;stroke:#222c3d;stroke-width:3;stroke-dasharray:14 8"></path>';
+      const free = (x, y) => !items.some((it) => x > it.r[0] - 34 && x < it.r[0] + it.r[2] + 6 && y > it.r[1] - 24 && y < it.r[1] + it.r[3] + 6) &&
+        !(x > 880 && y > 260 && y < 440) && y < 690 && !(x < 250 && y > 360 && y < 500);
+      let seed = 7;
+      const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+      [[30, 150], [190, 500], [540, 860], [900, 1020]].forEach((cx) => {
+        [[70, 230], [270, 410], [450, 610], [650, 700]].forEach((cy) => {
+          for (let x = cx[0]; x + 28 <= cx[1]; x += 42) for (let y = cy[0]; y + 16 <= cy[1]; y += 30) {
+            const keep = rnd() > 0.22;
+            if (keep && free(x, y)) bg += '<rect x="' + x + '" y="' + y + '" width="28" height="16" rx="2" style="fill:#161e2c"></rect>';
+          }
+        });
+      });
+
       const tg = $('#planning-toggles');
       items.forEach((it) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'demo-toggle';
-        b.innerHTML = '<span class="demo-check" aria-hidden="true"></span><span class="demo-toggle-name">' + it.name + '</span><b>' + it.mw + ' МВт</b>';
+        b.innerHTML = '<span class="demo-check" aria-hidden="true"></span><span class="demo-toggle-name">' + it.name + '</span><b>' + fmt(it.mw) + ' МВт</b>';
         b.addEventListener('click', () => { it.on = !it.on; render(); });
         tg.appendChild(b);
         it.el = b;
       });
+
       function render() {
-        const add = items.reduce((a, it) => a + (it.on ? it.mw : 0), 0), total = BASE + add, over = total > CAP;
-        let o = '<svg viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="Перспективные объекты вокруг подстанции 110 кВ">';
-        o += '<path d="M0 320H960M480 0V640M120 0L840 640M840 0L120 640" style="stroke:#1a2231;stroke-width:26"></path>';
-        items.forEach((it) => { if (it.on) o += wire('M' + it.x + ' ' + it.y + 'L480 320', over ? '#FF2D46' : '#59C27A', false, false); });
-        items.forEach((it) => {
-          const c = it.on ? (over ? '#FF2D46' : '#59C27A') : '#5B677A';
-          o += '<rect x="' + (it.x - 120) + '" y="' + (it.y - 50) + '" width="240" height="100" rx="12" style="fill:' + (it.on ? '#1d2636' : '#141b28') + ';stroke:' + c + ';stroke-width:2;' + (it.on ? '' : 'stroke-dasharray:6 6') + '"></rect>' +
-            '<text x="' + it.x + '" y="' + (it.y - 6) + '" style="fill:' + (it.on ? '#ffffff' : MUTED) + ';font-size:18px;font-weight:600;text-anchor:middle">' + it.name + '</text>' +
-            '<text x="' + it.x + '" y="' + (it.y + 24) + '" style="fill:' + (it.on ? c : MUTED) + ';font-size:17px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + it.mw + ' МВт' : 'не выбран') + '</text>';
+        const add = { n: 0, c: 0, s: 0 };
+        items.forEach((it) => { if (it.on) add[it.zone] += it.mw; });
+        const addAll = add.n + add.c + add.s, total = SRC_BASE + addAll, srcOver = total > SRC_CAP;
+        const works = [];
+        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, кабельные линии и перспективные объекты">' + bg;
+
+        Object.keys(zones).forEach((k) => {
+          const z = zones[k], load = z.base + add[k], over = load > z.cap;
+          o += '<path d="' + z.d + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(89,194,122,0.7))"></path>';
+          if (over) {
+            const lines = Math.max(2, Math.ceil((load - z.cap) / LINE_MW));
+            o += '<path d="' + z.d + '" transform="translate(9 9)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
+            works.push('Сеть, ' + z.name + ': не хватает ' + fmt(load - z.cap) + ' МВт — ' + lines + ' ' + plural(lines, 'новая КЛ', 'новые КЛ', 'новых КЛ') + ' 10 кВ по ' + fmt(z.km) + ' км' + (load - z.cap > 4 ? ' и новый РП 10 кВ' : ''));
+          }
+          const tw = 168;
+          o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:#0b0f17;stroke:' + (over ? AMBER : '#2d394d') + ';stroke-width:1.2"></rect>' +
+            '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (over ? AMBER : '#C5CEDB') + ';font-size:13px;font-weight:600;text-anchor:middle">КЛ 10 кВ · ' + fmt(load) + ' из ' + z.cap + ' МВт</text>';
         });
-        o += box(480, 320, 220, 70, B, 'ПС 110 кВ', false);
+
+        items.forEach((it) => {
+          const x = it.r[0], y = it.r[1], w = it.r[2], h = it.r[3], cx = x + w / 2;
+          const c = it.on ? '#5FD6A2' : '#5B677A';
+          if (it.on && it.tap.length > 9) o += '<path d="' + it.tap + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3"></path>';
+          o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" style="fill:' + (it.on ? 'rgba(95,214,162,0.13)' : 'rgba(11,15,23,0.7)') + ';stroke:' + c + ';stroke-width:2;' + (it.on ? '' : 'stroke-dasharray:7 6') + '"></rect>';
+          if (it.on) for (let i = 0; i < Math.floor((w - 20) / 42); i++) for (let j = 0; j < Math.floor((h - 62) / 26); j++)
+            o += '<rect x="' + (x + 14 + i * 42) + '" y="' + (y + 54 + j * 26) + '" width="28" height="14" rx="2" style="fill:rgba(95,214,162,0.35)"></rect>';
+          const words = it.name.split(' '), two = w < 140 && words.length > 1;
+          const l1 = two ? words.slice(0, Math.ceil(words.length / 2)).join(' ') : it.name, l2 = two ? words.slice(Math.ceil(words.length / 2)).join(' ') : '';
+          o += '<text x="' + cx + '" y="' + (y + 24) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l1 + '</text>';
+          if (l2) o += '<text x="' + cx + '" y="' + (y + 42) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l2 + '</text>';
+          o += '<text x="' + cx + '" y="' + (y + (l2 ? 62 : 44)) + '" style="fill:' + (it.on ? '#5FD6A2' : '#A7B2C2') + ';font-size:14px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран') + '</text>';
+        });
+
+        const sc = srcOver ? AMBER : '#8b95a3';
+        o += '<rect x="80" y="380" width="180" height="100" style="fill:#05070b;stroke:' + sc + ';stroke-width:' + (srcOver ? 2.5 : 1.5) + ';stroke-dasharray:5 4' + (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '') + '"></rect>' +
+          '<path d="M96 430H244" style="stroke:#4FA3E0;stroke-width:5;stroke-linecap:round"></path>' +
+          '<circle cx="140" cy="452" r="9" style="fill:none;stroke:#4FA3E0;stroke-width:2"></circle><circle cx="152" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
+          '<circle cx="188" cy="452" r="9" style="fill:none;stroke:#4FA3E0;stroke-width:2"></circle><circle cx="200" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
+          '<text x="170" y="408" style="fill:#ffffff;font-size:16px;font-weight:700;text-anchor:middle">ПС 110 кВ</text>' +
+          '<rect x="74" y="350" width="192" height="24" rx="12" style="fill:#0b0f17"></rect><text x="170" y="367" style="fill:' + (srcOver ? AMBER : '#C5CEDB') + ';font-size:14px;font-weight:600;text-anchor:middle">' + (srcOver ? 'требуется реконструкция' : 'источник питания района') + '</text>';
+        o += '<text x="28" y="34" style="fill:#A7B2C2;font-size:14px;font-weight:700;letter-spacing:0.06em">ДЕМОНСТРАЦИОННЫЙ РАЙОН</text>';
         $('#planning-stage').innerHTML = o + '</svg>';
+
+        const tp = Math.ceil(addAll / TP_MW);
+        if (tp) works.push(tp + ' ' + plural(tp, 'новая ТП', 'новые ТП', 'новых ТП') + ' 10/0,4 кВ для подключения абонентов');
+        if (items.some((it) => it.on && it.first)) works.push('Больница: два независимых ввода (I категория надёжности)');
+        if (srcOver) works.push(total <= SRC_NEXT
+          ? 'Источник: не хватает ' + fmt(total - SRC_CAP) + ' МВт — замена трансформаторов 2×40 на 2×63 МВА'
+          : 'Источник: не хватает ' + fmt(total - SRC_CAP) + ' МВт — нужен новый питающий центр');
+
         items.forEach((it) => { it.el.classList.toggle('is-on', it.on); it.el.setAttribute('aria-pressed', String(it.on)); });
-        $('#planning-load').textContent = total + ' из ' + CAP + ' МВт';
-        $('#planning-base').style.width = (BASE / CAP * 100 / 1.25) + '%';
-        $('#planning-add').style.width = (Math.min(add, CAP * 1.25 - BASE) / CAP * 100 / 1.25) + '%';
-        $('#planning-add').style.background = over ? '#FF2D46' : '#59C27A';
+        $('#planning-load').textContent = fmt(total) + ' из ' + SRC_CAP + ' МВт';
+        const scale = 100 / (SRC_CAP * 1.6);
+        $('#planning-base').style.width = (SRC_BASE * scale) + '%';
+        $('#planning-add').style.width = (Math.min(addAll, SRC_CAP * 1.6 - SRC_BASE) * scale) + '%';
+        $('#planning-add').style.background = srcOver ? AMBER : GREEN;
+        const heavy = works.some((w) => w.indexOf('не хватает') >= 0);
+        $('#planning-works-h').textContent = !addAll ? 'Объекты не выбраны' : (heavy ? 'Необходимая модернизация' : 'Что нужно для подключения');
+        $('#planning-works').innerHTML = works.map((w) => '<li class="' + (w.indexOf('не хватает') >= 0 ? 'is-warn' : '') + '">' + w + '</li>').join('');
         const v = $('#planning-verdict');
-        v.textContent = over ? 'Резерва не хватает на ' + (total - CAP) + ' МВт — для подключения требуются допмероприятия.' : (add ? 'Резерва достаточно: после подключения останется ' + (CAP - total) + ' МВт.' : 'Свободный резерв подстанции: ' + (CAP - BASE) + ' МВт.');
-        v.className = 'demo-verdict ' + (over ? 'is-bad' : 'is-ok');
-        $('#demo-planning').classList.toggle('is-alarm', over);
+        v.hidden = heavy || !addAll;
+        v.textContent = 'Резервов сети и источника достаточно: модернизация не требуется.';
+        v.className = 'demo-verdict is-ok';
+        $('#demo-planning').classList.toggle('is-alarm', false);
       }
       render();
     })();

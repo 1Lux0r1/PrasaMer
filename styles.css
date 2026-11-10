@@ -106,3 +106,14 @@ button { font-family: inherit; cursor: pointer; }
 .demo-bar::after { content: ''; position: absolute; left: 80%; top: 0; bottom: 0; width: 2px; background: #E6D72A; }
 .demo-bar i { display: block; height: 100%; }
 #planning-base { background: #4FA3E0; }
+
+/* Мини-экран «Планирование застройки» */
+.demo-side-tight { padding: 26px 32px; gap: 14px; }
+.demo-side-tight .demo-toggle { height: 46px; font-size: 17px; }
+.demo-side-tight .demo-toggles { gap: 6px; }
+.demo-bar-src::after { left: 62.5%; }
+.demo-works { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.35; color: #C5CEDB; }
+.demo-works li { position: relative; padding-left: 18px; }
+.demo-works li::before { content: ''; position: absolute; left: 0; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: #5FD6A2; }
+.demo-works li.is-warn { color: #FFD9A8; font-weight: 600; }
+.demo-works li.is-warn::before { background: #F5A04A; }
