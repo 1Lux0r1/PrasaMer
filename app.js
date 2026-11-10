@@ -564,11 +564,13 @@
       render();
     })();
 
-    /* 03. Планирование застройки: район, новые абоненты, расчёт модернизации (данные условные) */
+    /* 03. Планирование застройки: район, новые абоненты, расчёт модернизации и стоимости (данные условные) */
     (function () {
       const SRC_CAP = 42, SRC_BASE = 31, SRC_NEXT = 66;      // ПС 110 кВ: допустимая нагрузка 2×40 МВА, текущая, после замены на 2×63 МВА
       const LINE_MW = 5, TP_MW = 1.6;                        // одна КЛ 10 кВ и одна ТП 2×1000 кВА
-      const AMBER = '#F5A04A', GREEN = '#59C27A', RED = '#FF2D46';
+      /* условные расценки, млн ₽ */
+      const PRICE = { klKm: 12, rp: 90, tp: 14, feed: 25, trafo: 480, center: 2500 };
+      const AMBER = '#F5A04A', GREEN = '#59C27A';
       const zones = {
         n: { name: 'север', cap: 12, base: 6, km: 2.4, d: 'M170 410V250H520V150H600', tag: [300, 238] },
         c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M170 430H600', tag: [400, 418] },
@@ -581,7 +583,10 @@
         { name: 'Транспортный узел', mw: 6, zone: 'c', r: [384, 474, 136, 76], on: false, tap: 'M450 430V474' },
         { name: 'Технопарк', mw: 12, zone: 's', r: [640, 560, 250, 130], on: false, tap: 'M640 630' }
       ];
+      const KEYS = ['src', 'n', 'c', 's', 'tp'];
+      let card = null;
       const fmt = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
+      const money = (v) => !v ? '—' : (v >= 1000 ? String(Math.round(v / 10) / 100).replace('.', ',') + ' млрд ₽' : Math.round(v) + ' млн ₽');
       const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11) ? a : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? b : c);
 
       /* подложка района: улицы, река, парк, существующая застройка */
@@ -603,6 +608,22 @@
         });
       });
 
+      const stage = $('#planning-stage');
+      const svgBox = document.createElement('div');
+      stage.appendChild(svgBox);
+      /* кликабельные зоны объектов электроснабжения поверх плана */
+      const hit = (key, label, x, y, w, h) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'demo-hit';
+        b.setAttribute('aria-label', 'Карточка объекта: ' + label);
+        b.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px';
+        b.addEventListener('click', () => { card = key; render(); $('#planning-card-back').focus(); });
+        stage.appendChild(b);
+      };
+      hit('src', 'ПС 110 кВ', 80, 380, 180, 100);
+      Object.keys(zones).forEach((k) => hit(k, 'КЛ 10 кВ, ' + zones[k].name, zones[k].tag[0] - 90, zones[k].tag[1] - 40, 180, 44));
+
       const tg = $('#planning-toggles');
       items.forEach((it) => {
         const b = document.createElement('button');
@@ -613,25 +634,74 @@
         tg.appendChild(b);
         it.el = b;
       });
+      const rows = {};
+      KEYS.forEach((k) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'demo-obj';
+        b.innerHTML = '<span class="demo-obj-dot" aria-hidden="true"></span><span class="demo-obj-name"></span><span class="demo-obj-status"></span><b></b>' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5"></path></svg>';
+        b.addEventListener('click', () => { card = k; render(); $('#planning-card-back').focus(); });
+        $('#planning-objects').appendChild(b);
+        rows[k] = b;
+      });
+      $('#planning-card-back').addEventListener('click', () => { const k = card; card = null; render(); if (rows[k]) rows[k].focus(); });
 
-      function render() {
+      /* расчёт: по каждому объекту электроснабжения — параметры, мероприятия, стоимость */
+      function model() {
         const add = { n: 0, c: 0, s: 0 };
         items.forEach((it) => { if (it.on) add[it.zone] += it.mw; });
-        const addAll = add.n + add.c + add.s, total = SRC_BASE + addAll, srcOver = total > SRC_CAP;
-        const works = [];
+        const addAll = add.n + add.c + add.s, total = SRC_BASE + addAll, m = {};
+        Object.keys(zones).forEach((k) => {
+          const z = zones[k], load = z.base + add[k], def = Math.max(0, load - z.cap), works = [];
+          const who = items.filter((it) => it.on && it.zone === k);
+          if (def) {
+            const n = Math.max(2, Math.ceil(def / LINE_MW));
+            works.push([n + ' ' + plural(n, 'новая КЛ', 'новые КЛ', 'новых КЛ') + ' 10 кВ по ' + fmt(z.km) + ' км', n * z.km * PRICE.klKm]);
+            if (def > 4) works.push(['Новый РП 10 кВ', PRICE.rp]);
+          }
+          if (who.some((it) => it.first)) works.push(['Второй независимый ввод для больницы (I категория надёжности)', PRICE.feed]);
+          m[k] = {
+            title: 'КЛ 10 кВ · ' + z.name, short: 'КЛ 10 кВ · ' + z.name, def: def,
+            status: def ? 'не хватает ' + fmt(def) + ' МВт' : (add[k] ? 'резерва достаточно' : 'без изменений'),
+            facts: [['Пропускная способность', z.cap + ' МВт'], ['Текущая нагрузка', fmt(z.base) + ' МВт'],
+              ['Новые абоненты', who.length ? who.map((it) => it.name + ' +' + fmt(it.mw)).join(', ') : 'нет'],
+              ['Нагрузка после подключения', fmt(load) + ' МВт'], ['Длина трассы от ПС', fmt(z.km) + ' км']],
+            works: works, load: load, over: def > 0
+          };
+        });
+        const srcDef = Math.max(0, total - SRC_CAP);
+        m.src = {
+          title: 'ПС 110 кВ', short: 'ПС 110 кВ', def: srcDef,
+          status: srcDef ? 'не хватает ' + fmt(srcDef) + ' МВт' : (addAll ? 'резерва достаточно' : 'без изменений'),
+          facts: [['Трансформаторы', '2×40 МВА'], ['Допустимая нагрузка', SRC_CAP + ' МВт'], ['Текущая нагрузка', SRC_BASE + ' МВт'],
+            ['Новые абоненты', addAll ? '+' + fmt(addAll) + ' МВт' : 'нет'], ['Нагрузка после подключения', fmt(total) + ' МВт']],
+          works: !srcDef ? [] : (total <= SRC_NEXT ? [['Замена трансформаторов 2×40 на 2×63 МВА', PRICE.trafo]] : [['Строительство нового питающего центра', PRICE.center]]),
+          over: srcDef > 0
+        };
+        const tp = Math.ceil(addAll / TP_MW);
+        m.tp = {
+          title: 'ТП 10/0,4 кВ', short: 'Новые ТП 10/0,4 кВ', def: 0,
+          status: tp ? tp + ' ' + plural(tp, 'подстанция', 'подстанции', 'подстанций') : 'не требуются',
+          facts: [['Нагрузка новых абонентов', fmt(addAll) + ' МВт'], ['Мощность одной ТП', '2×1000 кВА, ' + fmt(TP_MW) + ' МВт'], ['Требуется ТП', String(tp)]],
+          works: tp ? [[tp + ' ' + plural(tp, 'новая ТП', 'новые ТП', 'новых ТП') + ' 10/0,4 кВ', tp * PRICE.tp]] : [],
+          over: false
+        };
+        KEYS.forEach((k) => { m[k].cost = m[k].works.reduce((a, w) => a + w[1], 0); });
+        return { m: m, add: add, addAll: addAll, total: total, cost: KEYS.reduce((a, k) => a + m[k].cost, 0) };
+      }
+
+      function render() {
+        const R = model(), m = R.m, srcOver = m.src.over;
         let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, кабельные линии и перспективные объекты">' + bg;
 
         Object.keys(zones).forEach((k) => {
-          const z = zones[k], load = z.base + add[k], over = load > z.cap;
-          o += '<path d="' + z.d + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(89,194,122,0.7))"></path>';
-          if (over) {
-            const lines = Math.max(2, Math.ceil((load - z.cap) / LINE_MW));
-            o += '<path d="' + z.d + '" transform="translate(9 9)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
-            works.push('Сеть, ' + z.name + ': не хватает ' + fmt(load - z.cap) + ' МВт — ' + lines + ' ' + plural(lines, 'новая КЛ', 'новые КЛ', 'новых КЛ') + ' 10 кВ по ' + fmt(z.km) + ' км' + (load - z.cap > 4 ? ' и новый РП 10 кВ' : ''));
-          }
+          const z = zones[k], over = m[k].over, sel = card === k;
+          o += '<path d="' + z.d + '" style="fill:none;stroke:' + (sel ? '#ffffff' : GREEN) + ';stroke-width:' + (sel ? 4.5 : 3) + ';stroke-linejoin:round;filter:drop-shadow(0 0 5px ' + (sel ? 'rgba(255,255,255,0.9)' : 'rgba(89,194,122,0.7)') + ')"></path>';
+          if (over) o += '<path d="' + z.d + '" transform="translate(9 9)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
           const tw = 168;
-          o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:#0b0f17;stroke:' + (over ? AMBER : '#2d394d') + ';stroke-width:1.2"></rect>' +
-            '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (over ? AMBER : '#C5CEDB') + ';font-size:13px;font-weight:600;text-anchor:middle">КЛ 10 кВ · ' + fmt(load) + ' из ' + z.cap + ' МВт</text>';
+          o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:' + (sel ? '#ffffff' : '#0b0f17') + ';stroke:' + (sel ? '#ffffff' : (over ? AMBER : '#5B677A')) + ';stroke-width:1.2"></rect>' +
+            '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (sel ? '#0b0f17' : (over ? AMBER : '#C5CEDB')) + ';font-size:13px;font-weight:600;text-anchor:middle">КЛ 10 кВ · ' + fmt(m[k].load) + ' из ' + z.cap + ' МВт</text>';
         });
 
         items.forEach((it) => {
@@ -648,38 +718,47 @@
           o += '<text x="' + cx + '" y="' + (y + (l2 ? 62 : 44)) + '" style="fill:' + (it.on ? '#5FD6A2' : '#A7B2C2') + ';font-size:14px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран') + '</text>';
         });
 
-        const sc = srcOver ? AMBER : '#8b95a3';
-        o += '<rect x="80" y="380" width="180" height="100" style="fill:#05070b;stroke:' + sc + ';stroke-width:' + (srcOver ? 2.5 : 1.5) + ';stroke-dasharray:5 4' + (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '') + '"></rect>' +
+        const srcSel = card === 'src', sc = srcSel ? '#ffffff' : (srcOver ? AMBER : '#8b95a3');
+        o += '<rect x="80" y="380" width="180" height="100" style="fill:#05070b;stroke:' + sc + ';stroke-width:' + ((srcOver || srcSel) ? 2.5 : 1.5) + ';stroke-dasharray:5 4' + (srcSel ? ';filter:drop-shadow(0 0 10px rgba(255,255,255,0.7))' : (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '')) + '"></rect>' +
           '<path d="M96 430H244" style="stroke:#4FA3E0;stroke-width:5;stroke-linecap:round"></path>' +
           '<circle cx="140" cy="452" r="9" style="fill:none;stroke:#4FA3E0;stroke-width:2"></circle><circle cx="152" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
           '<circle cx="188" cy="452" r="9" style="fill:none;stroke:#4FA3E0;stroke-width:2"></circle><circle cx="200" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
           '<text x="170" y="408" style="fill:#ffffff;font-size:16px;font-weight:700;text-anchor:middle">ПС 110 кВ</text>' +
           '<rect x="74" y="350" width="192" height="24" rx="12" style="fill:#0b0f17"></rect><text x="170" y="367" style="fill:' + (srcOver ? AMBER : '#C5CEDB') + ';font-size:14px;font-weight:600;text-anchor:middle">' + (srcOver ? 'требуется реконструкция' : 'источник питания района') + '</text>';
         o += '<text x="28" y="34" style="fill:#A7B2C2;font-size:14px;font-weight:700;letter-spacing:0.06em">ДЕМОНСТРАЦИОННЫЙ РАЙОН</text>';
-        $('#planning-stage').innerHTML = o + '</svg>';
-
-        const tp = Math.ceil(addAll / TP_MW);
-        if (tp) works.push(tp + ' ' + plural(tp, 'новая ТП', 'новые ТП', 'новых ТП') + ' 10/0,4 кВ для подключения абонентов');
-        if (items.some((it) => it.on && it.first)) works.push('Больница: два независимых ввода (I категория надёжности)');
-        if (srcOver) works.push(total <= SRC_NEXT
-          ? 'Источник: не хватает ' + fmt(total - SRC_CAP) + ' МВт — замена трансформаторов 2×40 на 2×63 МВА'
-          : 'Источник: не хватает ' + fmt(total - SRC_CAP) + ' МВт — нужен новый питающий центр');
+        svgBox.innerHTML = o + '</svg>';
 
         items.forEach((it) => { it.el.classList.toggle('is-on', it.on); it.el.setAttribute('aria-pressed', String(it.on)); });
-        $('#planning-load').textContent = fmt(total) + ' из ' + SRC_CAP + ' МВт';
+        $('#planning-load').textContent = fmt(R.total) + ' из ' + SRC_CAP + ' МВт';
         const scale = 100 / (SRC_CAP * 1.6);
         $('#planning-base').style.width = (SRC_BASE * scale) + '%';
-        $('#planning-add').style.width = (Math.min(addAll, SRC_CAP * 1.6 - SRC_BASE) * scale) + '%';
+        $('#planning-add').style.width = (Math.min(R.addAll, SRC_CAP * 1.6 - SRC_BASE) * scale) + '%';
         $('#planning-add').style.background = srcOver ? AMBER : GREEN;
-        const heavy = works.some((w) => w.indexOf('не хватает') >= 0);
-        $('#planning-works-h').textContent = !addAll ? 'Объекты не выбраны' : (heavy ? 'Необходимая модернизация' : 'Что нужно для подключения');
-        $('#planning-works').innerHTML = works.map((w) => '<li class="' + (w.indexOf('не хватает') >= 0 ? 'is-warn' : '') + '">' + w + '</li>').join('');
-        const v = $('#planning-verdict');
-        v.hidden = heavy || !addAll;
-        v.textContent = 'Резервов сети и источника достаточно: модернизация не требуется.';
-        v.className = 'demo-verdict is-ok';
-        $('#demo-planning').classList.toggle('is-alarm', false);
+
+        KEYS.forEach((k) => {
+          const b = rows[k], e = m[k];
+          b.classList.toggle('is-warn', e.def > 0);
+          b.children[1].textContent = e.short;
+          b.children[2].textContent = e.status;
+          b.children[3].textContent = money(e.cost);
+        });
+        $('#planning-total').textContent = money(R.cost);
+
+        const cardEl = $('#planning-card');
+        cardEl.hidden = !card;
+        if (card) {
+          const e = m[card];
+          $('#planning-card-title').textContent = e.title;
+          $('#planning-card-status').textContent = e.status;
+          $('#planning-card-status').className = 'demo-card-status' + (e.def > 0 ? ' is-warn' : '');
+          $('#planning-card-facts').innerHTML = e.facts.map((f) => '<div><span>' + f[0] + '</span><b>' + f[1] + '</b></div>').join('');
+          $('#planning-card-works').innerHTML = e.works.length
+            ? e.works.map((w) => '<li><span>' + w[0] + '</span><b>' + money(w[1]) + '</b></li>').join('')
+            : '<li class="is-none"><span>Мероприятия не требуются</span><b>—</b></li>';
+          $('#planning-card-cost').textContent = money(e.cost);
+        }
       }
+      window.addEventListener('hashchange', () => { card = null; render(); });
       render();
     })();
   }

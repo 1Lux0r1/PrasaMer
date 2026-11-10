@@ -108,7 +108,7 @@ button { font-family: inherit; cursor: pointer; }
 #planning-base { background: #4FA3E0; }
 
 /* Мини-экран «Планирование застройки» */
-.demo-side-tight { padding: 26px 32px; gap: 14px; }
+.demo-side-tight { padding: 24px 32px; gap: 12px; }
 .demo-side-tight .demo-toggle { height: 46px; font-size: 17px; }
 .demo-side-tight .demo-toggles { gap: 6px; }
 .demo-bar-src::after { left: 62.5%; }
@@ -117,3 +117,35 @@ button { font-family: inherit; cursor: pointer; }
 .demo-works li::before { content: ''; position: absolute; left: 0; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: #5FD6A2; }
 .demo-works li.is-warn { color: #FFD9A8; font-weight: 600; }
 .demo-works li.is-warn::before { background: #F5A04A; }
+
+/* Мини-экран «Планирование застройки»: объекты электроснабжения и карточки */
+#planning-stage { position: relative; display: block; }
+.demo-hit { position: absolute; padding: 0; border: 0; border-radius: 12px; background: transparent; }
+.demo-hit:hover { background: rgba(255,255,255,0.1); }
+.demo-side-tight { position: relative; }
+.demo-objs { display: flex; flex-direction: column; gap: 5px; }
+.demo-obj { height: 44px; padding: 0 10px 0 12px; display: flex; align-items: center; gap: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.04); color: #ffffff; font-size: 16px; text-align: left; }
+.demo-obj:hover { background: rgba(255,255,255,0.12); }
+.demo-obj-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #5FD6A2; }
+.demo-obj.is-warn .demo-obj-dot { background: #F5A04A; }
+.demo-obj-name { flex: none; font-weight: 600; }
+.demo-obj-status { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; color: #A7B2C2; }
+.demo-obj.is-warn .demo-obj-status { color: #FFD9A8; }
+.demo-obj b { flex: none; font-size: 15px; }
+.demo-obj svg, .demo-card-back svg { flex: none; fill: none; stroke: #A7B2C2; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.demo-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 10px; border-top: 1px solid #2d394d; font-size: 17px; color: #C5CEDB; }
+.demo-total b { font-size: 26px; color: #ffffff; }
+.demo-card { position: absolute; left: 0; top: 0; right: 0; bottom: 0; padding: 22px 32px 26px; display: flex; flex-direction: column; gap: 12px; background: #10151f; }
+.demo-card-back { align-self: flex-start; height: 44px; padding: 0 16px 0 10px; display: flex; align-items: center; gap: 8px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.07); color: #ffffff; font-size: 16px; }
+.demo-card-back:hover { background: rgba(255,255,255,0.16); }
+.demo-card h3 { margin: 0; font-size: 30px; line-height: 1.1; font-weight: 800; }
+.demo-card-status { align-self: flex-start; padding: 5px 12px; border-radius: 14px; background: rgba(95,214,162,0.14); color: #8FE6BF; font-size: 15px; font-weight: 600; }
+.demo-card-status.is-warn { background: rgba(245,160,74,0.16); color: #FFD9A8; }
+.demo-card-facts { display: flex; flex-direction: column; gap: 7px; font-size: 16px; }
+.demo-card-facts div { display: flex; justify-content: space-between; gap: 16px; }
+.demo-card-facts span { flex: none; color: #A7B2C2; }
+.demo-card-facts b { font-weight: 500; text-align: right; }
+.demo-card-works { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.35; }
+.demo-card-works li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 12px; border-radius: 10px; background: rgba(245,160,74,0.1); }
+.demo-card-works li.is-none { background: rgba(95,214,162,0.1); color: #8FE6BF; }
+.demo-card-works b { flex: none; }

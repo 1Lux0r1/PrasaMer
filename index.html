@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=0bdbddff">
+<link rel="stylesheet" href="styles.css?v=09f37395">
 </head>
 <body>
 <div id="stage">
@@ -247,10 +247,25 @@
           <div class="demo-bar-head"><span>Источник · ПС 110 кВ, 2×40 МВА</span><b id="planning-load"></b></div>
           <div class="demo-bar demo-bar-src"><i id="planning-base"></i><i id="planning-add"></i></div>
         </div>
-        <div class="demo-step" id="planning-works-h"></div>
-        <ul class="demo-works" id="planning-works"></ul>
-        <div class="demo-verdict" id="planning-verdict"></div>
-        <div class="demo-note">Район, нагрузки и нормативы расчёта условные.</div>
+        <div class="demo-step">Объекты электроснабжения</div>
+        <div class="demo-objs" id="planning-objects"></div>
+        <div class="demo-total"><span>Итого ориентировочно</span><b id="planning-total"></b></div>
+        <div class="demo-note">Район, нагрузки, нормативы и расценки условные.</div>
+
+        <div class="demo-card" id="planning-card" hidden>
+          <button type="button" class="demo-card-back" id="planning-card-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>
+            Ко всем объектам
+          </button>
+          <div class="demo-step">Карточка объекта</div>
+          <h3 id="planning-card-title"></h3>
+          <div class="demo-card-status" id="planning-card-status"></div>
+          <div class="demo-card-facts" id="planning-card-facts"></div>
+          <div class="demo-step">Необходимые мероприятия</div>
+          <ul class="demo-card-works" id="planning-card-works"></ul>
+          <div class="demo-total"><span>Ориентировочная стоимость</span><b id="planning-card-cost"></b></div>
+          <div class="demo-note">Условные расценки: КЛ 10 кВ — 12 млн ₽/км, РП 10 кВ — 90 млн ₽, ТП — 14 млн ₽, второй ввод — 25 млн ₽, замена трансформаторов — 480 млн ₽.</div>
+        </div>
       </aside>
     </div>
   </div>
@@ -519,6 +534,6 @@
 
 </section>
 </div>
-<script src="app.js?v=c88e36ef"></script>
+<script src="app.js?v=f3b31be5"></script>
 </body>
 </html>
