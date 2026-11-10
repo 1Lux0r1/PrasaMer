@@ -409,7 +409,7 @@
 
   <div style="position: absolute; left: 96px; top: 372px; width: 1728px; height: 660px; display: flex; align-items: stretch">
     <article style="flex: 1 1 0; min-width: 0; background: #1d2636; display: flex; flex-direction: column">
-      <img src="img/view-map-2.jpg" alt="Объекты электроснабжения и линии электропередачи на карте Москвы" style="display: block; width: 100%; height: 440px; object-fit: cover">
+      <img src="img/view-map-3.jpg" alt="Объекты электроснабжения и линии электропередачи на карте Москвы" style="display: block; width: 100%; height: 440px; object-fit: cover">
       <div style="padding: 24px 32px; display: flex; flex-direction: column; gap: 10px">
         <div style="font-size: 17px; font-weight: 800; letter-spacing: 0.04em; color: #8FB4F0">ВИД 1 · ГДЕ НАХОДИТСЯ</div>
         <h2 style="margin: 0; font-size: 32px; line-height: 1.15; font-weight: 700">Объекты на карте города</h2>
@@ -425,7 +425,49 @@
     </div>
 
     <article style="flex: 1 1 0; min-width: 0; background: #1d2636; display: flex; flex-direction: column">
-      <img src="img/view-scheme.jpg" alt="Ортогональная схема топологии электросети" style="display: block; width: 100%; height: 440px; object-fit: cover; object-position: left top">
+      <svg viewBox="0 0 800 440" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Ортогональная схема топологии: подстанции и электростанции с шинами, соединённые линиями по классам напряжения" style="display: block; width: 100%; height: 440px; background: #05070b; font-family: inherit">
+        <g style="fill: none; stroke-width: 2.4; stroke-linejoin: round">
+          <path d="M50 300V85M110 300V215M160 300V215M100 150V85M280 300V110H300V85M330 85V105H420V130M300 320H340V408H575V375M530 200V310H560V330M560 165H590V205H620M740 230V300M630 340H650" style="stroke: #4FA3E0"></path>
+          <path d="M300 350H355V272H370M480 262H600V178H620M670 85V150M730 85V150" style="stroke: #E6D72A"></path>
+          <path d="M150 390V425H0" style="stroke: #E5202E; stroke-width: 3"></path>
+        </g>
+        <g style="fill: #05070b; stroke: #8b95a3; stroke-width: 1.5; stroke-dasharray: 5 4">
+          <rect x="40" y="300" width="260" height="90"></rect>
+          <rect x="60" y="150" width="140" height="65"></rect>
+          <rect x="40" y="40" width="110" height="45"></rect>
+          <rect x="250" y="40" width="110" height="45"></rect>
+          <rect x="380" y="130" width="180" height="70"></rect>
+          <rect x="370" y="250" width="110" height="45"></rect>
+          <rect x="520" y="330" width="110" height="45"></rect>
+          <rect x="640" y="40" width="120" height="45"></rect>
+          <rect x="620" y="150" width="150" height="80"></rect>
+          <rect x="650" y="300" width="120" height="45"></rect>
+        </g>
+        <g style="fill: none; stroke-width: 5; stroke-linecap: round">
+          <path d="M56 325H284M76 195H184M54 63H136M264 63H346M396 180H544M534 353H616M636 205H754M664 323H756" style="stroke: #4FA3E0"></path>
+          <path d="M56 350H284M384 273H466M654 63H746M636 178H754" style="stroke: #E6D72A"></path>
+          <path d="M130 375H210" style="stroke: #E5202E"></path>
+        </g>
+        <g style="fill: none; stroke-width: 10; stroke-linecap: round">
+          <path d="M80 325h.01M130 325h.01M180 325h.01M230 325h.01M270 325h.01M100 195h.01M160 195h.01M95 63h.01M305 63h.01M420 180h.01M470 180h.01M520 180h.01M575 353h.01M665 205h.01M725 205h.01M710 323h.01" style="stroke: #4FA3E0"></path>
+          <path d="M105 350h.01M155 350h.01M205 350h.01M255 350h.01M425 273h.01M670 63h.01M730 63h.01M670 178h.01M730 178h.01" style="stroke: #E6D72A"></path>
+          <path d="M150 375h.01M190 375h.01" style="stroke: #E5202E"></path>
+        </g>
+        <path d="M95 166V195M165 166V195M415 146V180M470 146V180M525 146V180" style="fill: none; stroke: #7d8794; stroke-width: 1.4"></path>
+        <path d="M95 166h.01M165 166h.01M415 146h.01M470 146h.01M525 146h.01" style="fill: none; stroke: #C77DD6; stroke-width: 13; stroke-linecap: round"></path>
+        <g style="fill: #ffffff; font-size: 14px; font-weight: 600">
+          <text x="40" y="410">ПС 500 кВ</text>
+          <text x="60" y="142">ТЭЦ</text>
+          <text x="40" y="32">ПС 110 кВ</text>
+          <text x="250" y="32">ПС 110 кВ</text>
+          <text x="380" y="122">ТЭЦ</text>
+          <text x="370" y="242">ПС 220 кВ</text>
+          <text x="520" y="394">ПС 110 кВ</text>
+          <text x="640" y="32">ПС 220 кВ</text>
+          <text x="620" y="250">ПС 220 кВ</text>
+          <text x="650" y="364">ПС 110 кВ</text>
+        </g>
+      </svg>
       <div style="padding: 24px 32px; display: flex; flex-direction: column; gap: 10px">
         <div style="font-size: 17px; font-weight: 800; letter-spacing: 0.04em; color: #F0C36A">ВИД 2 · КАК СВЯЗАНО</div>
         <h2 style="margin: 0; font-size: 32px; line-height: 1.15; font-weight: 700">Ортогональная схема топологии</h2>
