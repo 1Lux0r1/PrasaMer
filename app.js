@@ -563,7 +563,7 @@
     /* 03. Планирование застройки: район, новые абоненты, расчёт модернизации и стоимости (данные условные) */
     (function () {
       const SRC_CAP = 42, SRC_BASE = 31, SRC_NEXT = 66;      // ПС 110 кВ: допустимая нагрузка 2×40 МВА, текущая, после замены на 2×63 МВА
-      const LINE_MW = 5, TP_MW = 1.6;                        // одна КЛ 10 кВ и одна ТП 2×1000 кВА
+      const LINE_MW = 5, TP_MW = 1.6;                        // одна ЛЭП 10 кВ и одна ТП 2×1000 кВА
       /* условные расценки, млн ₽ */
       const PRICE = { klKm: 12, rp: 90, tp: 14, feed: 25, trafo: 480, center: 2500 };
       const AMBER = '#F5A04A', GREEN = '#59C27A';
@@ -618,7 +618,7 @@
         stage.appendChild(b);
       };
       hit('src', 'ПС 110 кВ', 80, 380, 180, 100);
-      Object.keys(zones).forEach((k) => hit(k, 'КЛ 10 кВ, ' + zones[k].name, zones[k].tag[0] - 90, zones[k].tag[1] - 40, 180, 44));
+      Object.keys(zones).forEach((k) => hit(k, 'ЛЭП 10 кВ, ' + zones[k].name, zones[k].tag[0] - 90, zones[k].tag[1] - 40, 180, 44));
 
       const tg = $('#planning-toggles');
       items.forEach((it) => {
@@ -653,12 +653,12 @@
           const who = items.filter((it) => it.on && it.zone === k);
           if (def) {
             const n = Math.max(2, Math.ceil(def / LINE_MW));
-            works.push([n + ' ' + plural(n, 'новая КЛ', 'новые КЛ', 'новых КЛ') + ' 10 кВ по ' + fmt(z.km) + ' км', n * z.km * PRICE.klKm]);
+            works.push([n + ' ' + plural(n, 'новая ЛЭП', 'новые ЛЭП', 'новых ЛЭП') + ' 10 кВ по ' + fmt(z.km) + ' км', n * z.km * PRICE.klKm]);
             if (def > 4) works.push(['Новый РП 10 кВ', PRICE.rp]);
           }
           if (who.some((it) => it.first)) works.push(['Второй независимый ввод для больницы (I категория надёжности)', PRICE.feed]);
           m[k] = {
-            title: 'КЛ 10 кВ · ' + z.name, short: 'КЛ 10 кВ · ' + z.name, def: def,
+            title: 'ЛЭП 10 кВ · ' + z.name, short: 'ЛЭП 10 кВ · ' + z.name, def: def,
             status: def ? 'не хватает ' + fmt(def) + ' МВт' : (add[k] ? 'резерва достаточно' : 'без изменений'),
             facts: [['Пропускная способность', z.cap + ' МВт'], ['Текущая нагрузка', fmt(z.base) + ' МВт'],
               ['Новые абоненты', who.length ? who.map((it) => it.name + ' +' + fmt(it.mw)).join(', ') : 'нет'],
@@ -689,15 +689,15 @@
 
       function render() {
         const R = model(), m = R.m, srcOver = m.src.over;
-        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, кабельные линии и перспективные объекты">' + bg;
+        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, линии электропередачи и перспективные объекты">' + bg;
 
         Object.keys(zones).forEach((k) => {
           const z = zones[k], over = m[k].over, sel = card === k;
           o += '<path d="' + z.d + '" style="fill:none;stroke:' + (sel ? '#ffffff' : GREEN) + ';stroke-width:' + (sel ? 4.5 : 3) + ';stroke-linejoin:round;filter:drop-shadow(0 0 5px ' + (sel ? 'rgba(255,255,255,0.9)' : 'rgba(89,194,122,0.7)') + ')"></path>';
           if (over) o += '<path d="' + z.d + '" transform="translate(9 9)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
-          const tw = 168;
+          const tw = 182;
           o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:' + (sel ? '#ffffff' : '#0b0f17') + ';stroke:' + (sel ? '#ffffff' : (over ? AMBER : '#5B677A')) + ';stroke-width:1.2"></rect>' +
-            '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (sel ? '#0b0f17' : (over ? AMBER : '#C5CEDB')) + ';font-size:13px;font-weight:600;text-anchor:middle">КЛ 10 кВ · ' + fmt(m[k].load) + ' из ' + z.cap + ' МВт</text>';
+            '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (sel ? '#0b0f17' : (over ? AMBER : '#C5CEDB')) + ';font-size:13px;font-weight:600;text-anchor:middle">ЛЭП 10 кВ · ' + fmt(m[k].load) + ' из ' + z.cap + ' МВт</text>';
         });
 
         items.forEach((it) => {
