@@ -141,164 +141,312 @@
     return h;
   }
 
-  /* ---------- Слайд «Карта ↔ схема» ---------- */
-  function initScheme(root) {
-    var $ = function (sel) { return root.querySelector(sel); };
-    var state = { t: 0, view: 'map', sel: 'tp3', off: null, show: { a: true, b: true, c: true } };
-    var nodes = [], byId = {}, edges = [];
-    var add = function (id, type, name, parent, m, s, kind) {
-      var n = { id: id, type: type, name: name, parent: parent, m: [m[0], m[1] + 100], s: s, kind: kind };
-      nodes.push(n); byId[id] = n; return n;
-    };
-    var rad = function (d) { return d * Math.PI / 180; };
-    add('ps1', 'ps', 'ПС 110 кВ № 1', null, [300, 150], [550, 120]);
-    add('ps2', 'ps', 'ПС 110 кВ № 2', null, [1090, 140], [1120, 120]);
-    add('rp1', 'rp', 'РП-1', 'ps1', [330, 400], [360, 330]);
-    add('rp2', 'rp', 'РП-2', 'ps1', [700, 290], [740, 330]);
-    add('rp3', 'rp', 'РП-3', 'ps2', [1090, 380], [1120, 330]);
-    var kinds = ['Жилой дом', 'Школа', 'Жилой дом', 'Поликлиника', 'Жилой дом', 'Детский сад', 'Жилой дом', 'Жилой дом'];
-    var j = 0;
-    [['rp1', 190, [150, 90, 30]], ['rp2', 190, [110, 35]], ['rp3', 200, [150, 90, 30]]].forEach(function (p) {
-      var rp = byId[p[0]];
-      p[2].forEach(function (deg) {
-        var a = rad(deg);
-        var base = [rp.m[0] + p[1] * Math.cos(a), rp.m[1] - 100 + p[1] * Math.sin(a)];
-        var tp = add('tp' + (j + 1), 'tp', 'ТП-10' + (j + 1), rp.id, base, [208 + 152 * j, 560]);
-        [0.7, -0.7].forEach(function (da, k) {
-          var i = 2 * j + k;
-          add('c' + (i + 1), 'c', 'Потребитель № ' + (i + 1), tp.id,
-            [base[0] + 88 * Math.cos(a + da), base[1] + 88 * Math.sin(a + da)], [170 + 76 * i, 800], kinds[i % 8]);
-        });
-        j++;
+  /* ---------- Слайд «Карта ↔ схема ↔ объект» ---------- */
+
+  /* Модель сети и расчёт представления (без DOM). Данные условные. */
+  function powerCore() {
+    const CLR = { 500: '#E5202E', 220: '#E6D72A', 110: '#4FA3E0', 10: '#59C27A', gen: '#C77DD6' };
+    const DEMO_V = { 500: '512,3', 220: '224,6', 110: '115,0', 10: '10,4' };
+    const GRAY = '#6b7480';
+
+    function busArt(n) {
+      const pad = 14, top = n.gens ? 30 : 6, bot = 8, k = n.buses.length;
+      const bus = { 110: '', 220: '', 500: '' }, dots = { 110: '', 220: '', 500: '', gen: '' };
+      let ticks = '';
+      const ys = n.buses.map((c, i) => top + (i + 0.5) * (n.h - top - bot) / k);
+      n.buses.forEach((c, i) => {
+        const y = ys[i].toFixed(1);
+        const x0 = c === 500 ? n.w * 0.36 : pad, x1 = c === 500 ? n.w * 0.56 : n.w - pad;
+        bus[c] += 'M' + x0.toFixed(1) + ' ' + y + 'H' + x1.toFixed(1);
+        const cnt = Math.max(2, Math.floor((x1 - x0) / 30));
+        for (let j = 0; j < cnt; j++) {
+          const x = (x0 + (j + 0.5) * (x1 - x0) / cnt).toFixed(1);
+          dots[c] += 'M' + x + ' ' + y + 'h0.01';
+          ticks += 'M' + x + ' ' + y + 'v' + (j % 2 ? 7 : -7);
+        }
       });
-    });
-    nodes.forEach(function (n) {
-      if (!n.parent) return;
-      var p = byId[n.parent], A = p.m, C = n.m, dx = C[0] - A[0], dy = C[1] - A[1], ym = (p.s[1] + n.s[1]) / 2;
-      edges.push({
-        child: n.id, level: n.type === 'rp' ? 'a' : (n.type === 'tp' ? 'b' : 'c'),
-        m: [A, [A[0] + dx * 0.35 - dy * 0.08, A[1] + dy * 0.35 + dx * 0.08], [A[0] + dx * 0.7 + dy * 0.06, A[1] + dy * 0.7 - dx * 0.06], C],
-        s: [p.s, [p.s[0], ym], [n.s[0], ym], n.s]
-      });
-    });
-    var mid = function (a, b, k, off) { return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k + off]; };
-    var r2 = byId.rp2, r3 = byId.rp3;
-    var reserve = {
-      m: [r2.m, mid(r2.m, r3.m, 0.33, -26), mid(r2.m, r3.m, 0.66, -26), r3.m],
-      s: [r2.s, mid(r2.s, r3.s, 0.33, 0), mid(r2.s, r3.s, 0.66, 0), r3.s]
-    };
-
-    var typeName = { ps: 'Питающий центр', rp: 'Распределительный пункт', tp: 'Трансформаторная подстанция', c: 'Потребитель' };
-    var volt = { ps: '110 кВ', rp: '10 кВ', tp: '10/0,4 кВ', c: '0,4 кВ' };
-    var look = { ps: '#F5A04A', rp: '#7CCFD0', tp: '#9BDDB0', c: '#C5CEDB' };
-    var under = function (id, top) { var n = byId[id]; while (n) { if (n.id === top) return true; n = byId[n.parent]; } return false; };
-    var countDown = function (top) { return nodes.filter(function (n) { return n.type === 'c' && under(n.id, top); }).length; };
-    var title = function (n) { return n.type === 'c' ? n.kind : n.name; };
-
-    /* узлы создаются один раз */
-    var box = $('#sc-nodes');
-    nodes.forEach(function (n) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'sc-node sc-' + n.type;
-      b.setAttribute('aria-label', n.name + (n.kind ? ', ' + n.kind : ''));
-      b.innerHTML = '<span class="sc-shape" aria-hidden="true"></span><span class="sc-label"></span>';
-      b.addEventListener('click', function () { state.sel = n.id; render(); });
-      box.appendChild(b);
-      n.el = b; n.shape = b.firstChild; n.label = b.lastChild;
-    });
-
-    /* переключатели уровней */
-    var layerDefs = [['a', 'Питающие линии · 10 кВ', '#F0B37E'], ['b', 'Распределительная сеть · 10 кВ', '#7CCFD0'], ['c', 'Сеть 0,4 кВ и потребители', '#9BDDB0']];
-    var layerBox = $('#sc-layers');
-    layerDefs.forEach(function (d) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'sc-layer';
-      b.innerHTML = '<span aria-hidden="true" class="sc-layer-line" style="background:' + d[2] + '"></span><span class="sc-layer-name">' + d[1] +
-        '</span><span aria-hidden="true" class="sc-layer-dot" style="border-color:' + d[2] + '"></span>';
-      b.addEventListener('click', function () { state.show[d[0]] = !state.show[d[0]]; render(); });
-      layerBox.appendChild(b);
-      d.push(b);
-    });
-
-    function render() {
-      var t = state.t, sel = state.sel, off = state.off, show = state.show;
-      var L = function (a, b) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; };
-      var dead = function (id) { return !!off && under(id, off); };
-      var chain = {}, c = byId[sel];
-      while (c) { chain[c.id] = true; c = byId[c.parent]; }
-      var path = function (e) {
-        return 'M' + e.m.map(function (p, i) { var q = L(p, e.s[i]); return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L');
-      };
-      var d = { a: '', b: '', c: '' }, dOff = '', dSel = '';
-      edges.forEach(function (e) {
-        if (!show[e.level]) return;
-        var p = path(e);
-        if (dead(e.child)) dOff += p; else d[e.level] += p;
-        if (chain[e.child]) dSel += p;
-      });
-      $('#sc-pA').setAttribute('d', d.a); $('#sc-pB').setAttribute('d', d.b); $('#sc-pC').setAttribute('d', d.c);
-      $('#sc-pOff').setAttribute('d', dOff); $('#sc-pSel').setAttribute('d', dSel);
-      $('#sc-pRes').setAttribute('d', show.a ? path(reserve) : '');
-      $('#sc-mapbg').style.opacity = (1 - t).toFixed(3);
-      $('#sc-schbg').style.opacity = t.toFixed(3);
-
-      nodes.forEach(function (n) {
-        var q = L(n.m, n.s), isDead = dead(n.id), isSel = n.id === sel, col = isDead ? '#FF2D46' : look[n.type];
-        n.el.style.left = q[0].toFixed(1) + 'px';
-        n.el.style.top = q[1].toFixed(1) + 'px';
-        n.el.style.display = (n.type === 'c' && !show.c) ? 'none' : '';
-        n.el.classList.toggle('is-sel', isSel);
-        n.shape.style.borderColor = col;
-        n.shape.style.background = n.type === 'c' ? col : '#10151f';
-        n.label.textContent = n.type === 'c' ? (isSel ? n.kind : '') : n.name;
-      });
-
-      var isMap = state.view === 'map';
-      $('#sc-title-map').hidden = !isMap; $('#sc-title-scheme').hidden = isMap;
-      $('#sc-to-map').classList.toggle('is-on', isMap); $('#sc-to-map').setAttribute('aria-pressed', String(isMap));
-      $('#sc-to-scheme').classList.toggle('is-on', !isMap); $('#sc-to-scheme').setAttribute('aria-pressed', String(!isMap));
-      layerDefs.forEach(function (ld) {
-        var on = show[ld[0]];
-        ld[3].classList.toggle('is-on', on); ld[3].setAttribute('aria-pressed', String(on));
-        ld[3].querySelector('.sc-layer-dot').style.background = on ? ld[2] : 'transparent';
-      });
-
-      var sn = byId[sel], selDead = dead(sel), selIsOff = off === sel;
-      $('#sc-name').textContent = title(sn);
-      $('#sc-type').textContent = typeName[sn.type];
-      $('#sc-volt').textContent = volt[sn.type];
-      $('#sc-from').textContent = sn.parent ? byId[sn.parent].name : 'внешняя сеть';
-      $('#sc-down').textContent = sn.type === 'c' ? '—' : String(countDown(sel));
-      $('#sc-state').textContent = selDead ? 'Без питания' : 'Под напряжением';
-      $('#sc-state').style.color = selDead ? '#FF8A99' : '#5FD6A2';
-      var btn = $('#sc-off-btn');
-      btn.textContent = selIsOff ? 'Вернуть питание' : 'Смоделировать отключение';
-      btn.classList.toggle('is-off', selIsOff);
-      var note = $('#sc-off-note');
-      note.hidden = !off;
-      if (off) note.textContent = 'Отключён: ' + title(byId[off]) + '. Потребителей без питания: ' + countDown(off) + '.';
+      for (let g = 0; g < n.gens; g++) {
+        const x = (pad + 14 + g * (n.w - 2 * pad - 28) / Math.max(1, n.gens - 1)).toFixed(1);
+        dots.gen += 'M' + x + ' 14h0.01';
+        ticks += 'M' + x + ' 14V' + ys[0].toFixed(1);
+      }
+      return { bus: bus, dots: dots, ticks: ticks };
     }
 
-    var raf = 0;
+    const nodes = [], byId = {};
+    [ // id, тип, класс, на карте, на схеме, ширина, высота, шины, генераторы
+      ['a', 'ps', 500, [250, 560], [290, 600], 440, 110, [110, 220, 500], 0],
+      ['b', 'tec', 110, [330, 380], [180, 330], 150, 70, [110], 2],
+      ['c', 'ps', 110, [150, 250], [120, 130], 120, 50, [110], 0],
+      ['d', 'ps', 110, [420, 200], [400, 130], 110, 50, [110], 0],
+      ['e', 'tec', 110, [640, 400], [700, 300], 220, 80, [110], 3],
+      ['f', 'ps', 220, [560, 600], [620, 480], 130, 50, [220], 0],
+      ['g', 'ps', 110, [800, 560], [890, 480], 130, 50, [110], 0],
+      ['h', 'ps', 220, [1000, 180], [1130, 120], 160, 50, [220], 0],
+      ['i', 'tec', 220, [1080, 360], [1140, 310], 260, 90, [220, 110], 3],
+      ['j', 'ps', 110, [1130, 560], [1140, 520], 150, 50, [110], 0],
+      ['k', 'ps', 220, [760, 760], [850, 700], 150, 50, [220], 0],
+      ['l', 'ps', 220, [1090, 760], [1160, 740], 220, 80, [220, 110], 0]
+    ].forEach((d) => {
+      const n = { id: d[0], type: d[1], cls: d[2], m: d[3], s: d[4], w: d[5], h: d[6], buses: d[7], gens: d[8] };
+      n.title = n.type === 'tec' ? 'ТЭЦ' : 'ПС ' + n.cls + ' кВ';
+      n.art = busArt(n);
+      nodes.push(n); byId[n.id] = n;
+    });
+    byId.x = { id: 'x', m: [-20, 640], s: [0, 760] }; // внешняя сеть 500 кВ
+
+    const lines = [ // класс, от, до, тип трассы (V: верт-гор-верт, H: гор-верт-гор), средняя координата, смещения на концах
+      [110, 'a', 'c', 'V', 220, -200, -30], [110, 'a', 'b', 'V', 450, -140, -30], [110, 'a', 'b', 'V', 450, -80, 30],
+      [110, 'a', 'd', 'V', 230, 110, -20], [110, 'a', 'e', 'V', 400, 180, -60], [110, 'd', 'e', 'V', 210, 30, -20],
+      [220, 'a', 'f', 'H', 540, 20, 0], [220, 'a', 'k', 'H', 600, 40, 0], [110, 'a', 'g', 'H', 740, -20, 0],
+      [110, 'e', 'g', 'V', 400, 60, 0], [110, 'e', 'i', 'H', 900, 10, 20], [220, 'f', 'i', 'V', 420, 30, -100],
+      [220, 'h', 'i', 'V', 200, -30, -40], [220, 'h', 'i', 'V', 200, 50, 40], [110, 'i', 'j', 'V', 430, 20, 20],
+      [110, 'g', 'j', 'H', 1000, 10, 0], [110, 'j', 'l', 'V', 620, 50, 30], [220, 'k', 'l', 'H', 990, 10, 0],
+      [220, 'i', 'l', 'H', 1320, -10, 20], [110, 'b', 'c', 'V', 225, -40, 20], [500, 'a', 'x', 'V', 760, -160, 0]
+    ].map((d) => {
+      const a = byId[d[1]], b = byId[d[2]], mid = d[4], oa = d[5], ob = d[6];
+      const s = d[3] === 'V'
+        ? [[a.s[0] + oa, a.s[1]], [a.s[0] + oa, mid], [b.s[0] + ob, mid], [b.s[0] + ob, b.s[1]]]
+        : [[a.s[0], a.s[1] + oa], [mid, a.s[1] + oa], [mid, b.s[1] + ob], [b.s[0], b.s[1] + ob]];
+      const A = a.m, C = b.m, dx = C[0] - A[0], dy = C[1] - A[1], len = Math.hypot(dx, dy) || 1;
+      const px = -dy / len, py = dx / len, off = oa * 0.15;
+      const m = [A, [A[0] + dx * 0.35 + px * (18 + off), A[1] + dy * 0.35 + py * (18 + off)],
+        [A[0] + dx * 0.7 + px * (off - 10), A[1] + dy * 0.7 + py * (off - 10)], C];
+      return { cls: d[0], a: a.id, b: b.id, m: m, s: s };
+    });
+
+    /* Однолинейная схема объекта: геометрия одна для всех, цвета и подписи — от выбранного объекта */
+    const FEED = [250, 360, 580, 800, 1020, 1130];
+    const detail = (() => {
+      const a = { hiThin: '', hiFill: '', loThin: '', loFill: '', hiBus: 'M230 250H1150M230 292H1150', loBus: 'M170 640H1210M170 682H1210' };
+      const ln = (k, x1, y1, x2, y2) => { a[k + 'Thin'] += 'M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2; };
+      const sq = (k, x, y) => { a[k + 'Fill'] += 'M' + (x - 6) + ' ' + (y - 6) + 'h12v12h-12z'; };
+      const dt = (k, x, y) => { a[k + 'Fill'] += 'M' + (x - 4) + ' ' + y + 'a4 4 0 1 0 8 0a4 4 0 1 0 -8 0'; };
+      const ring = (k, x, y, r) => { a[k + 'Thin'] += 'M' + (x - r) + ' ' + y + 'a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0'; };
+      const arrow = (k, x, y, dir) => { a[k + 'Thin'] += 'M' + (x - 5) + ' ' + (y - dir * 9) + 'L' + x + ' ' + y + 'L' + (x + 5) + ' ' + (y - dir * 9); };
+      [330, 1050].forEach((x) => { ln('hi', x, 160, x, 250); arrow('hi', x, 160, -1); sq('hi', x, 205); dt('hi', x, 250); });
+      ln('hi', 690, 250, 690, 292); sq('hi', 690, 271); dt('hi', 690, 250); dt('hi', 690, 292);
+      [560, 820].forEach((x) => { ln('hi', x, 250, x, 222); ring('hi', x, 214, 8); dt('hi', x, 250); });
+      [470, 910].forEach((x) => {
+        dt('hi', x, 292); ln('hi', x, 292, x, 372); sq('hi', x, 332); ring('hi', x, 388, 16);
+        ring('lo', x, 410, 16); ln('lo', x, 426, x, 640); sq('lo', x, 590); dt('lo', x, 640);
+      });
+      ln('lo', 690, 640, 690, 682); sq('lo', 690, 661); dt('lo', 690, 640); dt('lo', 690, 682);
+      FEED.forEach((x, i) => { const by = i % 2 ? 682 : 640; dt('lo', x, by); ln('lo', x, by, x, 800); sq('lo', x, 735); arrow('lo', x, 800, 1); });
+      return a;
+    })();
+
+    function detailLabels(n) {
+      const hiC = n.cls, loC = n.cls === 500 ? 220 : (n.cls === 220 ? 110 : 10);
+      const hi = CLR[hiC], lo = CLR[loC], G = '#59d98e', C = '#56c7d6', MUTED = '#A7B2C2';
+      const out = [];
+      const add = (x, y, t, c, al, fs, fw) => out.push({ x: x, y: y, t: t, c: c, al: al || 'left', tf: al === 'center' ? 'translateX(-50%)' : (al === 'right' ? 'translateX(-100%)' : 'none'), fs: fs || 13, fw: fw || 500 });
+      add(690, 128, 'РУ ' + hiC + ' кВ', '#ffffff', 'center', 17, 700);
+      add(690, 536, 'РУ ' + loC + ' кВ', '#ffffff', 'center', 17, 700);
+      add(214, 232, '1 с.ш.', MUTED, 'right'); add(214, 248, DEMO_V[hiC] + ' кВ', hi, 'right', 13, 700);
+      add(214, 276, '2 с.ш.', MUTED, 'right'); add(214, 292, DEMO_V[hiC] + ' кВ', hi, 'right', 13, 700);
+      add(154, 622, '1 с.ш.', MUTED, 'right'); add(154, 638, DEMO_V[loC] + ' кВ', lo, 'right', 13, 700);
+      add(154, 666, '2 с.ш.', MUTED, 'right'); add(154, 682, DEMO_V[loC] + ' кВ', lo, 'right', 13, 700);
+      [[330, ['34,19', '3,92', '91']], [1050, ['25,92', '41,01', '107']]].forEach((p) => {
+        add(p[0] + 14, 160, p[1][0], G); add(p[0] + 14, 176, p[1][1], C); add(p[0] + 14, 192, p[1][2], hi);
+      });
+      [[470, ['33,13', '3,39', '147']], [910, ['25,62', '41,01', '167']]].forEach((p) => {
+        add(p[0] + 28, 390, 'АТ', MUTED, 'left', 14, 700);
+        add(p[0] + 14, 470, p[1][0], G); add(p[0] + 14, 486, p[1][1], C); add(p[0] + 14, 502, p[1][2], lo);
+      });
+      [['28,13', '26,90'], ['28,76', '26,44'], ['28,27', '1,01'], ['32,51', '0,33'], ['4,19', '13,12'], ['11,40', '3,20']].forEach((v, i) => {
+        add(FEED[i] + 12, 756, v[0], G); add(FEED[i] + 12, 772, v[1], C);
+      });
+      return { labels: out, hi: hi, lo: lo };
+    }
+
+    const cache = {};
+    function compute(st) {
+      const t = st.t, z = st.z, off = st.off, sel = st.sel;
+      const lerp = (a, b) => a + (b - a) * t;
+      const alive = {};
+      if (off) {
+        const q = [];
+        nodes.forEach((n) => { if (n.id !== off && (n.type === 'tec' || n.id === 'a')) { alive[n.id] = true; q.push(n.id); } });
+        while (q.length) {
+          const id = q.pop();
+          lines.forEach((l) => {
+            if (l.b === 'x') return;
+            const o = l.a === id ? l.b : (l.b === id ? l.a : null);
+            if (o && o !== off && !alive[o]) { alive[o] = true; q.push(o); }
+          });
+        }
+      }
+      const dead = (id) => !!off && id !== 'x' && !alive[id];
+      const d = { 500: '', 220: '', 110: '' };
+      let dDead = '', dSel = '';
+      lines.forEach((l) => {
+        if (!st.show[l.cls]) return;
+        const p = 'M' + l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1)).join('L');
+        if (dead(l.a) || dead(l.b)) dDead += p; else d[l.cls] += p;
+        if (l.a === sel || l.b === sel) dSel += p;
+      });
+      const vn = nodes.map((n) => {
+        const dd = dead(n.id), isSel = n.id === sel;
+        return {
+          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h,
+          x: lerp(n.m[0], n.s[0]).toFixed(1), y: lerp(n.m[1], n.s[1]).toFixed(1),
+          w: lerp(44, n.w).toFixed(1), h: lerp(44, n.h).toFixed(1),
+          mkOp: (1 - t).toFixed(3), boxOp: t.toFixed(3),
+          col: dd ? GRAY : CLR[n.cls], mkRadius: n.type === 'tec' ? '50%' : '6px', genOp: n.type === 'tec' ? 1 : 0,
+          boxBorder: isSel ? '#ffffff' : '#8b95a3', artOp: dd ? 0.3 : 1,
+          glow: isSel ? '0 0 0 3px rgba(255,255,255,0.22), 0 0 16px rgba(255,255,255,0.55)' : 'none',
+          lx: lerp(40, 0).toFixed(1), ly: lerp(12, -22).toFixed(1),
+          lc: isSel ? '#ffffff' : '#C5CEDB', lw: isSel ? 700 : 500
+        };
+      });
+      const sn = byId[sel];
+      const deadCount = off ? nodes.filter((n) => n.id !== off && dead(n.id)).length : 0;
+      const dl = cache[sel] || (cache[sel] = detailLabels(sn));
+      const selOff = off === sel, selDead = dead(sel);
+      return {
+        dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
+        mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
+        origin: sn.s[0] + 'px ' + sn.s[1] + 'px',
+        netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
+        detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
+        detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
+        selTitle: sn.title,
+        selType: sn.type === 'tec' ? 'Электростанция' : 'Подстанция',
+        selCls: sn.cls + ' кВ',
+        selConn: String(lines.filter((l) => l.a === sel || l.b === sel).length),
+        selState: selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением'),
+        selStateColor: (selOff || selDead) ? '#FF8A99' : '#5FD6A2',
+        selOff: selOff, hasOff: !!off,
+        offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.')) : ''
+      };
+    }
+    return { CLR: CLR, nodes: nodes, compute: compute };
+  }
+
+  function initScheme(root) {
+    const $ = (sel) => root.querySelector(sel);
+    const core = powerCore();
+    const state = { t: 0, z: 0, view: 'map', sel: 'i', off: null, show: { 500: true, 220: true, 110: true } };
+    const CLS = [500, 220, 110, 'gen'];
+    const els = {};
+
+    const box = $('#sc-nodes');
+    core.nodes.forEach((n) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sc-node';
+      b.setAttribute('aria-label', n.title);
+      let svg = '<svg viewBox="0 0 ' + n.w + ' ' + n.h + '" preserveAspectRatio="none" aria-hidden="true"><path d="' + n.art.ticks + '" class="sc-ticks"></path>';
+      CLS.forEach((c) => {
+        if (n.art.bus[c]) svg += '<path d="' + n.art.bus[c] + '" class="sc-bus" style="stroke:' + core.CLR[c] + '"></path>';
+        if (n.art.dots[c]) svg += '<path d="' + n.art.dots[c] + '" class="sc-dots' + (c === 'gen' ? ' sc-gen' : '') + '" style="stroke:' + core.CLR[c] + '"></path>';
+      });
+      b.innerHTML = '<span class="sc-box" aria-hidden="true">' + svg + '</svg></span>' +
+        '<span class="sc-mk" aria-hidden="true"><i></i></span><span class="sc-label">' + n.title + '</span>';
+      b.addEventListener('click', () => { state.sel = n.id; render(); });
+      b.addEventListener('dblclick', () => { state.sel = n.id; go('object'); });
+      box.appendChild(b);
+      els[n.id] = { el: b, box: b.children[0], mk: b.children[1], gen: b.children[1].firstChild, label: b.children[2] };
+    });
+
+    const layerBox = $('#sc-layers'), layerEls = {};
+    [[500, 'Сеть 500 кВ'], [220, 'Сеть 220 кВ'], [110, 'Сеть 110 кВ']].forEach((d) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sc-layer';
+      b.innerHTML = '<span aria-hidden="true" class="sc-layer-line" style="background:' + core.CLR[d[0]] + '"></span><span class="sc-layer-name">' + d[1] +
+        '</span><span aria-hidden="true" class="sc-layer-dot" style="border-color:' + core.CLR[d[0]] + '"></span>';
+      b.addEventListener('click', () => { state.show[d[0]] = !state.show[d[0]]; render(); });
+      layerBox.appendChild(b);
+      layerEls[d[0]] = b;
+    });
+
+    let lastSel = null;
+    function render() {
+      const v = core.compute(state);
+      $('#sc-p500').setAttribute('d', v.dLine[500]); $('#sc-p220').setAttribute('d', v.dLine[220]); $('#sc-p110').setAttribute('d', v.dLine[110]);
+      $('#sc-pDead').setAttribute('d', v.dDead); $('#sc-pSel').setAttribute('d', v.dSel);
+      $('#sc-mapbg').style.opacity = v.mapOp; $('#sc-schbg').style.opacity = v.schOp;
+
+      v.nodes.forEach((n) => {
+        const e = els[n.id];
+        e.el.style.left = n.x + 'px'; e.el.style.top = n.y + 'px';
+        e.el.style.width = n.w + 'px'; e.el.style.height = n.h + 'px';
+        e.box.style.opacity = n.boxOp; e.box.style.borderColor = n.boxBorder; e.box.style.boxShadow = n.glow;
+        e.box.firstChild.style.opacity = n.artOp;
+        e.mk.style.opacity = n.mkOp; e.mk.style.borderColor = n.col; e.mk.style.borderRadius = n.mkRadius; e.mk.style.boxShadow = n.glow;
+        e.gen.style.opacity = n.genOp;
+        e.label.style.left = n.lx + 'px'; e.label.style.top = n.ly + 'px'; e.label.style.color = n.lc; e.label.style.fontWeight = n.lw;
+      });
+
+      const net = $('#sc-net'), det = $('#sc-detail');
+      net.style.transformOrigin = v.origin; net.style.transform = v.netTf; net.style.opacity = v.netOp;
+      net.style.pointerEvents = state.z > 0.01 ? 'none' : '';
+      det.style.transformOrigin = v.origin; det.style.transform = v.detTf; det.style.opacity = v.detOp;
+      det.style.visibility = state.z > 0.01 ? 'visible' : 'hidden';
+      if (lastSel !== state.sel) {
+        lastSel = state.sel;
+        ['hiThin', 'hiFill', 'hiBus', 'loThin', 'loFill', 'loBus'].forEach((k) => {
+          const p = $('#sc-d-' + k), c = k.slice(0, 2) === 'hi' ? v.hi : v.lo;
+          p.setAttribute('d', v.detail[k]);
+          if (k.slice(2) === 'Fill') p.style.fill = c; else p.style.stroke = c;
+        });
+        $('#sc-d-title').textContent = v.selTitle;
+        $('#sc-d-labels').innerHTML = v.detLabels.map((l) =>
+          '<span style="left:' + l.x + 'px;top:' + l.y + 'px;color:' + l.c + ';transform:' + l.tf + ';font-size:' + l.fs + 'px;font-weight:' + l.fw + '">' + l.t + '</span>').join('');
+      }
+
+      ['map', 'scheme', 'object'].forEach((name) => {
+        const on = state.view === name;
+        $('#sc-title-' + name).hidden = !on;
+        $('#sc-to-' + name).classList.toggle('is-on', on);
+        $('#sc-to-' + name).setAttribute('aria-pressed', String(on));
+      });
+      [500, 220, 110].forEach((c) => {
+        const on = state.show[c];
+        layerEls[c].classList.toggle('is-on', on); layerEls[c].setAttribute('aria-pressed', String(on));
+        layerEls[c].querySelector('.sc-layer-dot').style.background = on ? core.CLR[c] : 'transparent';
+      });
+      $('#sc-name').textContent = v.selTitle;
+      $('#sc-type').textContent = v.selType;
+      $('#sc-cls').textContent = v.selCls;
+      $('#sc-conn').textContent = v.selConn;
+      $('#sc-state').textContent = v.selState; $('#sc-state').style.color = v.selStateColor;
+      $('#sc-open-btn').textContent = state.view === 'object' ? 'Вернуться к схеме сети' : 'Открыть схему объекта';
+      const btn = $('#sc-off-btn');
+      btn.textContent = v.selOff ? 'Вернуть в работу' : 'Смоделировать отключение';
+      btn.classList.toggle('is-off', v.selOff);
+      $('#sc-off-note').hidden = !v.hasOff; $('#sc-off-note').textContent = v.offNote;
+    }
+
+    let raf = 0;
     function go(view) {
-      var target = view === 'scheme' ? 1 : 0, from = state.t, t0 = performance.now(), dur = 1100;
+      const tT = view === 'map' ? 0 : 1, zT = view === 'object' ? 1 : 0;
       cancelAnimationFrame(raf);
       state.view = view;
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { state.t = target; render(); return; }
-      var step = function (now) {
-        var k = Math.min(1, (now - t0) / dur);
-        var e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-        state.t = from + (target - from) * e;
+      const steps = [];
+      if (zT < state.z) steps.push(['z', state.z, zT]);
+      if (tT !== state.t) steps.push(['t', state.t, tT]);
+      if (zT > state.z) steps.push(['z', state.z, zT]);
+      if ((window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) || !steps.length) {
+        state.t = tT; state.z = zT; render(); return;
+      }
+      const dur = 1000;
+      let i = 0, t0 = performance.now();
+      const step = (now) => {
+        const s = steps[i], k = Math.min(1, (now - t0) / dur);
+        const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        state[s[0]] = s[1] + (s[2] - s[1]) * e;
         render();
-        if (k < 1) raf = requestAnimationFrame(step);
+        if (k >= 1) { i++; t0 = now; }
+        if (i < steps.length) raf = requestAnimationFrame(step);
       };
       raf = requestAnimationFrame(step);
     }
-    $('#sc-to-map').addEventListener('click', function () { go('map'); });
-    $('#sc-to-scheme').addEventListener('click', function () { go('scheme'); });
-    $('#sc-off-btn').addEventListener('click', function () { state.off = state.off === state.sel ? null : state.sel; render(); });
+    ['map', 'scheme', 'object'].forEach((name) => { $('#sc-to-' + name).addEventListener('click', () => go(name)); });
+    $('#sc-open-btn').addEventListener('click', () => go(state.view === 'object' ? 'scheme' : 'object'));
+    $('#sc-off-btn').addEventListener('click', () => { state.off = state.off === state.sel ? null : state.sel; render(); });
     render();
   }
 

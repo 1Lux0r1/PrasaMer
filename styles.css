@@ -35,7 +35,7 @@ button { font-family: inherit; cursor: pointer; }
 .sc-layer-line { width: 26px; height: 3px; border-radius: 2px; }
 .sc-layer-name { flex: 1 1 0; }
 .sc-layer-dot { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 2px solid; }
-.sc-off-btn { margin-top: 6px; height: 48px; border-radius: 24px; border: 1px solid #FF2D46; background: rgba(255,45,70,0.22); color: #ffffff; font-size: 17px; font-weight: 600; }
+.sc-off-btn { height: 48px; border-radius: 24px; border: 1px solid #FF2D46; background: rgba(255,45,70,0.22); color: #ffffff; font-size: 17px; font-weight: 600; }
 .sc-off-btn:hover { background: rgba(255,45,70,0.34); }
 .sc-off-btn.is-off { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); }
 
@@ -44,13 +44,17 @@ button { font-family: inherit; cursor: pointer; }
 .sc-switch button.is-on { background: rgba(255,255,255,0.18); }
 .sc-switch svg { fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linejoin: round; }
 
-.sc-node { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; }
-.sc-shape { box-sizing: border-box; border: 3px solid; background: #10151f; transition: box-shadow 0.2s; }
-.sc-ps .sc-shape { width: 26px; height: 26px; border-radius: 6px; }
-.sc-rp .sc-shape { width: 18px; height: 18px; border-radius: 3px; transform: rotate(45deg); }
-.sc-tp .sc-shape { width: 16px; height: 16px; border-radius: 50%; }
-.sc-c .sc-shape { width: 10px; height: 10px; border-radius: 50%; border-width: 0; }
-.sc-node:hover .sc-shape { box-shadow: 0 0 0 4px rgba(255,255,255,0.14); }
-.sc-node.is-sel .sc-shape { box-shadow: 0 0 0 5px rgba(255,255,255,0.25), 0 0 18px rgba(255,255,255,0.7); }
-.sc-label { position: absolute; left: 40px; top: 12px; white-space: nowrap; font-size: 14px; font-weight: 500; color: #C5CEDB; text-shadow: 0 0 6px #10151f, 0 0 6px #10151f; pointer-events: none; }
-.sc-node.is-sel .sc-label { font-weight: 700; color: #ffffff; }
+.sc-node { position: absolute; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); }
+.sc-box { position: absolute; left: 0; top: 0; right: 0; bottom: 0; box-sizing: border-box; border: 1.5px dashed #8b95a3; background: #05070b; }
+.sc-box svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+.sc-bus { fill: none; stroke-width: 4; }
+.sc-dots { fill: none; stroke-width: 9; stroke-linecap: round; }
+.sc-dots.sc-gen { stroke-width: 12; }
+.sc-ticks { fill: none; stroke: #7d8794; stroke-width: 1.2; }
+.sc-mk { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; box-sizing: border-box; border: 3px solid; background: #10151f; display: flex; align-items: center; justify-content: center; }
+.sc-mk i { width: 8px; height: 8px; border-radius: 50%; background: #C77DD6; }
+.sc-node:hover .sc-box { border-color: #ffffff; }
+.sc-label { position: absolute; white-space: nowrap; font-size: 14px; font-weight: 500; color: #C5CEDB; padding: 1px 4px; margin-left: -4px; background: rgba(5,7,11,0.8); pointer-events: none; }
+.sc-open-btn { margin-top: 6px; height: 48px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.14); color: #ffffff; font-size: 17px; font-weight: 600; }
+.sc-open-btn:hover { background: rgba(255,255,255,0.22); }
+.sc-d-labels span { position: absolute; white-space: nowrap; line-height: 1; }
