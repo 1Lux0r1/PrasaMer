@@ -21,36 +21,36 @@ button{font-family:inherit;cursor:pointer}
   </div>
 
   <div style="position: absolute; left: 56px; top: 32px; width: 1824px; height: 96px; display: flex; gap: 16px">
-    <div style="flex: 1 1 0; min-width: 0; padding: 0 26px; border-radius: 16px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 20px">
+    <div style="flex: 7 1 0; min-width: 0; padding: 0 26px; border-radius: 16px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 20px">
       <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style="flex: none; fill: none; stroke: #FF5468; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round"><path d="M5 5h4v4H5zM15 5h4v4h-4zM5 15h4v4H5zM15 15h4v4h-4zM9 7h6M9 17h6M7 9v6M17 9v6M9 9l6 6"></path></svg>
       <p style="margin: 0; font-size: 18px; line-height: 1.5; color: #D5DCE6">Электросетевой комплекс города Москвы представляет собой <b style="font-weight: 700; color: #ffffff">сложнозамкнутую систему</b>, содержащую множество взаимосвязей и закольцовок.</p>
     </div>
-    <div style="flex: 1 1 0; min-width: 0; padding: 0 26px; border-radius: 16px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 20px">
+    <div style="flex: 10 1 0; min-width: 0; padding: 0 26px; border-radius: 16px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 20px">
       <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style="flex: none; fill: none; stroke: #FF5468; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round"><path d="M2 6l6-2 8 2 6-2v14l-6 2-8-2-6 2zM8 4v14M16 6v14"></path></svg>
       <p style="margin: 0; font-size: 18px; line-height: 1.5; color: #D5DCE6">Мы внедряем решение, которое позволит представлять схему электроснабжения <b style="font-weight: 700; color: #ffffff">на карте города и на ортогональной схеме</b>, чтобы наглядно видеть <b style="font-weight: 700; color: #ffffff">сложные и неочевидные взаимосвязи объектов</b>.</p>
     </div>
   </div>
 
-  <aside style="position: absolute; left: 56px; top: 148px; width: 588px; height: 828px; display: flex; flex-direction: column; gap: 16px">
+  <aside style="position: absolute; left: 56px; top: 148px; width: 396px; height: 828px; display: flex; flex-direction: column; gap: 16px">
     <div style="display: flex; align-items: center; gap: 14px; font-size: 16px; font-weight: 700; letter-spacing: 0.06em">
       <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
       ПРЕДСТАВЛЕНИЕ
     </div>
-    <div style="min-height: 124px">
+    <div style="min-height: 132px">
       <sc-if value="{{isMap}}" hint-placeholder-val="{{ true }}">
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #8FB4F0">ВИД 1 · ГДЕ НАХОДИТСЯ</div>
-        <h1 style="margin: 6px 0 0; font-size: 42px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Объекты <span style="color: #FF3D55">на карте</span></h1>
-        <p style="margin: 10px 0 0; font-size: 19px; line-height: 1.4; color: #C5CEDB">Источники питания, подстанции и линии — на карте города.</p>
+        <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Объекты <span style="color: #FF3D55">на карте</span></h1>
+        <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Источники питания, подстанции и линии — на карте города.</p>
       </sc-if>
       <sc-if value="{{isScheme}}" hint-placeholder-val="{{ false }}">
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #F0C36A">ВИД 2 · КАК СВЯЗАНО</div>
-        <h1 style="margin: 6px 0 0; font-size: 42px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">топологии</span></h1>
-        <p style="margin: 10px 0 0; font-size: 19px; line-height: 1.4; color: #C5CEDB">Те же объекты и их связи — по классам напряжения.</p>
+        <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">топологии</span></h1>
+        <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Те же объекты и их связи — по классам напряжения.</p>
       </sc-if>
       <sc-if value="{{isObject}}" hint-placeholder-val="{{ false }}">
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #9BDDB0">ВИД 3 · ЧТО ВНУТРИ</div>
-        <h1 style="margin: 6px 0 0; font-size: 42px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">объекта</span></h1>
-        <p style="margin: 10px 0 0; font-size: 19px; line-height: 1.4; color: #C5CEDB">Оборудование объекта: распределительные устройства, трансформаторы, присоединения.</p>
+        <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">объекта</span></h1>
+        <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Оборудование объекта: распределительные устройства, трансформаторы, присоединения.</p>
       </sc-if>
     </div>
 
@@ -91,14 +91,14 @@ button{font-family:inherit;cursor:pointer}
     <div style="margin-top: auto; font-size: 15px; line-height: 1.4; color: #A7B2C2">Демонстрационные данные. Нажмите на объект, чтобы выбрать его; повторное нажатие снимает выделение, двойное открывает схему объекта.</div>
   </aside>
 
-  <main style="position: absolute; left: 500px; top: 148px; width: 1380px; height: 944px; transform: scale(0.877); transform-origin: top right; overflow: hidden; border-radius: 16px; border: 1px solid #2d394d; background: #05070b">
-    <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1380px; height: 944px; overflow: hidden; background: #0a0f18; opacity: {{mapOp}}">
-      <img src="/_blob/f446e5b2c9d7383ecc877856638cb3ca" alt="" style="position: absolute; left: -1836px; top: -829px; width: 4800px; height: 2820px; max-width: none; display: block; opacity: 0.55">
+  <main style="position: absolute; left: 280px; top: 148px; width: 1600px; height: 944px; transform: scale(0.877); transform-origin: top right; overflow: hidden; border-radius: 16px; border: 1px solid #2d394d; background: #05070b">
+    <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1600px; height: 944px; overflow: hidden; background: #0a0f18; opacity: {{mapOp}}">
+      <img src="/_blob/f446e5b2c9d7383ecc877856638cb3ca" alt="" style="position: absolute; left: -1726px; top: -829px; width: 4800px; height: 2820px; max-width: none; display: block; opacity: 0.55">
     </div>
-    <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1380px; height: 944px; opacity: {{schOp}}; background: #05070b"></div>
+    <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1600px; height: 944px; opacity: {{schOp}}; background: #05070b"></div>
 
-    <div style="position: absolute; left: 0; top: 0; width: 1380px; height: 944px; transform-origin: {{origin}}; transform: {{netTf}}; opacity: {{netOp}}; pointer-events: {{netPe}}">
-      <svg viewBox="0 0 1380 944" width="1380" height="944" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
+    <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 944px; transform-origin: {{origin}}; transform: {{netTf}}; opacity: {{netOp}}; pointer-events: {{netPe}}">
+      <svg viewBox="0 0 1600 944" width="1600" height="944" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
         <path d="{{d110}}" style="fill: none; stroke: #56B4E9; stroke-width: 1.8; stroke-linejoin: round"></path>
         <path d="{{d220}}" style="fill: none; stroke: #F2C94C; stroke-width: 1.8; stroke-linejoin: round"></path>
         <path d="{{d500}}" style="fill: none; stroke: #FF3D55; stroke-width: 2.4; stroke-linejoin: round"></path>
@@ -127,8 +127,8 @@ button{font-family:inherit;cursor:pointer}
       </sc-for>
     </div>
 
-    <div style="position: absolute; left: 0; top: 0; width: 1380px; height: 944px; transform-origin: {{origin}}; transform: {{detTf}}; opacity: {{detOp}}; pointer-events: none">
-      <svg viewBox="0 0 1380 944" width="1380" height="944" role="img" aria-label="Однолинейная схема объекта" style="position: absolute; left: 0; top: 0; display: block">
+    <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 944px; transform-origin: {{origin}}; transform: {{detTf}}; opacity: {{detOp}}; pointer-events: none">
+      <svg viewBox="0 0 1380 944" width="1380" height="944" role="img" aria-label="Однолинейная схема объекта" style="position: absolute; left: 110px; top: 0; display: block">
         <path d="{{dtHiThin}}" style="fill: none; stroke: {{hi}}; stroke-width: 1.5; stroke-linejoin: round"></path>
         <path d="{{dtLoThin}}" style="fill: none; stroke: {{lo}}; stroke-width: 1.5; stroke-linejoin: round"></path>
         <path d="{{dtHiBus}}" style="fill: none; stroke: {{hi}}; stroke-width: 4"></path>
@@ -136,10 +136,12 @@ button{font-family:inherit;cursor:pointer}
         <path d="{{dtHiFill}}" style="fill: {{hi}}"></path>
         <path d="{{dtLoFill}}" style="fill: {{lo}}"></path>
       </svg>
-      <div style="position: absolute; left: 40px; top: 96px; padding: 6px 16px; border: 2px dashed #FF3D55; font-size: 17px; font-weight: 700">{{selTitle}}</div>
+      <div style="position: absolute; left: 150px; top: 96px; padding: 6px 16px; border: 2px dashed #FF3D55; font-size: 17px; font-weight: 700">{{selTitle}}</div>
+      <div style="position: absolute; left: 110px; top: 0">
       <sc-for list="{{detLabels}}" as="dl" hint-placeholder-count="0">
         <span style="position: absolute; left: {{dl.x}}px; top: {{dl.y}}px; white-space: nowrap; line-height: 1; color: {{dl.c}}; transform: {{dl.tf}}; font-size: {{dl.fs}}px; font-weight: {{dl.fw}}">{{dl.t}}</span>
       </sc-for>
+      </div>
     </div>
 
     <div role="group" aria-label="Вид" style="position: absolute; left: 24px; top: 20px; display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(22,29,43,0.82); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px)">
@@ -204,7 +206,7 @@ class Component extends DCLogic {
 
     const nodes = [], byId = {};
     /* На карте объекты стоят на трёх «кольцах» вокруг центра: 500, 220 и 110 кВ */
-    const MC = [690, 455], KY = 0.72;
+    const DX = 110, MC = [690 + DX, 455], KY = 0.72; // сцена 1600×944, сеть сдвинута к центру
     const pol = (deg, r) => [MC[0] + r * Math.cos(deg * Math.PI / 180), MC[1] + KY * r * Math.sin(deg * Math.PI / 180)];
     [ // id, тип, класс, на карте [угол, радиус], на схеме, ширина, высота, шины, генераторы
       ['a', 'ps', 500, [175, 560], [120, 470], 160, 100, [500, 220, 110], 0],
@@ -222,15 +224,15 @@ class Component extends DCLogic {
       ['c', 'ps', 110, [215, 450], [160, 250], 110, 46, [110], 0],
       ['b', 'tec', 110, [150, 450], [160, 690], 130, 70, [110], 2]
     ].forEach((d) => {
-      const n = { id: d[0], type: d[1], cls: d[2], pol: d[3], m: pol(d[3][0], d[3][1]), s: d[4], w: d[5], h: d[6], buses: d[7], gens: d[8] };
+      const n = { id: d[0], type: d[1], cls: d[2], pol: d[3], m: pol(d[3][0], d[3][1]), s: [d[4][0] + DX, d[4][1]], w: d[5], h: d[6], buses: d[7], gens: d[8] };
       n.title = n.type === 'tec' ? 'ТЭЦ' : 'ПС ' + n.cls + ' кВ';
       n.art = busArt(n);
       nodes.push(n); byId[n.id] = n;
     });
     /* внешняя сеть 500 кВ: линии уходят за край карты */
     byId.x1 = { id: 'x1', ext: true, m: [-20, 470], s: [0, 470] };
-    byId.x2 = { id: 'x2', ext: true, m: [1400, 40], s: [1380, 50] };
-    byId.x3 = { id: 'x3', ext: true, m: [1400, 860], s: [1380, 870] };
+    byId.x2 = { id: 'x2', ext: true, m: [1620, 40], s: [1600, 50] };
+    byId.x3 = { id: 'x3', ext: true, m: [1620, 860], s: [1600, 870] };
 
     const lines = [ // класс, от, до, трасса на схеме (V: верт-гор-верт, H: гор-верт-гор), средняя координата, смещения на концах, кольцо
       [500, 'a', 'm', 'V', 96, -40, -60, 1], [500, 'm', 'n', 'H', 1320, 0, 0, 1], [500, 'a', 'n', 'V', 850, -40, -60, 1],
@@ -242,7 +244,7 @@ class Component extends DCLogic {
       [110, 'f', 'd', 'H', 390, -10, 0], [110, 'i', 'e', 'H', 950, -10, 0], [110, 'l', 'g', 'V', 670, -20, 20], [110, 'k', 'j', 'V', 670, 20, 0],
       [110, 'a', 'c', 'V', 360, 20, -20], [110, 'c', 'd', 'H', 440, 10, -10], [110, 'a', 'b', 'V', 580, 20, -20], [110, 'b', 'j', 'H', 420, -10, 10]
     ].map((d) => {
-      const a = byId[d[1]], b = byId[d[2]], mid = d[4], oa = d[5], ob = d[6];
+      const a = byId[d[1]], b = byId[d[2]], mid = d[3] === 'H' ? d[4] + DX : d[4], oa = d[5], ob = d[6];
       const mix = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k];
       const six = (q) => [q[0], q[1], mix(q[1], q[2], 1 / 3), mix(q[1], q[2], 2 / 3), q[2], q[3]]; // шесть точек на линию — для плавного перехода
       const s = six(d[3] === 'V'
@@ -354,7 +356,7 @@ class Component extends DCLogic {
       return {
         dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
-        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '690px 472px',
+        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '800px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
         detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
         detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
