@@ -160,6 +160,8 @@ button { font-family: inherit; cursor: pointer; }
 #data[data-hl] [data-of]:not(.is-hl) { opacity: 0.25; }
 #data span[data-of].is-hl { color: #ffffff !important; font-weight: 800; }
 #data div[data-of].is-hl { background: #FF2D46 !important; }
-#data path[data-of].is-hl { stroke: #FF2D46 !important; stroke-width: 3; }
+#data path[data-of].is-hl { stroke: #FF2D46 !important; }
+#data circle[data-of].is-hl { stroke: #FF2D46 !important; }
+#data [data-kpi] { transition: box-shadow 0.15s; }
 #data [data-kpi].is-hl { box-shadow: inset 0 0 0 2px #FF2D46; }
 #data [data-kpi].is-hl [data-kpi-note] { color: #ffffff !important; font-weight: 600; }
