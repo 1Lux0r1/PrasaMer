@@ -1,323 +1,849 @@
+/* Схема электроснабжения — рабочий макет презентации. Без сборки и зависимостей. */
 (function () {
   'use strict';
-  const $ = (s, r) => (r || document).querySelector(s);
-  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
-  const slides = $$('.slide');
-  const names = ['О системе', 'Данные', 'Карта ↔ схема', 'Область применения', 'Эффект'];
-  const ids = slides.map(s => s.id);
-  let current = Math.max(0, ids.indexOf(location.hash.slice(1)));
-  let lock = false, demoOpen = false, lastFocus = null;
 
-  function fit() {
-    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
-    const stage = $('#stage');
-    stage.style.transform = 'scale(' + s + ')';
-    stage.style.left = ((innerWidth - 1920 * s) / 2) + 'px';
-    stage.style.top = ((innerHeight - 1080 * s) / 2) + 'px';
-  }
-  function update() {
-    slides.forEach((s, i) => { s.classList.toggle('active', i === current); s.setAttribute('aria-hidden', i === current ? 'false' : 'true'); });
-    $('#counter').textContent = String(current + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
-    $('#slide-name').textContent = names[current];
-    $('#prev').disabled = current === 0;
-    $('#next').disabled = current === slides.length - 1;
-    $('#prev').setAttribute('aria-label', current ? 'Предыдущий слайд: ' + names[current - 1] : 'Предыдущий слайд недоступен');
-    $('#next').setAttribute('aria-label', current < slides.length - 1 ? 'Следующий слайд: ' + names[current + 1] : 'Следующий слайд недоступен');
-    $$('#dots button').forEach((b, i) => { b.classList.toggle('active', i === current); if (i === current) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
-    history.replaceState(null, '', '#' + ids[current]);
-  }
-  function go(n) {
-    if (lock || demoOpen) return;
-    n = Math.max(0, Math.min(slides.length - 1, n));
-    if (n === current) return;
-    lock = true; current = n; update(); setTimeout(() => { lock = false; }, 560);
-  }
-  $('#prev').addEventListener('click', () => go(current - 1));
-  $('#next').addEventListener('click', () => go(current + 1));
-  names.forEach((name, i) => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.title = name; b.setAttribute('aria-label', 'Слайд ' + (i + 1) + ': ' + name);
-    b.addEventListener('click', () => go(i)); $('#dots').appendChild(b);
-  });
-  $$('[data-nav]').forEach(h => { h.style.pointerEvents = 'none'; });
-  document.addEventListener('click', e => {
-    if (demoOpen) return;
-    const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
-    const n = ids.indexOf(a.getAttribute('href').slice(1));
-    if (n >= 0) { e.preventDefault(); go(n); }
-  });
-  document.addEventListener('keydown', e => {
-    if (demoOpen) {
-      if (e.key === 'Escape') { e.preventDefault(); closeDemo(); }
-      if (e.key === 'Tab') {
-        const f = $$('button:not([disabled]), input:not([disabled]), [tabindex="0"]', $('.demo:not([hidden])')).filter(x => x.getClientRects().length);
-        if (!f.length) return;
-        const first = f[0], last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
-      return;
-    }
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(current + 1); }
-    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(current - 1); }
-    if (e.key === 'Home') { e.preventDefault(); go(0); }
-    if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
-  });
-  let tx = 0, ty = 0;
-  addEventListener('touchstart', e => { tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
-  addEventListener('touchend', e => {
-    if (demoOpen || e.target.closest('.demo, input, button')) return;
-    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.4) go(current + (dx < 0 ? 1 : -1));
-  }, { passive: true });
-  addEventListener('resize', fit);
+  var SLIDES = [
+    { id: 'about', name: 'О системе', icon: 'M10 9v5M10 6h.01M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16z' },
+    { id: 'data', name: 'Данные', icon: 'M3 5c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM3 5v10c0 1.7 3.1 3 7 3s7-1.3 7-3V5M3 10c0 1.7 3.1 3 7 3s7-1.3 7-3' },
+    { id: 'scheme', name: 'Карта ↔ схема', icon: 'M2 5l5-2 6 2 5-2v12l-5 2-6-2-5 2zM7 3v12M13 5v12' },
+    { id: 'tasks', name: 'Область применения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' },
+    { id: 'effect', name: 'Эффект', icon: 'M3 17V3M3 17h14M6 13l3-4 3 2 4-6M13 5h3v3' }
+  ];
 
-  function mapSVG(host) {
-    const scale = +host.dataset.scale, cx = +host.dataset.cx, cy = +host.dataset.cy;
-    host.innerHTML = '<img class="map-img" src="img/moscow-base.svg" alt="" style="left:' + (960 - cx * scale / 100) + 'px;top:' + (540 - cy * scale / 100) + 'px;width:' + (48 * scale) + 'px;height:' + (28.2 * scale) + 'px">';
-  }
-  $$('[data-map]').forEach(mapSVG);
-
-  const HL = new WeakMap();
-  $$('#data [data-src]').forEach(src => {
-    const key = src.dataset.src;
-    const targets = $$('[data-of~="' + key + '"]', $('#data'));
-    function on() {
-      targets.forEach(t => { const old = HL.get(t) || 0; HL.set(t, old + 1); t.style.setProperty('--hl', src.dataset.color || '#fff'); t.classList.add('is-hl'); });
-      src.classList.add('is-hl');
-      if (src.dataset.kpi === 'consumers') { const k = $('[data-kpi="consumers"]'); k.style.setProperty('--hl', src.dataset.color); k.classList.add('is-hl'); }
-      else { const k = $('[data-kpi="objects"]'); k.style.setProperty('--hl', src.dataset.color); k.classList.add('is-hl'); const note = $('[data-kpi-note]'); if (note) note.textContent = src.dataset.note || ''; }
-    }
-    function off() {
-      targets.forEach(t => { const n = Math.max(0, (HL.get(t) || 1) - 1); HL.set(t, n); if (!n) t.classList.remove('is-hl'); });
-      src.classList.remove('is-hl');
-      $$('#data [data-kpi]').forEach(k => k.classList.remove('is-hl'));
-      const note = $('[data-kpi-note]'); if (note) note.textContent = '';
-    }
-    src.addEventListener('pointerenter', on); src.addEventListener('pointerleave', off);
-    src.addEventListener('focus', on); src.addEventListener('blur', off);
-    src.addEventListener('click', () => { if (src.classList.contains('is-hl')) off(); else on(); });
-  });
-
-  function powerCore() {
-    const host = $('#sc-nodes'); if (!host) return;
-    const CLR = { 500: '#FF3D55', 220: '#F2C94C', 110: '#56B4E9', 10: '#59C27A', gen: '#C77DD6' };
-    const M = 40, DX = 50, DY = 65;
-    const N = (x, y) => ({ x: M + x * DX, y: M + y * DY });
-    const nodes = [
-      { id: 'c1', name: 'ЦП 500 кВ · А', type: 'Центр питания', cls: 500, buses: true, p: N(10, 1) },
-      { id: 'c2', name: 'ЦП 500 кВ · Б', type: 'Центр питания', cls: 500, buses: true, p: N(20, 1) },
-      { id: 'g1', name: 'Генерация · А', type: 'Источник генерации', cls: 500, gen: true, p: N(4, 1) },
-      { id: 'g2', name: 'Генерация · Б', type: 'Источник генерации', cls: 500, gen: true, p: N(26, 1) },
-      { id: 'a1', name: 'ПС 220 кВ · А', type: 'Подстанция', cls: 220, buses: true, p: N(5, 6) },
-      { id: 'a2', name: 'ПС 220 кВ · Б', type: 'Подстанция', cls: 220, buses: true, p: N(13, 6) },
-      { id: 'a3', name: 'ПС 220 кВ · В', type: 'Подстанция', cls: 220, buses: true, p: N(22, 6) },
-      { id: 'b1', name: 'ПС 110 кВ · А', type: 'Подстанция', cls: 110, p: N(2, 11) },
-      { id: 'b2', name: 'ПС 110 кВ · Б', type: 'Подстанция', cls: 110, p: N(8, 11) },
-      { id: 'b3', name: 'ПС 110 кВ · В', type: 'Подстанция', cls: 110, p: N(15, 11) },
-      { id: 'b4', name: 'ПС 110 кВ · Г', type: 'Подстанция', cls: 110, p: N(23, 11) }
-    ];
-    const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
-    const edges = [
-      ['g1', 'c1', 500], ['g2', 'c2', 500], ['c1', 'c2', 500],
-      ['c1', 'a1', 220], ['c1', 'a2', 220], ['c2', 'a2', 220], ['c2', 'a3', 220], ['a1', 'a2', 220], ['a2', 'a3', 220],
-      ['a1', 'b1', 110], ['a1', 'b2', 110], ['a2', 'b2', 110], ['a2', 'b3', 110], ['a3', 'b3', 110], ['a3', 'b4', 110], ['b2', 'b3', 110]
-    ].map((e, i) => ({ id: 'e' + i, a: e[0], b: e[1], cls: e[2], off: false }));
-    let sel = 'a2', mode = 'map', layers = { 500: true, 220: true, 110: true };
-    const shown = n => layers[n.cls] && (mode === 'map' || n.cls !== 500 || !n.gen);
-    const path = e => {
-      const a = byId[e.a].p, b = byId[e.b].p;
-      if (mode === 'map') return 'M' + a.x + ' ' + a.y + 'L' + b.x + ' ' + b.y;
-      const mid = (a.y + b.y) / 2;
-      return 'M' + a.x + ' ' + a.y + 'V' + mid + 'H' + b.x + 'V' + b.y;
+  /* ---------- Карта Москвы (процедурная, условная) ---------- */
+  function buildMap(cx, cy, R) {
+    var s = 20260;
+    var rnd = function () { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
+    var TAU = Math.PI * 2;
+    var rf = function (t) { return 1 - 0.05 * Math.cos(2 * t) + 0.025 * Math.cos(3 * t + 0.8) + 0.015 * Math.sin(5 * t + 0.3); };
+    var P = function (t, f) {
+      var r = R * f * (1 + Math.min(f, 1) * (rf(t) - 1));
+      return [cx + r * Math.cos(t), cy + r * Math.sin(t)];
     };
-    function nodePos(n) { return mode === 'map' ? n.p : { x: n.p.x, y: n.p.y }; }
-    function draw() {
-      ['110', '220', '500'].forEach(c => { $('#sc-p' + c).setAttribute('d', edges.filter(e => String(e.cls) === c && shown(byId[e.a]) && shown(byId[e.b]) && !e.off).map(path).join('')); });
-      $('#sc-pDead').setAttribute('d', edges.filter(e => e.off && shown(byId[e.a]) && shown(byId[e.b])).map(path).join(''));
-      const se = edges.filter(e => !e.off && (e.a === sel || e.b === sel) && shown(byId[e.a]) && shown(byId[e.b]));
-      $('#sc-pSel').setAttribute('d', se.map(path).join(''));
-      host.innerHTML = '';
-      nodes.filter(shown).forEach(n => {
-        const p = nodePos(n), b = document.createElement('button');
-        b.type = 'button'; b.className = 'sc-node' + (n.id === sel ? ' selected' : ''); b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
-        const col = n.gen ? CLR.gen : CLR[n.cls];
-        const connected = edges.some(e => !e.off && (e.a === n.id || e.b === n.id));
-        b.style.setProperty('--c', connected ? col : '#6b7480');
-        b.setAttribute('aria-label', n.name + (n.id === sel ? ', выбран' : ''));
-        if (n.id === sel) b.setAttribute('aria-pressed', 'true'); else b.setAttribute('aria-pressed', 'false');
-        b.innerHTML = '<span class="sc-mark ' + (n.buses ? 'bus' : n.gen ? 'gen' : 'sub') + '"></span><span class="sc-node-label">' + n.name + '</span>';
-        b.addEventListener('click', () => { sel = n.id; if (mode === 'object') mode = 'map'; draw(); });
-        b.addEventListener('dblclick', () => { sel = n.id; mode = 'object'; draw(); });
-        host.appendChild(b);
-      });
-      const n = byId[sel], con = edges.filter(e => e.a === sel || e.b === sel), live = con.filter(e => !e.off);
-      $('#sc-name').textContent = n.name; $('#sc-type').textContent = n.type;
-      $('#sc-cls').textContent = n.cls + ' кВ'; $('#sc-conn').textContent = con.length + ' · активных ' + live.length;
-      $('#sc-state').textContent = live.length ? 'Под напряжением' : 'Без напряжения'; $('#sc-state').style.color = live.length ? '#9BDDB0' : '#FF8A99';
-      $('#sc-off-btn').textContent = live.length === con.length ? 'Отключить присоединения' : 'Вернуть под напряжение';
-      $('#sc-open-btn').textContent = mode === 'object' ? 'Вернуться к сети' : 'Открыть схему объекта';
-      $('#sc-off-note').hidden = live.length > 0;
-      $('#sc-off-note').textContent = 'Объект и связанные линии обесточены. Возвращение под напряжение выполняется кнопкой в паспорте.';
-      const detail = mode === 'object';
-      $('#sc-detail').style.opacity = detail ? 1 : 0; $('#sc-detail').style.visibility = detail ? 'visible' : 'hidden'; $('#sc-detail').style.pointerEvents = detail ? 'auto' : 'none';
-      $('#sc-net').style.opacity = detail ? 0 : 1; $('#sc-net').style.visibility = detail ? 'hidden' : 'visible';
-      $('#sc-mapbg').style.opacity = mode === 'map' ? 1 : 0;
-      ['map', 'scheme', 'object'].forEach(v => { $('#sc-title-' + v).hidden = v !== mode; $('#sc-to-' + v).classList.toggle('on', v === mode); $('#sc-to-' + v).setAttribute('aria-pressed', v === mode ? 'true' : 'false'); });
-      if (detail) drawDetail(n);
-    }
-    function drawDetail(n) {
-      const cx = 690, hiY = 270, loY = 650, hi = n.cls, lo = hi === 500 ? 220 : hi === 220 ? 110 : 10;
-      const hc = CLR[hi], lc = CLR[lo];
-      const incoming = edges.filter(e => e.a === n.id || e.b === n.id).length;
-      const xs = [cx - 390, cx - 130, cx + 130, cx + 390];
-      let thin = '', bus = '', fill = '', labels = '';
-      for (let i = 0; i < 4; i++) {
-        const x = xs[i], active = i < Math.max(2, Math.min(4, incoming));
-        thin += 'M' + x + ' 70V' + hiY + 'M' + x + ' ' + hiY + 'V' + (hiY + 110) + 'M' + x + ' ' + loY + 'V920';
-        if (i < 2) {
-          thin += 'M' + x + ' ' + (hiY + 110) + 'V430H' + (cx + (i ? 120 : -120)) + 'V' + loY;
-          fill += 'M' + (cx + (i ? 120 : -120) - 34) + ' 470h68v90h-68z';
-        }
-        labels += '<span style="left:' + x + 'px;top:36px">Ввод ' + (i + 1) + ' · ' + hi + ' кВ</span>';
-        labels += '<span style="left:' + x + 'px;top:925px">ЛЭП ' + lo + ' кВ · фидер ' + (i + 1) + '</span>';
+    var fmt = function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); };
+    var line = function (pts) { return 'M' + pts.map(fmt).join('L'); };
+    var arc = function (f, t0, t1) {
+      var n = Math.max(2, Math.ceil(Math.abs(t1 - t0) / 0.05)), pts = [];
+      for (var i = 0; i <= n; i++) pts.push(P(t0 + (t1 - t0) * i / n, f));
+      return line(pts);
+    };
+    var radial = function (t, f0, f1, wob) {
+      var n = Math.max(1, Math.ceil((f1 - f0) / 0.07)), pts = [], tt = t, last = t;
+      for (var i = 0; i <= n; i++) {
+        last = tt;
+        pts.push(P(tt, f0 + (f1 - f0) * i / n));
+        tt += (rnd() - 0.5) * wob;
       }
-      bus = 'M' + (cx - 450) + ' ' + hiY + 'H' + (cx + 450) + 'M' + (cx - 450) + ' ' + loY + 'H' + (cx + 450);
-      $('#sc-d-hiThin').setAttribute('d', thin); $('#sc-d-hiThin').style.stroke = hc;
-      $('#sc-d-loThin').setAttribute('d', ''); $('#sc-d-hiBus').setAttribute('d', bus); $('#sc-d-hiBus').style.stroke = hc; $('#sc-d-loBus').setAttribute('d', '');
-      $('#sc-d-hiFill').setAttribute('d', fill); $('#sc-d-hiFill').style.fill = hc; $('#sc-d-hiFill').style.opacity = 0.18;
-      $('#sc-d-loFill').setAttribute('d', '');
-      const extra = '<path d="M' + (cx - 450) + ' ' + loY + 'H' + (cx + 450) + '" style="fill:none;stroke:' + lc + ';stroke-width:4"></path>' + xs.map(x => '<path d="M' + x + ' ' + loY + 'V920" style="fill:none;stroke:' + lc + ';stroke-width:1.5"></path>').join('');
-      $('#sc-detail svg').insertAdjacentHTML('beforeend', '<g id="sc-d-temp">' + extra + '</g>');
-      const old = $$('#sc-d-temp'); old.slice(0, -1).forEach(x => x.remove());
-      $('#sc-d-title').textContent = n.name + ' · условная однолинейная схема';
-      $('#sc-d-title').style.borderColor = hc;
-      $('#sc-d-labels').innerHTML = labels + '<span style="left:' + cx + 'px;top:440px;transform:translateX(-50%);color:' + lc + '">Трансформаторы ' + hi + '/' + lo + ' кВ</span>';
+      return [line(pts), last];
+    };
+    var dot = function (q, r) {
+      return 'M' + (q[0] - r).toFixed(1) + ' ' + q[1].toFixed(1) +
+        'a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0';
+    };
+    var major = [[], [], [], [], []], minor = [[], [], [], [], []], outer = [], nodes = [];
+    var k = Math.max(1, Math.min(2.2, R / 400));
+    var i, t0;
+
+    [0.055, 0.12, 0.19, 0.36].forEach(function (f, j) { major[(j + 1) % 5].push(arc(f, 0, TAU) + 'Z'); });
+    for (i = 0; i < 5; i++) {
+      t0 = rnd() * TAU;
+      major[i % 5].push(arc(0.56 + rnd() * 0.14, t0, t0 + 0.7 + rnd() * 0.8));
     }
-    Object.keys(layers).forEach(c => {
-      const b = document.createElement('button'); b.type = 'button'; b.textContent = c + ' кВ'; b.style.setProperty('--c', CLR[c]); b.className = 'on'; b.setAttribute('aria-pressed', 'true');
-      b.addEventListener('click', () => { layers[c] = !layers[c]; b.classList.toggle('on', layers[c]); b.setAttribute('aria-pressed', String(layers[c])); if (!shown(byId[sel])) { const n = nodes.find(shown); if (n) sel = n.id; } if (mode === 'object' && !layers[byId[sel].cls]) mode = 'map'; draw(); });
-      $('#sc-layers').appendChild(b);
+    var N = 22;
+    for (i = 0; i < N; i++) {
+      var t = (i + (rnd() - 0.5) * 0.5) / N * TAU;
+      var f0 = [0.12, 0.19, 0.19, 0.36][Math.floor(rnd() * 4)];
+      var r = radial(t, f0, 1, 0.03);
+      major[i % 5].push(r[0]);
+      nodes.push(dot(P(r[1], 1), +(2.4 * k).toFixed(1)));
+      outer.push(radial(r[1], 1, 1.5 + rnd() * 1.2, 0.05)[0]);
+    }
+    for (i = 0; i < 80; i++) {
+      var f = 0.22 + rnd() * 0.76; t0 = rnd() * TAU;
+      minor[Math.floor(rnd() * 5)].push(arc(f, t0, t0 + 0.2 + rnd() * 0.8));
+    }
+    for (i = 0; i < 120; i++) {
+      var tr = rnd() * TAU, fr = 0.14 + rnd() * 0.7;
+      minor[Math.floor(rnd() * 5)].push(radial(tr, fr, Math.min(1, fr + 0.08 + rnd() * 0.28), 0.04)[0]);
+    }
+    for (i = 0; i < 6; i++) {
+      t0 = rnd() * TAU;
+      outer.push(arc(1.25 + rnd() * 0.75, t0, t0 + 0.3 + rnd() * 0.6));
+    }
+    var blobs = [];
+    [[0.35, 1.12, 0.2], [1.2, 1.05, 0.16], [2.2, 1.2, 0.3], [2.9, 1.1, 0.18], [3.6, 1.25, 0.26], [4.3, 1.08, 0.14], [5.0, 1.15, 0.2], [5.75, 1.3, 0.24], [2.45, 1.75, 0.35]].forEach(function (b) {
+      var c = P(b[0], b[1]), pts = [];
+      for (var j = 0; j < 18; j++) {
+        var a = j / 18 * TAU, rr = R * b[2] * (0.65 + rnd() * 0.7);
+        pts.push([c[0] + rr * Math.cos(a), c[1] + rr * Math.sin(a)]);
+      }
+      blobs.push(line(pts) + 'Z');
     });
-    $('#sc-to-map').onclick = () => { mode = 'map'; draw(); };
-    $('#sc-to-scheme').onclick = () => { mode = 'scheme'; draw(); };
-    $('#sc-to-object').onclick = () => { mode = 'object'; draw(); };
-    $('#sc-open-btn').onclick = () => { mode = mode === 'object' ? 'map' : 'object'; draw(); };
-    $('#sc-off-btn').onclick = () => { const con = edges.filter(e => e.a === sel || e.b === sel), turnOff = con.some(e => !e.off); con.forEach(e => { e.off = turnOff; }); draw(); };
-    draw();
-  }
-  powerCore();
-
-  function openDemo(key) {
-    lastFocus = document.activeElement; demoOpen = true;
-    $('#demo-scrim').hidden = false; $('#demo-' + key).hidden = false;
-    $('#chrome').inert = true;
-    slides.forEach(s => { s.inert = true; });
-    $('#demo-' + key + ' .demo-close').focus();
-  }
-  function closeDemo() {
-    $$('.demo').forEach(d => { d.hidden = true; }); $('#demo-scrim').hidden = true; demoOpen = false;
-    $('#chrome').inert = false; slides.forEach(s => { s.inert = false; });
-    if (lastFocus) lastFocus.focus();
-  }
-  $$('[data-demo]').forEach(b => b.addEventListener('click', () => openDemo(b.dataset.demo)));
-  $$('.demo-close').forEach(b => b.addEventListener('click', closeDemo));
-  $('#demo-scrim').addEventListener('click', closeDemo);
-
-  function initSolutions() {
-    const Y = '#F2C94C', B = '#56B4E9', GREEN = '#59C27A', GRAY = '#6b7480', MUTED = '#A7B2C2';
-    const wire = (d, c, extra) => '<path d="' + d + '" style="fill:none;stroke:' + c + ';stroke-width:2;stroke-linejoin:round" ' + (extra || '') + '></path>';
-    const box = (x, y, w, h, c, text, extra) => '<g ' + (extra || '') + '><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="5" style="fill:#182233;stroke:' + c + ';stroke-width:2"></rect><text x="' + (x + w / 2) + '" y="' + (y + h / 2 + 6) + '" text-anchor="middle" style="fill:#fff;font-size:17px;font-weight:600">' + text + '</text></g>';
-    const homes = (pts, off) => pts.map((p, i) => '<g style="color:' + (off ? GRAY : '#D5DCE6') + '"><path d="M' + p[0] + ' ' + p[1] + 'l14-12 14 12v24h-28z" style="fill:' + (off ? '#202632' : '#26394b') + ';stroke:currentColor;stroke-width:1.5"></path><text x="' + (p[0] + 14) + '" y="' + (p[1] + 45) + '" text-anchor="middle" style="fill:' + (off ? GRAY : MUTED) + ';font-size:12px">' + (off ? 'нет питания' : 'дома') + '</text></g>').join('');
-    let phase = 0;
-    const groups = { a: [[650, 380], [740, 400], [820, 380], [650, 490], [740, 510], [820, 490]], b: [[170, 390], [260, 410], [350, 390], [170, 500], [260, 520], [350, 500]] };
-    function outageDraw() {
-      const f = { x: 410 };
-      const offA = phase >= 1, restored = phase >= 2;
-      let o = '<svg viewBox="0 0 1000 600" width="1000" height="600" role="img" aria-label="Демонстрация последствий аварии">';
-      o += '<text x="30" y="34" style="fill:#A7B2C2;font-size:14px;letter-spacing:2px">ДЕМОНСТРАЦИОННАЯ СЕТЬ · 110/10 КВ</text>';
-      o += box(80, 80, 220, 70, B, 'ПС 110 кВ · А') + box(680, 80, 220, 70, B, 'ПС 110 кВ · Б');
-      o += wire('M190 150V220H410', B) + wire('M790 150V220H590', B) + wire('M410 220H590', offA && !restored ? GRAY : Y, offA && !restored ? 'stroke-dasharray="7 6"' : '');
-      o += box(f.x, 190, 180, 60, offA && !restored ? '#FF3D55' : Y, 'РП 10 кВ');
-      o += wire('M' + f.x + ' 328V420', GREEN, offA && !restored ? 'stroke-dasharray="7 6"' : '') + box(f.x, 300, 150, 56, B, 'ПС 110 кВ', offA && !restored ? 'opacity=".55"' : '');
-      o += wire('M340 328H170V360', GREEN) + wire('M560 328H740V360', GREEN, offA && !restored ? 'stroke-dasharray="7 6"' : '');
-      o += homes(groups.b, false) + homes(groups.a, offA && !restored);
-      o += '<g><rect x="350" y="535" width="300" height="38" rx="19" style="fill:' + (restored ? 'rgba(89,194,122,.14)' : offA ? 'rgba(255,61,85,.14)' : 'rgba(255,255,255,.05)') + ';stroke:' + (restored ? GREEN : offA ? '#FF3D55' : GRAY) + '"></rect><text x="500" y="560" text-anchor="middle" style="fill:' + (restored ? GREEN : offA ? '#FF8A99' : MUTED) + ';font-size:16px;font-weight:600">' + (restored ? 'Питание восстановлено через ПС 110 кВ · Б' : offA ? 'Авария: группа потребителей обесточена' : 'Нормальный режим · все потребители под напряжением') + '</text></g></svg>';
-      $('#outage-stage').innerHTML = o;
-      $('#outage-step').textContent = ['Шаг 1 · Нормальный режим', 'Шаг 2 · Отключение РП 10 кВ', 'Шаг 3 · Переключение на резерв'][phase];
-      $('#outage-text').textContent = ['Система видит топологические связи каждого потребителя и источники его питания.', 'После отключения решение подсвечивает затронутую группу и рассчитывает последствия по типам объектов.', 'Система предлагает альтернативный источник и показывает, какие потребители можно вернуть под напряжение.'][phase];
-      $('#outage-n1').textContent = phase === 1 ? '1 240' : '0'; $('#outage-n2').textContent = phase === 1 ? '6' : '0'; $('#outage-n3').textContent = phase === 1 ? '3' : '0';
-      $('#outage-btn').textContent = phase === 0 ? 'Смоделировать аварию' : phase === 1 ? 'Выполнить переключение' : 'Вернуть исходный режим';
+    var RV = [[-1.3, -0.3], [-1.02, -0.24], [-0.82, -0.1], [-0.72, -0.3], [-0.56, -0.2], [-0.6, 0], [-0.42, 0.06], [-0.36, -0.12], [-0.22, 0.02], [-0.28, 0.2], [-0.12, 0.23], [-0.05, 0.08], [0.06, 0.1], [0.13, 0.25], [0.05, 0.4], [0.2, 0.46], [0.35, 0.36], [0.43, 0.5], [0.31, 0.62], [0.46, 0.72], [0.66, 0.7], [0.8, 0.86], [1.05, 0.96], [1.4, 1.2]]
+      .map(function (q) { return [cx + q[0] * R, cy + q[1] * R]; });
+    var dRiver = 'M' + fmt(RV[0]);
+    for (i = 0; i < RV.length - 1; i++) {
+      var p0 = RV[Math.max(0, i - 1)], p1 = RV[i], p2 = RV[i + 1], p3 = RV[Math.min(RV.length - 1, i + 2)];
+      var c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      var c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      dRiver += 'C' + fmt(c1) + ' ' + fmt(c2) + ' ' + fmt(p2);
     }
-    $('#outage-btn').onclick = () => { phase = (phase + 1) % 3; outageDraw(); }; outageDraw();
+    return {
+      city: arc(1, 0, TAU) + 'Z', blobs: blobs.join(''), river: dRiver, outer: outer.join(''), nodes: nodes.join(''),
+      major: major.map(function (g) { return g.join(''); }), minor: minor.map(function (g) { return g.join(''); }),
+      w: { major: (1.6 * k).toFixed(2), minor: (0.9 * k).toFixed(2), ring: (2.2 * k).toFixed(2), river: (6 * k).toFixed(1) }
+    };
+  }
 
-    const temps = [-30, -20, -10, 0, 10, 20, 30, 35];
-    const loads = [94, 87, 79, 70, 62, 65, 76, 89];
-    function forecastDraw(t) {
-      const peak = Math.round(70 + Math.max(0, -t) * 0.8 + Math.max(0, t - 18) * 1.2);
-      const res = Math.max(0, 100 - peak), over = peak > 90;
-      const pts = temps.map((x, i) => [80 + i * 116, 450 - loads[i] * 3.6]);
-      let o = '<svg viewBox="0 0 1000 600" width="1000" height="600" role="img" aria-label="Прогноз потребления по температуре">';
-      o += '<text x="60" y="45" style="fill:#A7B2C2;font-size:14px;letter-spacing:2px">СУТОЧНЫЙ ПИК · % ОТ РАСПОЛАГАЕМОЙ МОЩНОСТИ</text>';
-      [25, 50, 75, 100].forEach(v => { const y = 450 - v * 3.6; o += wire('M70 ' + y + 'H940', '#344258') + '<text x="52" y="' + (y + 5) + '" text-anchor="end" style="fill:#A7B2C2;font-size:13px">' + v + '</text>'; });
-      const py = 450 - peak * 3.6;
-      o += '<path d="M' + pts.map(p => p.join(' ')).join('L') + '" style="fill:none;stroke:#56B4E9;stroke-width:4;stroke-linejoin:round"></path>';
-      o += pts.map(p => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5" style="fill:#56B4E9"></circle>').join('');
-      o += wire('M70 ' + py + 'H940', over ? '#FF3D55' : GREEN, 'stroke-dasharray="8 7"');
-      o += '<g><rect x="680" y="' + (py - 54) + '" width="250" height="40" rx="8" style="fill:#1d2636;stroke:' + (over ? '#FF3D55' : GREEN) + '"></rect><text x="805" y="' + (py - 28) + '" text-anchor="middle" style="fill:#fff;font-size:17px">При ' + t + ' °C · пик ' + peak + '%</text></g>';
-      temps.forEach((x, i) => { o += '<text x="' + (80 + i * 116) + '" y="490" text-anchor="middle" style="fill:#A7B2C2;font-size:13px">' + x + '°</text>'; });
-      o += '</svg>'; $('#forecast-stage').innerHTML = o;
-      $('#forecast-t').textContent = t + ' °C'; $('#forecast-peak').textContent = peak + '%'; $('#forecast-peak-l').textContent = 'ожидаемый пик нагрузки';
-      $('#forecast-res').textContent = res + '%'; $('#forecast-res-l').textContent = 'расчётный резерв мощности';
-      $('#forecast-verdict').textContent = over ? 'Внимание: резерв ниже 10%. Нужны меры по ограничению пика.' : 'Расчётного резерва достаточно для прогнозируемого пика.';
-      $('#forecast-verdict').style.color = over ? '#FF8A99' : GREEN;
+  function mapHTML(mode, cx, cy, R) {
+    var g = buildMap(cx, cy, R), w = g.w;
+    var colors = ['#EADFB4', '#7CCFD0', '#E39AAE', '#9BDDB0', '#F0B37E'];
+    var p = function (d, style) { return '<path d="' + d + '" style="' + style + '"></path>'; };
+    var out = '<svg viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true" style="position:absolute;left:0;top:0;display:block;background:#182233">';
+    out += p(g.blobs, 'fill:#121926;opacity:.8') + p(g.city, 'fill:#10151f');
+    out += p(g.river, 'fill:none;stroke:#1b3346;stroke-width:' + w.river + ';stroke-linecap:round;stroke-linejoin:round');
+    if (mode === 'dim') {
+      out += p(g.outer, 'fill:none;stroke:#212b3c;stroke-width:' + w.minor);
+      out += p(g.minor.join(''), 'fill:none;stroke:#222c3d;stroke-width:' + w.minor);
+      out += p(g.major.join(''), 'fill:none;stroke:#2d394d;stroke-width:' + w.major);
+      out += p(g.city, 'fill:none;stroke:#334058;stroke-width:' + w.ring);
+    } else {
+      out += p(g.river, 'fill:none;stroke:#2f6f7c;stroke-width:1.2;opacity:.8');
+      out += p(g.outer, 'fill:none;stroke:#EADFB4;stroke-width:' + w.minor + ';opacity:.2');
+      colors.forEach(function (c, i) { out += p(g.minor[i], 'fill:none;stroke:' + c + ';stroke-width:' + w.minor + ';opacity:.45'); });
+      colors.forEach(function (c, i) { out += p(g.major[i], 'fill:none;stroke:' + c + ';stroke-width:' + w.major + ';opacity:.9;filter:drop-shadow(0 0 4px ' + c + '8c)'); });
+      out += p(g.city, 'fill:none;stroke:#F2EAD0;stroke-width:' + w.ring + ';filter:drop-shadow(0 0 5px rgba(242,234,208,.6))');
+      out += p(g.nodes, 'fill:#fff;opacity:.95');
     }
-    $('#forecast-range').addEventListener('input', e => forecastDraw(+e.target.value)); forecastDraw(-5);
+    return out + '</svg>';
+  }
 
-    const devs = [
-      { id: 'housing', name: 'Жилой квартал', load: 18, desc: '12 жилых домов · 4 800 квартир', works: ['ЛЭП 10 кВ · 3,2 км', 'РП 10 кВ · 1 шт.', 'ТП 10/0,4 кВ · 8 шт.'], cost: '278,4 млн ₽', obj: 'РП 10 кВ + 8 ТП' },
-      { id: 'school', name: 'Школа и детский сад', load: 3, desc: 'Школа на 1 200 мест · детский сад на 280 мест', works: ['ЛЭП 10 кВ · 0,8 км', 'ТП 10/0,4 кВ · 2 шт.'], cost: '37,6 млн ₽', obj: '2 ТП 10/0,4 кВ' },
-      { id: 'business', name: 'Деловой центр', load: 12, desc: 'Офисы и общественные функции · 95 000 м²', works: ['ЛЭП 10 кВ · 1,6 км', 'РП 10 кВ · 1 шт.', 'ТП 10/0,4 кВ · 4 шт.'], cost: '165,2 млн ₽', obj: 'РП 10 кВ + 4 ТП' }
-    ];
-    const active = new Set(['housing']); let selected = null;
-    function planningDraw() {
-      const sum = devs.filter(d => active.has(d.id)).reduce((a, d) => a + d.load, 0), base = 31, total = base + sum, pct = total / 80 * 100;
-      let o = '<svg viewBox="0 0 1000 600" width="1000" height="600" role="img" aria-label="Планирование застройки и необходимые объекты">';
-      o += '<text x="36" y="40" style="fill:#A7B2C2;font-size:14px;letter-spacing:2px">УСЛОВНЫЙ РАЙОН · ПЛАНИРУЕМАЯ ЗАСТРОЙКА</text>';
-      o += '<path d="M0 150H1000M0 500H1000M160 0V600M820 0V600" style="stroke:#344258;stroke-width:18;opacity:.55"></path>';
-      o += '<path d="M96 430H244" style="stroke:#56B4E9;stroke-width:5;stroke-linecap:round"></path>' + box(38, 390, 130, 60, B, 'ПС 110 кВ');
-      const coords = { housing: [380, 180], school: [640, 330], business: [360, 390] };
-      devs.forEach(d => {
-        const p = coords[d.id], on = active.has(d.id);
-        o += '<path d="M244 430V' + p[1] + 'H' + p[0] + '" style="fill:none;stroke:' + (on ? GREEN : GRAY) + ';stroke-width:2;stroke-dasharray:' + (on ? '0' : '7 6') + '"></path>';
-        o += '<g data-dev="' + d.id + '" style="cursor:pointer;opacity:' + (on ? 1 : .45) + '"><rect x="' + p[0] + '" y="' + (p[1] - 48) + '" width="220" height="96" rx="8" style="fill:#1d2636;stroke:' + (on ? GREEN : GRAY) + ';stroke-width:2"></rect><text x="' + (p[0] + 110) + '" y="' + (p[1] - 8) + '" text-anchor="middle" style="fill:#fff;font-size:18px;font-weight:600">' + d.name + '</text><text x="' + (p[0] + 110) + '" y="' + (p[1] + 22) + '" text-anchor="middle" style="fill:' + (on ? GREEN : MUTED) + ';font-size:16px">+' + d.load + ' МВА</text></g>';
-        if (on && d.id !== 'school') o += box(p[0] + 15, p[1] + 70, 190, 44, GREEN, d.id === 'housing' ? 'РП 10 кВ + 8 ТП' : 'РП 10 кВ + 4 ТП');
+  /* ---------- Верхняя навигация ---------- */
+  function navHTML(cur) {
+    var h = '<nav class="deck-nav" aria-label="Слайды"><div class="deck-group">';
+    SLIDES.forEach(function (sl, i) {
+      var on = i === cur;
+      h += '<a href="#' + sl.id + '" class="deck-tab' + (on ? ' is-on' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' +
+        '<span class="deck-tab-num">0' + (i + 1) + '</span><span>' + sl.name + '</span></a>';
+    });
+    var arrow = function (href, label, d, strong) {
+      return '<a href="#' + href + '" aria-label="' + label + '" class="deck-arrow' + (strong ? ' is-strong' : '') + '">' +
+        '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="' + d + '"></path></svg></a>';
+    };
+    h += '</div><div class="deck-side"><button type="button" class="deck-full" data-fullscreen aria-label="Во весь экран">' +
+      '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8V3h5M14 3h5v5M19 14v5h-5M8 19H3v-5"></path></svg></button>' +
+      '<div class="deck-count">0' + (cur + 1) + ' / 0' + SLIDES.length + '</div><div class="deck-group">' +
+      arrow(SLIDES[(cur + SLIDES.length - 1) % SLIDES.length].id, 'Предыдущий слайд', 'M11 4L6 9l5 5', false) +
+      arrow(SLIDES[(cur + 1) % SLIDES.length].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div></nav>';
+    return h;
+  }
+
+  /* ---------- Слайд «Карта ↔ схема ↔ объект» ---------- */
+
+  /* Модель сети и расчёт представления (без DOM). Данные условные. */
+  function powerCore() {
+    const CLR = { 500: '#FF3D55', 220: '#F2C94C', 110: '#56B4E9', 10: '#59C27A', gen: '#C77DD6' };
+    const DEMO_V = { 500: '512,3', 220: '224,6', 110: '115,0', 10: '10,4' };
+    const GRAY = '#6b7480';
+
+    function busArt(n) {
+      const pad = 14, top = n.gens ? 30 : 6, bot = 8, k = n.buses.length;
+      const bus = { 110: '', 220: '', 500: '' }, dots = { 110: '', 220: '', 500: '', gen: '' };
+      let ticks = '';
+      const ys = n.buses.map((c, i) => top + (i + 0.5) * (n.h - top - bot) / k);
+      n.buses.forEach((c, i) => {
+        const y = ys[i].toFixed(1);
+        const x0 = pad, x1 = n.w - pad;
+        bus[c] += 'M' + x0.toFixed(1) + ' ' + y + 'H' + x1.toFixed(1);
+        const cnt = Math.max(2, Math.floor((x1 - x0) / 30));
+        for (let j = 0; j < cnt; j++) {
+          const x = (x0 + (j + 0.5) * (x1 - x0) / cnt).toFixed(1);
+          dots[c] += 'M' + x + ' ' + y + 'h0.01';
+          ticks += 'M' + x + ' ' + y + 'v' + (j % 2 ? 7 : -7);
+        }
       });
-      o += '<circle cx="140" cy="452" r="9" style="fill:none;stroke:#56B4E9;stroke-width:2"></circle><circle cx="152" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>';
-      o += '<circle cx="188" cy="452" r="9" style="fill:none;stroke:#56B4E9;stroke-width:2"></circle><circle cx="200" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>';
-      o += '<text x="45" y="565" style="fill:#A7B2C2;font-size:14px">Зелёным — новые объекты электроснабжения</text></svg>';
-      $('#planning-stage').innerHTML = o;
-      $$('[data-dev]', $('#planning-stage')).forEach(g => g.addEventListener('click', () => { selected = g.dataset.dev; planningDraw(); }));
-      $('#planning-toggles').innerHTML = devs.map(d => '<label class="demo-check"><input type="checkbox" data-toggle="' + d.id + '" ' + (active.has(d.id) ? 'checked' : '') + '><span>' + d.name + '</span><b>+' + d.load + ' МВА</b></label>').join('');
-      $$('[data-toggle]').forEach(i => i.addEventListener('change', () => { if (i.checked) active.add(i.dataset.toggle); else active.delete(i.dataset.toggle); if (selected && !active.has(selected)) selected = null; planningDraw(); }));
-      $('#planning-load').textContent = total + ' / 80 МВА'; $('#planning-base').style.width = Math.min(100, base / 80 * 100) + '%'; $('#planning-add').style.width = Math.min(100 - base / 80 * 100, sum / 80 * 100) + '%';
-      $('#planning-total').textContent = sum + ' МВА новой нагрузки';
-      $('#planning-objects').innerHTML = active.size ? devs.filter(d => active.has(d.id)).map(d => '<button type="button" data-object="' + d.id + '">' + d.obj + '<span>→</span></button>').join('') : '<p>Выберите объект застройки.</p>';
-      $$('[data-object]').forEach(b => b.addEventListener('click', () => { selected = b.dataset.object; planningDraw(); }));
-      const card = $('#planning-card'); card.hidden = !selected;
-      if (selected) {
-        const d = devs.find(x => x.id === selected);
-        $('#planning-card-title').textContent = d.name; $('#planning-card-status').textContent = pct > 90 ? 'Требуется расширение источника' : 'Резерва источника достаточно';
-        $('#planning-card-status').style.color = pct > 90 ? '#FF8A99' : GREEN;
-        $('#planning-card-facts').innerHTML = '<span>' + d.desc + '</span><b>+' + d.load + ' МВА</b>';
-        $('#planning-card-works').innerHTML = d.works.map(w => '<li>' + w + '</li>').join(''); $('#planning-card-cost').textContent = d.cost;
+      for (let g = 0; g < n.gens; g++) {
+        const x = (pad + 14 + g * (n.w - 2 * pad - 28) / Math.max(1, n.gens - 1)).toFixed(1);
+        dots.gen += 'M' + x + ' 14h0.01';
+        ticks += 'M' + x + ' 14V' + ys[0].toFixed(1);
       }
+      return { bus: bus, dots: dots, ticks: ticks };
     }
-    $('#planning-card-back').onclick = () => { selected = null; planningDraw(); }; planningDraw();
-  }
-  initSolutions();
 
-  fit(); update();
+    const nodes = [], byId = {};
+    /* На карте объекты стоят на трёх «кольцах» вокруг центра: 500, 220 и 110 кВ */
+    const MC = [690, 455], KY = 0.72;
+    const pol = (deg, r) => [MC[0] + r * Math.cos(deg * Math.PI / 180), MC[1] + KY * r * Math.sin(deg * Math.PI / 180)];
+    [ // id, тип, класс, на карте [угол, радиус], на схеме, ширина, высота, шины, генераторы
+      ['a', 'ps', 500, [175, 560], [120, 470], 160, 100, [500, 220, 110], 0],
+      ['m', 'ps', 500, [305, 560], [1180, 110], 170, 80, [500, 220], 0],
+      ['n', 'ps', 500, [50, 560], [1180, 790], 170, 80, [500, 220], 0],
+      ['f', 'ps', 220, [195, 330], [300, 470], 120, 64, [220, 110], 0],
+      ['h', 'ps', 220, [270, 330], [680, 200], 130, 64, [220], 0],
+      ['i', 'tec', 220, [345, 330], [1080, 470], 150, 90, [220, 110], 3],
+      ['l', 'ps', 220, [40, 330], [900, 740], 140, 64, [220, 110], 0],
+      ['k', 'ps', 220, [125, 330], [460, 740], 140, 64, [220, 110], 0],
+      ['d', 'ps', 110, [215, 150], [480, 340], 110, 46, [110], 0],
+      ['e', 'tec', 110, [320, 150], [820, 340], 140, 70, [110], 2],
+      ['g', 'ps', 110, [35, 150], [820, 600], 110, 46, [110], 0],
+      ['j', 'ps', 110, [140, 150], [480, 600], 110, 46, [110], 0],
+      ['c', 'ps', 110, [215, 450], [160, 250], 110, 46, [110], 0],
+      ['b', 'tec', 110, [150, 450], [160, 690], 130, 70, [110], 2]
+    ].forEach((d) => {
+      const n = { id: d[0], type: d[1], cls: d[2], pol: d[3], m: pol(d[3][0], d[3][1]), s: d[4], w: d[5], h: d[6], buses: d[7], gens: d[8] };
+      n.title = n.type === 'tec' ? 'ТЭЦ' : 'ПС ' + n.cls + ' кВ';
+      n.art = busArt(n);
+      nodes.push(n); byId[n.id] = n;
+    });
+    /* внешняя сеть 500 кВ: линии уходят за край карты */
+    byId.x1 = { id: 'x1', ext: true, m: [-20, 470], s: [0, 470] };
+    byId.x2 = { id: 'x2', ext: true, m: [1400, 40], s: [1380, 50] };
+    byId.x3 = { id: 'x3', ext: true, m: [1400, 860], s: [1380, 870] };
+
+    const lines = [ // класс, от, до, трасса на схеме (V: верт-гор-верт, H: гор-верт-гор), средняя координата, смещения на концах, кольцо
+      [500, 'a', 'm', 'V', 96, -40, -60, 1], [500, 'm', 'n', 'H', 1320, 0, 0, 1], [500, 'a', 'n', 'V', 850, -40, -60, 1],
+      [500, 'a', 'x1', 'H', 40, 0, 0], [500, 'm', 'x2', 'V', 50, 40, 0], [500, 'n', 'x3', 'V', 870, 40, 0],
+      [220, 'f', 'h', 'V', 200, -20, 0, 1], [220, 'h', 'i', 'H', 1080, 0, 0, 1], [220, 'i', 'l', 'V', 740, 0, 0, 1],
+      [220, 'l', 'k', 'H', 680, 0, 0, 1], [220, 'f', 'k', 'V', 740, -20, 0, 1],
+      [220, 'a', 'f', 'H', 210, 0, 0], [220, 'm', 'h', 'V', 150, -50, 30], [220, 'm', 'i', 'V', 300, 20, 20], [220, 'n', 'l', 'H', 1000, -10, 10],
+      [110, 'd', 'e', 'H', 650, 0, 0, 1], [110, 'e', 'g', 'V', 470, 0, 0, 1], [110, 'g', 'j', 'H', 650, 0, 0, 1], [110, 'd', 'j', 'V', 470, 0, 0, 1],
+      [110, 'f', 'd', 'H', 390, -10, 0], [110, 'i', 'e', 'H', 950, -10, 0], [110, 'l', 'g', 'V', 670, -20, 20], [110, 'k', 'j', 'V', 670, 20, 0],
+      [110, 'a', 'c', 'V', 360, 20, -20], [110, 'c', 'd', 'H', 440, 10, -10], [110, 'a', 'b', 'V', 580, 20, -20], [110, 'b', 'j', 'H', 420, -10, 10]
+    ].map((d) => {
+      const a = byId[d[1]], b = byId[d[2]], mid = d[4], oa = d[5], ob = d[6];
+      const mix = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k];
+      const six = (q) => [q[0], q[1], mix(q[1], q[2], 1 / 3), mix(q[1], q[2], 2 / 3), q[2], q[3]]; // шесть точек на линию — для плавного перехода
+      const s = six(d[3] === 'V'
+        ? [[a.s[0] + oa, a.s[1]], [a.s[0] + oa, mid], [b.s[0] + ob, mid], [b.s[0] + ob, b.s[1]]]
+        : [[a.s[0], a.s[1] + oa], [mid, a.s[1] + oa], [mid, b.s[1] + ob], [b.s[0], b.s[1] + ob]]);
+      const A = a.m, C = b.m;
+      let m;
+      if (d[7]) { // участок кольца на карте идёт по дуге между объектами
+        let d0 = a.pol[0], d1 = b.pol[0];
+        if (d1 - d0 > 180) d1 -= 360; else if (d0 - d1 > 180) d1 += 360;
+        const at = (k) => pol(d0 + (d1 - d0) * k, a.pol[1] + (b.pol[1] - a.pol[1]) * k);
+        m = [A, at(0.2), at(0.4), at(0.6), at(0.8), C];
+      } else {
+        const dx = C[0] - A[0], dy = C[1] - A[1], len = Math.hypot(dx, dy) || 1, px = -dy / len, py = dx / len;
+        m = six([A, [A[0] + dx * 0.35 + px * 10, A[1] + dy * 0.35 + py * 10], [A[0] + dx * 0.7 - px * 8, A[1] + dy * 0.7 - py * 8], C]);
+      }
+      return { cls: d[0], a: a.id, b: b.id, m: m, s: s };
+    });
+
+    /* Однолинейная схема объекта: геометрия одна для всех, цвета и подписи — от выбранного объекта */
+    const FEED = [250, 360, 580, 800, 1020, 1130];
+    const detail = (() => {
+      const a = { hiThin: '', hiFill: '', loThin: '', loFill: '', hiBus: 'M230 250H1150M230 292H1150', loBus: 'M170 640H1210M170 682H1210' };
+      const ln = (k, x1, y1, x2, y2) => { a[k + 'Thin'] += 'M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2; };
+      const sq = (k, x, y) => { a[k + 'Fill'] += 'M' + (x - 6) + ' ' + (y - 6) + 'h12v12h-12z'; };
+      const dt = (k, x, y) => { a[k + 'Fill'] += 'M' + (x - 4) + ' ' + y + 'a4 4 0 1 0 8 0a4 4 0 1 0 -8 0'; };
+      const ring = (k, x, y, r) => { a[k + 'Thin'] += 'M' + (x - r) + ' ' + y + 'a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0'; };
+      const arrow = (k, x, y, dir) => { a[k + 'Thin'] += 'M' + (x - 5) + ' ' + (y - dir * 9) + 'L' + x + ' ' + y + 'L' + (x + 5) + ' ' + (y - dir * 9); };
+      [330, 1050].forEach((x) => { ln('hi', x, 160, x, 250); arrow('hi', x, 160, -1); sq('hi', x, 205); dt('hi', x, 250); });
+      ln('hi', 690, 250, 690, 292); sq('hi', 690, 271); dt('hi', 690, 250); dt('hi', 690, 292);
+      [560, 820].forEach((x) => { ln('hi', x, 250, x, 222); ring('hi', x, 214, 8); dt('hi', x, 250); });
+      [470, 910].forEach((x) => {
+        dt('hi', x, 292); ln('hi', x, 292, x, 372); sq('hi', x, 332); ring('hi', x, 388, 16);
+        ring('lo', x, 410, 16); ln('lo', x, 426, x, 640); sq('lo', x, 590); dt('lo', x, 640);
+      });
+      ln('lo', 690, 640, 690, 682); sq('lo', 690, 661); dt('lo', 690, 640); dt('lo', 690, 682);
+      FEED.forEach((x, i) => { const by = i % 2 ? 682 : 640; dt('lo', x, by); ln('lo', x, by, x, 800); sq('lo', x, 735); arrow('lo', x, 800, 1); });
+      return a;
+    })();
+
+    function detailLabels(n) {
+      const hiC = n.cls, loC = n.cls === 500 ? 220 : (n.cls === 220 ? 110 : 10);
+      const hi = CLR[hiC], lo = CLR[loC], G = '#59d98e', C = '#56c7d6', MUTED = '#A7B2C2';
+      const out = [];
+      const add = (x, y, t, c, al, fs, fw) => out.push({ x: x, y: y, t: t, c: c, al: al || 'left', tf: al === 'center' ? 'translateX(-50%)' : (al === 'right' ? 'translateX(-100%)' : 'none'), fs: fs || 13, fw: fw || 500 });
+      add(690, 128, 'РУ ' + hiC + ' кВ', '#ffffff', 'center', 17, 700);
+      add(690, 536, 'РУ ' + loC + ' кВ', '#ffffff', 'center', 17, 700);
+      add(214, 232, '1 с.ш.', MUTED, 'right'); add(214, 248, DEMO_V[hiC] + ' кВ', hi, 'right', 13, 700);
+      add(214, 276, '2 с.ш.', MUTED, 'right'); add(214, 292, DEMO_V[hiC] + ' кВ', hi, 'right', 13, 700);
+      add(154, 622, '1 с.ш.', MUTED, 'right'); add(154, 638, DEMO_V[loC] + ' кВ', lo, 'right', 13, 700);
+      add(154, 666, '2 с.ш.', MUTED, 'right'); add(154, 682, DEMO_V[loC] + ' кВ', lo, 'right', 13, 700);
+      [[330, ['34,19', '3,92', '91']], [1050, ['25,92', '41,01', '107']]].forEach((p) => {
+        add(p[0] + 14, 160, p[1][0], G); add(p[0] + 14, 176, p[1][1], C); add(p[0] + 14, 192, p[1][2], hi);
+      });
+      [[470, ['33,13', '3,39', '147']], [910, ['25,62', '41,01', '167']]].forEach((p) => {
+        add(p[0] + 28, 390, 'АТ', MUTED, 'left', 14, 700);
+        add(p[0] + 14, 470, p[1][0], G); add(p[0] + 14, 486, p[1][1], C); add(p[0] + 14, 502, p[1][2], lo);
+      });
+      [['28,13', '26,90'], ['28,76', '26,44'], ['28,27', '1,01'], ['32,51', '0,33'], ['4,19', '13,12'], ['11,40', '3,20']].forEach((v, i) => {
+        add(FEED[i] + 12, 756, v[0], G); add(FEED[i] + 12, 772, v[1], C);
+      });
+      return { labels: out, hi: hi, lo: lo };
+    }
+
+    const cache = {};
+    function compute(st) {
+      const t = st.t, z = st.z, off = st.off, sel = st.sel;
+      const lerp = (a, b) => a + (b - a) * t;
+      const alive = {};
+      if (off) {
+        const q = [];
+        nodes.forEach((n) => { if (n.id !== off && (n.type === 'tec' || n.cls === 500)) { alive[n.id] = true; q.push(n.id); } });
+        while (q.length) {
+          const id = q.pop();
+          lines.forEach((l) => {
+            if (byId[l.b].ext) return;
+            const o = l.a === id ? l.b : (l.b === id ? l.a : null);
+            if (o && o !== off && !alive[o]) { alive[o] = true; q.push(o); }
+          });
+        }
+      }
+      const dead = (id) => !!off && !byId[id].ext && !alive[id];
+      const d = { 500: '', 220: '', 110: '' };
+      let dDead = '', dSel = '';
+      lines.forEach((l) => {
+        if (!st.show[l.cls]) return;
+        const p = 'M' + l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1)).join('L');
+        if (dead(l.a) || dead(l.b)) dDead += p; else d[l.cls] += p;
+        if (l.a === sel || l.b === sel) dSel += p;
+      });
+      const vn = nodes.map((n) => {
+        const dd = dead(n.id), isSel = n.id === sel;
+        return {
+          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h,
+          x: lerp(n.m[0], n.s[0]).toFixed(1), y: lerp(n.m[1], n.s[1]).toFixed(1),
+          w: lerp(44, n.w).toFixed(1), h: lerp(44, n.h).toFixed(1),
+          mkOp: (1 - t).toFixed(3), boxOp: t.toFixed(3),
+          col: dd ? GRAY : CLR[n.cls], mkRadius: n.type === 'tec' ? '50%' : '6px', genOp: n.type === 'tec' ? 1 : 0,
+          boxBorder: isSel ? '#ffffff' : '#8b95a3', artOp: dd ? 0.3 : 1,
+          glow: isSel ? '0 0 0 3px rgba(255,255,255,0.22), 0 0 16px rgba(255,255,255,0.55)' : 'none',
+          lx: lerp(40, 0).toFixed(1), ly: lerp(12, -22).toFixed(1),
+          lc: isSel ? '#ffffff' : '#C5CEDB', lw: isSel ? 700 : 500
+        };
+      });
+      const sn = byId[sel];
+      const deadCount = off ? nodes.filter((n) => n.id !== off && dead(n.id)).length : 0;
+      const dl = cache[sel] || (cache[sel] = detailLabels(sn));
+      const selOff = off === sel, selDead = dead(sel);
+      return {
+        dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
+        mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
+        origin: sn.s[0] + 'px ' + sn.s[1] + 'px',
+        netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
+        detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
+        detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
+        selTitle: sn.title,
+        selType: sn.type === 'tec' ? 'Электростанция' : 'Подстанция',
+        selCls: sn.cls + ' кВ',
+        selConn: String(lines.filter((l) => l.a === sel || l.b === sel).length),
+        selState: selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением'),
+        selStateColor: (selOff || selDead) ? '#FF8A99' : '#5FD6A2',
+        selOff: selOff, hasOff: !!off,
+        offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.')) : ''
+      };
+    }
+    return { CLR: CLR, nodes: nodes, compute: compute };
+  }
+
+  function initScheme(root) {
+    const $ = (sel) => root.querySelector(sel);
+    const core = powerCore();
+    const state = { t: 0, z: 0, view: 'map', sel: 'i', off: null, show: { 500: true, 220: true, 110: true } };
+    const CLS = [500, 220, 110, 'gen'];
+    const els = {};
+
+    const box = $('#sc-nodes');
+    core.nodes.forEach((n) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sc-node';
+      b.setAttribute('aria-label', n.title);
+      let svg = '<svg viewBox="0 0 ' + n.w + ' ' + n.h + '" preserveAspectRatio="none" aria-hidden="true"><path d="' + n.art.ticks + '" class="sc-ticks"></path>';
+      CLS.forEach((c) => {
+        if (n.art.bus[c]) svg += '<path d="' + n.art.bus[c] + '" class="sc-bus" style="stroke:' + core.CLR[c] + '"></path>';
+        if (n.art.dots[c]) svg += '<path d="' + n.art.dots[c] + '" class="sc-dots' + (c === 'gen' ? ' sc-gen' : '') + '" style="stroke:' + core.CLR[c] + '"></path>';
+      });
+      b.innerHTML = '<span class="sc-box" aria-hidden="true">' + svg + '</svg></span>' +
+        '<span class="sc-mk" aria-hidden="true"><i></i></span><span class="sc-label">' + n.title + '</span>';
+      b.addEventListener('click', () => { state.sel = n.id; render(); });
+      b.addEventListener('dblclick', () => { state.sel = n.id; go('object'); });
+      box.appendChild(b);
+      els[n.id] = { el: b, box: b.children[0], mk: b.children[1], gen: b.children[1].firstChild, label: b.children[2] };
+    });
+
+    const layerBox = $('#sc-layers'), layerEls = {};
+    [[500, '500 кВ'], [220, '220 кВ'], [110, '110 кВ']].forEach((d) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sc-layer';
+      b.innerHTML = '<span aria-hidden="true" class="sc-layer-line" style="background:' + core.CLR[d[0]] + '"></span><span class="sc-layer-name">' + d[1] +
+        '</span><span aria-hidden="true" class="sc-layer-dot" style="border-color:' + core.CLR[d[0]] + '"></span>';
+      b.addEventListener('click', () => { state.show[d[0]] = !state.show[d[0]]; render(); });
+      layerBox.appendChild(b);
+      layerEls[d[0]] = b;
+    });
+
+    let lastSel = null;
+    function render() {
+      const v = core.compute(state);
+      $('#sc-p500').setAttribute('d', v.dLine[500]); $('#sc-p220').setAttribute('d', v.dLine[220]); $('#sc-p110').setAttribute('d', v.dLine[110]);
+      $('#sc-pDead').setAttribute('d', v.dDead); $('#sc-pSel').setAttribute('d', v.dSel);
+      $('#sc-mapbg').style.opacity = v.mapOp; $('#sc-schbg').style.opacity = v.schOp;
+
+      v.nodes.forEach((n) => {
+        const e = els[n.id];
+        e.el.style.left = n.x + 'px'; e.el.style.top = n.y + 'px';
+        e.el.style.width = n.w + 'px'; e.el.style.height = n.h + 'px';
+        e.box.style.opacity = n.boxOp; e.box.style.borderColor = n.boxBorder; e.box.style.boxShadow = n.glow;
+        e.box.firstChild.style.opacity = n.artOp;
+        e.mk.style.opacity = n.mkOp; e.mk.style.borderColor = n.col; e.mk.style.borderRadius = n.mkRadius; e.mk.style.boxShadow = n.glow;
+        e.gen.style.opacity = n.genOp;
+        e.label.style.left = n.lx + 'px'; e.label.style.top = n.ly + 'px'; e.label.style.color = n.lc; e.label.style.fontWeight = n.lw;
+      });
+
+      const net = $('#sc-net'), det = $('#sc-detail');
+      net.style.transformOrigin = v.origin; net.style.transform = v.netTf; net.style.opacity = v.netOp;
+      net.style.pointerEvents = state.z > 0.01 ? 'none' : '';
+      det.style.transformOrigin = v.origin; det.style.transform = v.detTf; det.style.opacity = v.detOp;
+      det.style.visibility = state.z > 0.01 ? 'visible' : 'hidden';
+      if (lastSel !== state.sel) {
+        lastSel = state.sel;
+        ['hiThin', 'hiFill', 'hiBus', 'loThin', 'loFill', 'loBus'].forEach((k) => {
+          const p = $('#sc-d-' + k), c = k.slice(0, 2) === 'hi' ? v.hi : v.lo;
+          p.setAttribute('d', v.detail[k]);
+          if (k.slice(2) === 'Fill') p.style.fill = c; else p.style.stroke = c;
+        });
+        $('#sc-d-title').textContent = v.selTitle;
+        $('#sc-d-labels').innerHTML = v.detLabels.map((l) =>
+          '<span style="left:' + l.x + 'px;top:' + l.y + 'px;color:' + l.c + ';transform:' + l.tf + ';font-size:' + l.fs + 'px;font-weight:' + l.fw + '">' + l.t + '</span>').join('');
+      }
+
+      ['map', 'scheme', 'object'].forEach((name) => {
+        const on = state.view === name;
+        $('#sc-title-' + name).hidden = !on;
+        $('#sc-to-' + name).classList.toggle('is-on', on);
+        $('#sc-to-' + name).setAttribute('aria-pressed', String(on));
+      });
+      [500, 220, 110].forEach((c) => {
+        const on = state.show[c];
+        layerEls[c].classList.toggle('is-on', on); layerEls[c].setAttribute('aria-pressed', String(on));
+        layerEls[c].querySelector('.sc-layer-dot').style.background = on ? core.CLR[c] : 'transparent';
+      });
+      $('#sc-name').textContent = v.selTitle;
+      $('#sc-type').textContent = v.selType;
+      $('#sc-cls').textContent = v.selCls;
+      $('#sc-conn').textContent = v.selConn;
+      $('#sc-state').textContent = v.selState; $('#sc-state').style.color = v.selStateColor;
+      $('#sc-open-btn').textContent = state.view === 'object' ? 'Вернуться к схеме сети' : 'Открыть схему объекта';
+      const btn = $('#sc-off-btn');
+      btn.textContent = v.selOff ? 'Вернуть в работу' : 'Смоделировать отключение';
+      btn.classList.toggle('is-off', v.selOff);
+      $('#sc-off-note').hidden = !v.hasOff; $('#sc-off-note').textContent = v.offNote;
+    }
+
+    let raf = 0;
+    function go(view) {
+      const tT = view === 'map' ? 0 : 1, zT = view === 'object' ? 1 : 0;
+      cancelAnimationFrame(raf);
+      state.view = view;
+      const steps = [];
+      if (zT < state.z) steps.push(['z', state.z, zT]);
+      if (tT !== state.t) steps.push(['t', state.t, tT]);
+      if (zT > state.z) steps.push(['z', state.z, zT]);
+      if ((window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) || !steps.length) {
+        state.t = tT; state.z = zT; render(); return;
+      }
+      const dur = 1000;
+      let i = 0, t0 = performance.now();
+      const step = (now) => {
+        const s = steps[i], k = Math.min(1, (now - t0) / dur);
+        const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+        state[s[0]] = s[1] + (s[2] - s[1]) * e;
+        render();
+        if (k >= 1) { i++; t0 = now; }
+        if (i < steps.length) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }
+    ['map', 'scheme', 'object'].forEach((name) => { $('#sc-to-' + name).addEventListener('click', () => go(name)); });
+    $('#sc-open-btn').addEventListener('click', () => go(state.view === 'object' ? 'scheme' : 'object'));
+    $('#sc-off-btn').addEventListener('click', () => { state.off = state.off === state.sel ? null : state.sel; render(); });
+    render();
+  }
+
+  /* ---------- Слайд «Решения»: мини-экраны «Как это работает» ---------- */
+  function initSolutions(root) {
+    const $ = (sel) => root.querySelector(sel);
+    const Y = '#F2C94C', B = '#56B4E9', GRAY = '#6b7480', MUTED = '#A7B2C2';
+    const scrim = $('#demo-scrim');
+    let opener = null;
+
+    function close() {
+      root.querySelectorAll('.demo').forEach((d) => { d.hidden = true; });
+      scrim.hidden = true;
+      if (opener) { opener.focus(); opener = null; }
+    }
+    function open(name, from) {
+      close();
+      opener = from;
+      scrim.hidden = false;
+      const d = $('#demo-' + name);
+      d.hidden = false;
+      d.querySelector('.demo-close').focus();
+    }
+    root.querySelectorAll('[data-demo]').forEach((b) => b.addEventListener('click', () => open(b.dataset.demo, b)));
+    root.querySelectorAll('.demo-close').forEach((b) => b.addEventListener('click', close));
+    scrim.addEventListener('click', close);
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    window.addEventListener('hashchange', close);
+
+    const box = (x, y, w, h, bus, label, dead) =>
+      '<rect x="' + (x - w / 2) + '" y="' + (y - h / 2) + '" width="' + w + '" height="' + h + '" style="fill:#05070b;stroke:' + (dead ? GRAY : '#8b95a3') + ';stroke-width:1.5;stroke-dasharray:5 4"></rect>' +
+      '<path d="M' + (x - w / 2 + 14) + ' ' + y + 'H' + (x + w / 2 - 14) + '" style="stroke:' + (dead ? GRAY : bus) + ';stroke-width:5;stroke-linecap:round"></path>' +
+      '<text x="' + (x - w / 2) + '" y="' + (y - h / 2 - 10) + '" style="fill:' + (dead ? MUTED : '#ffffff') + ';font-size:17px;font-weight:600">' + label + '</text>';
+    const wire = (d, color, dead, dashed) =>
+      '<path d="' + d + '" style="fill:none;stroke:' + (dead ? GRAY : color) + ';stroke-width:2.5;' + ((dead || dashed) ? 'stroke-dasharray:7 7;' : 'filter:drop-shadow(0 0 5px ' + color + ');') + '"></path>';
+
+    /* 01. Авария и переключение */
+    (function () {
+      const feeds = [{ x: 170, n: [42, 3, 0] }, { x: 470, n: [58, 5, 2] }, { x: 790, n: [37, 4, 1] }];
+      let step = 0;
+      const texts = [
+        ['Шаг 1 из 3 · Нормальный режим', 'Сеть работает штатно: все подстанции и потребители под напряжением.', 'Отключить ПС 220 кВ'],
+        ['Шаг 2 из 3 · Авария', 'Питающая подстанция отключена. Решение сразу показывает, кто остался без электроснабжения.', 'Переключить на резерв'],
+        ['Шаг 3 из 3 · Переключение', 'Часть потребителей переведена на соседний источник по резервной связи. Оставшаяся подстанция — первый приоритет восстановления.', 'Начать заново']
+      ];
+      function render() {
+        const s1dead = step > 0, dead = [step > 0, step === 1, false], tie = step === 2;
+        let o = '<svg viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="Схема участка сети: две питающие подстанции, три подстанции 110 кВ и их потребители">';
+        o += wire('M250 110V200H170V300', B, dead[0]) + wire('M290 110V200H470V300', B, step > 0) + wire('M840 110V300', B, false);
+        o += wire('M540 300H720', B, false, !tie);
+        o += '<text x="630" y="286" style="fill:' + (tie ? '#ffffff' : MUTED) + ';font-size:14px;text-anchor:middle">' + (tie ? 'резерв включён' : 'резервная связь') + '</text>';
+        o += box(270, 90, 200, 56, Y, 'ПС 220 кВ', s1dead) + box(790, 90, 200, 56, Y, 'ПС 220 кВ', false);
+        feeds.forEach((f, i) => {
+          const dd = dead[i];
+          o += wire('M' + f.x + ' 328V420', '#59C27A', dd) + box(f.x, 300, 150, 56, B, 'ПС 110 кВ', dd);
+          o += '<rect x="' + (f.x - 110) + '" y="420" width="220" height="150" rx="12" style="fill:' + (dd ? 'rgba(255,45,70,0.12)' : '#1d2636') + ';stroke:' + (dd ? '#FF2D46' : '#2d394d') + ';stroke-width:1.5"></rect>';
+          ['Жилые дома', 'Соцобъекты', 'Промышленность'].forEach((name, k) => {
+            const y = 462 + k * 40;
+            o += '<text x="' + (f.x - 90) + '" y="' + y + '" style="fill:#C5CEDB;font-size:17px">' + name + '</text>' +
+              '<text x="' + (f.x + 90) + '" y="' + y + '" style="fill:' + (dd ? '#FF8A99' : '#ffffff') + ';font-size:19px;font-weight:700;text-anchor:end">' + f.n[k] + '</text>';
+          });
+          o += '<text x="' + f.x + '" y="600" style="fill:' + (dd ? '#FF8A99' : '#5FD6A2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + (dd ? 'без питания' : 'под напряжением') + '</text>';
+        });
+        $('#outage-stage').innerHTML = o + '</svg>';
+        const sum = [0, 1, 2].map((k) => feeds.reduce((a, f, i) => a + (dead[i] ? f.n[k] : 0), 0));
+        $('#outage-n1').textContent = sum[0]; $('#outage-n2').textContent = sum[1]; $('#outage-n3').textContent = sum[2];
+        $('#outage-step').textContent = texts[step][0]; $('#outage-text').textContent = texts[step][1]; $('#outage-btn').textContent = texts[step][2];
+        $('#demo-outage').classList.toggle('is-alarm', sum[0] > 0);
+      }
+      $('#outage-btn').addEventListener('click', () => { step = (step + 1) % 3; render(); });
+      render();
+    })();
+
+    /* 02. Прогноз потребления */
+    (function () {
+      const X0 = 80, X1 = 920, Y0 = 520, Y1 = 60, MAX = 130;
+      const px = (h) => X0 + (X1 - X0) * h / 24, py = (v) => Y0 - (Y0 - Y1) * v / MAX;
+      const profile = (h) => 0.52 + 0.14 * Math.exp(-Math.pow((h - 9) / 2.6, 2)) + 0.26 * Math.exp(-Math.pow((h - 19) / 3, 2)) - 0.1 * Math.exp(-Math.pow((h - 4) / 3, 2));
+      const range = $('#forecast-range');
+      function render() {
+        const T = +range.value, m = 1 + 0.012 * Math.max(0, 5 - T) + 0.016 * Math.max(0, T - 22);
+        let d = '', peak = 0, peakH = 0;
+        for (let i = 0; i <= 96; i++) {
+          const h = i / 4, v = profile(h) * m * 100;
+          if (v > peak) { peak = v; peakH = h; }
+          d += (i ? 'L' : 'M') + px(h).toFixed(1) + ' ' + py(v).toFixed(1);
+        }
+        const over = peak > 100;
+        let o = '<svg viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="Суточный график нагрузки и линия располагаемой мощности">';
+        o += '<defs><clipPath id="fc-over"><rect x="0" y="0" width="960" height="' + py(100) + '"></rect></clipPath></defs>';
+        [0, 25, 50, 75, 100, 125].forEach((v) => {
+          o += '<path d="M' + X0 + ' ' + py(v) + 'H' + X1 + '" style="stroke:#222c3d;stroke-width:1"></path><text x="' + (X0 - 12) + '" y="' + (py(v) + 5) + '" style="fill:' + MUTED + ';font-size:15px;text-anchor:end">' + v + ' %</text>';
+        });
+        [0, 4, 8, 12, 16, 20, 24].forEach((h) => { o += '<text x="' + px(h) + '" y="' + (Y0 + 30) + '" style="fill:' + MUTED + ';font-size:15px;text-anchor:middle">' + (h < 10 ? '0' : '') + h + ':00</text>'; });
+        o += '<path d="' + d + 'L' + X1 + ' ' + Y0 + 'L' + X0 + ' ' + Y0 + 'Z" style="fill:rgba(79,163,224,0.14)"></path>';
+        o += '<path d="' + d + '" style="fill:none;stroke:' + B + ';stroke-width:3.5;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(79,163,224,0.7))"></path>';
+        o += '<path d="' + d + '" clip-path="url(#fc-over)" style="fill:none;stroke:#FF2D46;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(255,45,70,0.8))"></path>';
+        o += '<path d="M' + X0 + ' ' + py(100) + 'H' + X1 + '" style="stroke:' + Y + ';stroke-width:2;stroke-dasharray:8 6"></path><text x="' + (X0 + 10) + '" y="' + (py(100) - 10) + '" style="fill:' + Y + ';font-size:15px;font-weight:600">Располагаемая мощность</text>';
+        o += '<circle cx="' + px(peakH) + '" cy="' + py(peak) + '" r="7" style="fill:#10151f;stroke:' + (over ? '#FF2D46' : '#ffffff') + ';stroke-width:3"></circle>';
+        o += '<text x="' + px(peakH) + '" y="' + (py(peak) - 18) + '" style="fill:#ffffff;font-size:17px;font-weight:700;text-anchor:middle">пик ' + Math.round(peak) + ' %</text>';
+        $('#forecast-stage').innerHTML = o + '</svg>';
+        const hh = Math.floor(peakH), mm = Math.round((peakH - hh) * 60);
+        $('#forecast-t').textContent = (T > 0 ? '+' : (T < 0 ? '−' : '')) + Math.abs(T) + ' °C';
+        range.setAttribute('aria-valuetext', T + ' °C');
+        $('#forecast-peak').textContent = Math.round(peak) + ' %';
+        $('#forecast-peak-l').textContent = 'пик нагрузки, в ' + (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+        $('#forecast-res').textContent = Math.abs(Math.round(100 - peak)) + ' %';
+        $('#forecast-res-l').textContent = over ? 'не хватает мощности в пике' : 'запас мощности в пике';
+        const v = $('#forecast-verdict');
+        v.textContent = over ? 'Пик превышает располагаемую мощность — нужны мероприятия заранее.' : (peak > 90 ? 'Запас мал: стоит заранее подготовить резервы.' : 'Мощности достаточно.');
+        v.className = 'demo-verdict ' + (over ? 'is-bad' : (peak > 90 ? 'is-warn' : 'is-ok'));
+        $('#demo-forecast').classList.toggle('is-alarm', over);
+      }
+      range.addEventListener('input', render);
+      render();
+    })();
+
+    /* 03. Планирование застройки: район, новые абоненты, расчёт модернизации и стоимости (данные условные) */
+    (function () {
+      const SRC_CAP = 42, SRC_BASE = 31, SRC_NEXT = 66;      // ПС 110 кВ: допустимая нагрузка 2×40 МВА, текущая, после замены на 2×63 МВА
+      const LINE_MW = 5, TP_MW = 1.6;                        // одна ЛЭП 10 кВ и одна ТП 2×1000 кВА
+      /* условные расценки, млн ₽ */
+      const PRICE = { klKm: 12, rp: 90, tp: 14, feed: 25, trafo: 480, center: 2500 };
+      const AMBER = '#F5A04A', GREEN = '#59C27A';
+      const zones = {
+        n: { name: 'север', cap: 12, base: 6, km: 2.4, d: 'M170 410V250H520V150H600', tag: [300, 238] },
+        c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M170 430H600', tag: [400, 418] },
+        s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M170 450V630H640', tag: [400, 618] }
+      };
+      const items = [
+        { name: 'Жилой микрорайон', mw: 9, zone: 'n', r: [600, 70, 270, 150], on: true, tap: 'M600 150' },
+        { name: 'Школа и детский сад', mw: 1.5, zone: 'n', r: [400, 96, 104, 84], on: false, tap: 'M520 180H504' },
+        { name: 'Больница', mw: 4, zone: 'c', r: [600, 330, 160, 130], on: false, tap: 'M600 430', first: true },
+        { name: 'Транспортный узел', mw: 6, zone: 'c', r: [384, 474, 136, 76], on: false, tap: 'M450 430V474' },
+        { name: 'Технопарк', mw: 12, zone: 's', r: [640, 560, 250, 130], on: false, tap: 'M640 630' }
+      ];
+      const KEYS = ['src', 'n', 'c', 's', 'tp'];
+      let card = null;
+      const fmt = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
+      const money = (v) => !v ? '—' : (v >= 1000 ? String(Math.round(v / 10) / 100).replace('.', ',') + ' млрд ₽' : Math.round(v) + ' млн ₽');
+      const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11) ? a : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? b : c);
+
+      /* подложка района: улицы, река, парк, существующая застройка */
+      let bg = '<rect width="1040" height="776" style="fill:#0b0f17"></rect>';
+      bg += '<path d="M-20 740C140 700 240 760 400 735S700 700 1060 750V800H-20Z" style="fill:#12283a"></path>';
+      bg += '<path d="M905 285c50-30 120-10 125 45s-40 95-95 90-80-95-30-135z" style="fill:#12241c"></path>';
+      bg += '<path d="M0 250H1040M0 430H1040M0 630H1040M170 0V776M520 0V776M880 0V776M0 40L1040 110" style="fill:none;stroke:#1a2231;stroke-width:22"></path>';
+      bg += '<path d="M0 560L1040 500" style="fill:none;stroke:#222c3d;stroke-width:3;stroke-dasharray:14 8"></path>';
+      const free = (x, y) => !items.some((it) => x > it.r[0] - 34 && x < it.r[0] + it.r[2] + 6 && y > it.r[1] - 24 && y < it.r[1] + it.r[3] + 6) &&
+        !(x > 880 && y > 260 && y < 440) && y < 690 && !(x < 250 && y > 360 && y < 500);
+      let seed = 7;
+      const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+      [[30, 150], [190, 500], [540, 860], [900, 1020]].forEach((cx) => {
+        [[70, 230], [270, 410], [450, 610], [650, 700]].forEach((cy) => {
+          for (let x = cx[0]; x + 28 <= cx[1]; x += 42) for (let y = cy[0]; y + 16 <= cy[1]; y += 30) {
+            const keep = rnd() > 0.22;
+            if (keep && free(x, y)) bg += '<rect x="' + x + '" y="' + y + '" width="28" height="16" rx="2" style="fill:#161e2c"></rect>';
+          }
+        });
+      });
+
+      const stage = $('#planning-stage');
+      const svgBox = document.createElement('div');
+      stage.appendChild(svgBox);
+      /* кликабельные зоны объектов электроснабжения поверх плана */
+      const hit = (key, label, x, y, w, h) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'demo-hit';
+        b.setAttribute('aria-label', 'Карточка объекта: ' + label);
+        b.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px';
+        b.addEventListener('click', () => { card = key; render(); $('#planning-card-back').focus(); });
+        stage.appendChild(b);
+      };
+      hit('src', 'ПС 110 кВ', 80, 380, 180, 100);
+      Object.keys(zones).forEach((k) => hit(k, 'ЛЭП 10 кВ, ' + zones[k].name, zones[k].tag[0] - 90, zones[k].tag[1] - 40, 180, 44));
+
+      const tg = $('#planning-toggles');
+      items.forEach((it) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'demo-toggle';
+        b.innerHTML = '<span class="demo-check" aria-hidden="true"></span><span class="demo-toggle-name">' + it.name + '</span><b>' + fmt(it.mw) + ' МВт</b>';
+        b.addEventListener('click', () => { it.on = !it.on; render(); });
+        tg.appendChild(b);
+        it.el = b;
+      });
+      const rows = {};
+      KEYS.forEach((k) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'demo-obj';
+        b.innerHTML = '<span class="demo-obj-dot" aria-hidden="true"></span><span class="demo-obj-name"></span><span class="demo-obj-status"></span><b></b>' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2l5 5-5 5"></path></svg>';
+        b.addEventListener('click', () => { card = k; render(); $('#planning-card-back').focus(); });
+        $('#planning-objects').appendChild(b);
+        rows[k] = b;
+      });
+      $('#planning-card-back').addEventListener('click', () => { const k = card; card = null; render(); if (rows[k]) rows[k].focus(); });
+
+      /* расчёт: по каждому объекту электроснабжения — параметры, мероприятия, стоимость */
+      function model() {
+        const add = { n: 0, c: 0, s: 0 };
+        items.forEach((it) => { if (it.on) add[it.zone] += it.mw; });
+        const addAll = add.n + add.c + add.s, total = SRC_BASE + addAll, m = {};
+        Object.keys(zones).forEach((k) => {
+          const z = zones[k], load = z.base + add[k], def = Math.max(0, load - z.cap), works = [];
+          const who = items.filter((it) => it.on && it.zone === k);
+          if (def) {
+            const n = Math.max(2, Math.ceil(def / LINE_MW));
+            works.push([n + ' ' + plural(n, 'новая ЛЭП', 'новые ЛЭП', 'новых ЛЭП') + ' 10 кВ по ' + fmt(z.km) + ' км', n * z.km * PRICE.klKm]);
+            if (def > 4) works.push(['Новый РП 10 кВ', PRICE.rp]);
+          }
+          if (who.some((it) => it.first)) works.push(['Второй независимый ввод для больницы (I категория надёжности)', PRICE.feed]);
+          m[k] = {
+            title: 'ЛЭП 10 кВ · ' + z.name, short: 'ЛЭП 10 кВ · ' + z.name, def: def,
+            status: def ? 'не хватает ' + fmt(def) + ' МВт' : (add[k] ? 'резерва достаточно' : 'без изменений'),
+            facts: [['Пропускная способность', z.cap + ' МВт'], ['Текущая нагрузка', fmt(z.base) + ' МВт'],
+              ['Новые абоненты', who.length ? who.map((it) => it.name + ' +' + fmt(it.mw)).join(', ') : 'нет'],
+              ['Нагрузка после подключения', fmt(load) + ' МВт'], ['Длина трассы от ПС', fmt(z.km) + ' км']],
+            works: works, load: load, over: def > 0
+          };
+        });
+        const srcDef = Math.max(0, total - SRC_CAP);
+        m.src = {
+          title: 'ПС 110 кВ', short: 'ПС 110 кВ', def: srcDef,
+          status: srcDef ? 'не хватает ' + fmt(srcDef) + ' МВт' : (addAll ? 'резерва достаточно' : 'без изменений'),
+          facts: [['Трансформаторы', '2×40 МВА'], ['Допустимая нагрузка', SRC_CAP + ' МВт'], ['Текущая нагрузка', SRC_BASE + ' МВт'],
+            ['Новые абоненты', addAll ? '+' + fmt(addAll) + ' МВт' : 'нет'], ['Нагрузка после подключения', fmt(total) + ' МВт']],
+          works: !srcDef ? [] : (total <= SRC_NEXT ? [['Замена трансформаторов 2×40 на 2×63 МВА', PRICE.trafo]] : [['Строительство нового питающего центра', PRICE.center]]),
+          over: srcDef > 0
+        };
+        const tp = Math.ceil(addAll / TP_MW);
+        m.tp = {
+          title: 'ТП 10/0,4 кВ', short: 'Новые ТП 10/0,4 кВ', def: 0,
+          status: tp ? tp + ' ' + plural(tp, 'подстанция', 'подстанции', 'подстанций') : 'не требуются',
+          facts: [['Нагрузка новых абонентов', fmt(addAll) + ' МВт'], ['Мощность одной ТП', '2×1000 кВА, ' + fmt(TP_MW) + ' МВт'], ['Требуется ТП', String(tp)]],
+          works: tp ? [[tp + ' ' + plural(tp, 'новая ТП', 'новые ТП', 'новых ТП') + ' 10/0,4 кВ', tp * PRICE.tp]] : [],
+          over: false
+        };
+        KEYS.forEach((k) => { m[k].cost = m[k].works.reduce((a, w) => a + w[1], 0); });
+        return { m: m, add: add, addAll: addAll, total: total, cost: KEYS.reduce((a, k) => a + m[k].cost, 0) };
+      }
+
+      function render() {
+        const R = model(), m = R.m, srcOver = m.src.over;
+        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, линии электропередачи и перспективные объекты">' + bg;
+
+        Object.keys(zones).forEach((k) => {
+          const z = zones[k], over = m[k].over, sel = card === k;
+          o += '<path d="' + z.d + '" style="fill:none;stroke:' + (sel ? '#ffffff' : GREEN) + ';stroke-width:' + (sel ? 4.5 : 3) + ';stroke-linejoin:round;filter:drop-shadow(0 0 5px ' + (sel ? 'rgba(255,255,255,0.9)' : 'rgba(89,194,122,0.7)') + ')"></path>';
+          if (over) o += '<path d="' + z.d + '" transform="translate(9 9)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
+          const tw = 182;
+          o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:' + (sel ? '#ffffff' : '#0b0f17') + ';stroke:' + (sel ? '#ffffff' : (over ? AMBER : '#5B677A')) + ';stroke-width:1.2"></rect>' +
+            '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (sel ? '#0b0f17' : (over ? AMBER : '#C5CEDB')) + ';font-size:13px;font-weight:600;text-anchor:middle">ЛЭП 10 кВ · ' + fmt(m[k].load) + ' из ' + z.cap + ' МВт</text>';
+        });
+
+        items.forEach((it) => {
+          const x = it.r[0], y = it.r[1], w = it.r[2], h = it.r[3], cx = x + w / 2;
+          const c = it.on ? '#5FD6A2' : '#5B677A';
+          if (it.on && it.tap.length > 9) o += '<path d="' + it.tap + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3"></path>';
+          o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" style="fill:' + (it.on ? 'rgba(95,214,162,0.13)' : 'rgba(11,15,23,0.7)') + ';stroke:' + c + ';stroke-width:2;' + (it.on ? '' : 'stroke-dasharray:7 6') + '"></rect>';
+          if (it.on) for (let i = 0; i < Math.floor((w - 20) / 42); i++) for (let j = 0; j < Math.floor((h - 62) / 26); j++)
+            o += '<rect x="' + (x + 14 + i * 42) + '" y="' + (y + 54 + j * 26) + '" width="28" height="14" rx="2" style="fill:rgba(95,214,162,0.35)"></rect>';
+          const words = it.name.split(' '), two = w < 140 && words.length > 1;
+          const l1 = two ? words.slice(0, Math.ceil(words.length / 2)).join(' ') : it.name, l2 = two ? words.slice(Math.ceil(words.length / 2)).join(' ') : '';
+          o += '<text x="' + cx + '" y="' + (y + 24) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l1 + '</text>';
+          if (l2) o += '<text x="' + cx + '" y="' + (y + 42) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l2 + '</text>';
+          o += '<text x="' + cx + '" y="' + (y + (l2 ? 62 : 44)) + '" style="fill:' + (it.on ? '#5FD6A2' : '#A7B2C2') + ';font-size:14px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран') + '</text>';
+        });
+
+        const srcSel = card === 'src', sc = srcSel ? '#ffffff' : (srcOver ? AMBER : '#8b95a3');
+        o += '<rect x="80" y="380" width="180" height="100" style="fill:#05070b;stroke:' + sc + ';stroke-width:' + ((srcOver || srcSel) ? 2.5 : 1.5) + ';stroke-dasharray:5 4' + (srcSel ? ';filter:drop-shadow(0 0 10px rgba(255,255,255,0.7))' : (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '')) + '"></rect>' +
+          '<path d="M96 430H244" style="stroke:#56B4E9;stroke-width:5;stroke-linecap:round"></path>' +
+          '<circle cx="140" cy="452" r="9" style="fill:none;stroke:#56B4E9;stroke-width:2"></circle><circle cx="152" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
+          '<circle cx="188" cy="452" r="9" style="fill:none;stroke:#56B4E9;stroke-width:2"></circle><circle cx="200" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
+          '<text x="170" y="408" style="fill:#ffffff;font-size:16px;font-weight:700;text-anchor:middle">ПС 110 кВ</text>' +
+          '<rect x="74" y="350" width="192" height="24" rx="12" style="fill:#0b0f17"></rect><text x="170" y="367" style="fill:' + (srcOver ? AMBER : '#C5CEDB') + ';font-size:14px;font-weight:600;text-anchor:middle">' + (srcOver ? 'требуется реконструкция' : 'источник питания района') + '</text>';
+        o += '<text x="28" y="34" style="fill:#A7B2C2;font-size:14px;font-weight:700;letter-spacing:0.06em">ДЕМОНСТРАЦИОННЫЙ РАЙОН</text>';
+        svgBox.innerHTML = o + '</svg>';
+
+        items.forEach((it) => { it.el.classList.toggle('is-on', it.on); it.el.setAttribute('aria-pressed', String(it.on)); });
+        $('#planning-load').textContent = fmt(R.total) + ' из ' + SRC_CAP + ' МВт';
+        const scale = 100 / (SRC_CAP * 1.6);
+        $('#planning-base').style.width = (SRC_BASE * scale) + '%';
+        $('#planning-add').style.width = (Math.min(R.addAll, SRC_CAP * 1.6 - SRC_BASE) * scale) + '%';
+        $('#planning-add').style.background = srcOver ? AMBER : GREEN;
+
+        KEYS.forEach((k) => {
+          const b = rows[k], e = m[k];
+          b.classList.toggle('is-warn', e.def > 0);
+          b.children[1].textContent = e.short;
+          b.children[2].textContent = e.status;
+          b.children[3].textContent = money(e.cost);
+        });
+        $('#planning-total').textContent = money(R.cost);
+
+        const cardEl = $('#planning-card');
+        cardEl.hidden = !card;
+        if (card) {
+          const e = m[card];
+          $('#planning-card-title').textContent = e.title;
+          $('#planning-card-status').textContent = e.status;
+          $('#planning-card-status').className = 'demo-card-status' + (e.def > 0 ? ' is-warn' : '');
+          $('#planning-card-facts').innerHTML = e.facts.map((f) => '<div><span>' + f[0] + '</span><b>' + f[1] + '</b></div>').join('');
+          $('#planning-card-works').innerHTML = e.works.length
+            ? e.works.map((w) => '<li><span>' + w[0] + '</span><b>' + money(w[1]) + '</b></li>').join('')
+            : '<li class="is-none"><span>Мероприятия не требуются</span><b>—</b></li>';
+          $('#planning-card-cost').textContent = money(e.cost);
+        }
+      }
+      window.addEventListener('hashchange', () => { card = null; render(); });
+      render();
+    })();
+  }
+
+  /* ---------- Слайд «Данные»: подсветка объектов выбранного источника ---------- */
+  function initData(root) {
+    const note = root.querySelector('[data-kpi-note]'), noteDefault = note.textContent;
+    let locked = null;
+    function show(src) {
+      root.querySelectorAll('.is-hl').forEach((el) => el.classList.remove('is-hl'));
+      if (src) root.setAttribute('data-hl', src); else root.removeAttribute('data-hl');
+      const card = src && root.querySelector('[data-src="' + src + '"]');
+      note.textContent = (card && card.dataset.note) || noteDefault;
+      if (!src) return;
+      card.classList.add('is-hl');
+      root.style.setProperty('--hl', card.dataset.color || '#ffffff');
+      root.querySelectorAll('[data-of="' + src + '"]').forEach((el) => el.classList.add('is-hl'));
+      const kpi = src === 'sbyt' ? 'consumers' : (card.dataset.note ? 'objects' : null);
+      if (kpi) root.querySelector('[data-kpi="' + kpi + '"]').classList.add('is-hl');
+    }
+    root.querySelectorAll('[data-src]').forEach((b) => {
+      const src = b.dataset.src;
+      b.addEventListener('mouseenter', () => show(src));
+      b.addEventListener('focus', () => show(src));
+      b.addEventListener('mouseleave', () => show(locked));
+      b.addEventListener('blur', () => show(locked));
+      b.addEventListener('click', () => { locked = locked === src ? null : src; b.setAttribute('aria-pressed', String(locked === src)); show(locked || src); });
+    });
+  }
+
+  /* ---------- Запуск ---------- */
+  function start() {
+    document.querySelectorAll('[data-map]').forEach(function (el) {
+      el.innerHTML = mapHTML(el.dataset.map, +el.dataset.cx, +el.dataset.cy, +el.dataset.scale);
+    });
+    document.querySelectorAll('[data-nav]').forEach(function (el) { el.innerHTML = navHTML(+el.dataset.nav - 1); });
+    document.querySelectorAll('[data-fullscreen]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+      });
+    });
+    initScheme(document.getElementById('scheme'));
+    initSolutions(document.getElementById('tasks'));
+    initData(document.getElementById('data'));
+
+    var stage = document.getElementById('stage');
+    var fit = function () {
+      var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stage.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+    };
+    var current = 0;
+    var show = function () {
+      var id = (location.hash || '#about').slice(1), idx = 0;
+      SLIDES.forEach(function (s, i) { if (s.id === id) idx = i; });
+      current = idx;
+      SLIDES.forEach(function (s, i) { document.getElementById(s.id).classList.toggle('is-active', i === idx); });
+      document.title = SLIDES[idx].name + ' — Схема электроснабжения';
+    };
+    window.addEventListener('resize', fit);
+    window.addEventListener('hashchange', show);
+    window.addEventListener('keydown', function (e) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (document.querySelector('.demo:not([hidden])')) return; // открыт мини-экран: стрелки нужны ему
+      var d = (e.key === 'ArrowRight' || e.key === 'PageDown') ? 1 : ((e.key === 'ArrowLeft' || e.key === 'PageUp') ? -1 : 0);
+      if (!d) return;
+      e.preventDefault();
+      location.hash = SLIDES[Math.max(0, Math.min(SLIDES.length - 1, current + d))].id;
+    });
+    fit(); show();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
