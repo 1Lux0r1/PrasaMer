@@ -31,7 +31,7 @@ button { font-family: inherit; cursor: pointer; }
 .sc-row { display: flex; justify-content: space-between; gap: 12px; }
 .sc-row > span:first-child { color: #A7B2C2; }
 .sc-row > span:last-child { text-align: right; }
-.sc-layer { height: 46px; padding: 0 14px; display: flex; align-items: center; gap: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); color: #A7B2C2; font-size: 17px; text-align: left; }
+.sc-layer { flex: 1 1 0; height: 46px; padding: 0 12px; display: flex; align-items: center; gap: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); color: #A7B2C2; font-size: 17px; text-align: left; }
 .sc-layer.is-on { color: #ffffff; }
 .sc-layer:hover { background: rgba(255,255,255,0.1); }
 .sc-layer-line { width: 26px; height: 3px; border-radius: 2px; }
@@ -161,3 +161,8 @@ button { font-family: inherit; cursor: pointer; }
 #data path[data-of].is-hl:not(.df-flow) { stroke: var(--hl, #ffffff) !important; }
 #data [data-kpi].is-hl { box-shadow: inset 0 0 0 2px var(--hl, #ffffff); }
 #data [data-kpi].is-hl [data-kpi-note] { color: #ffffff !important; font-weight: 600; }
+
+/* Слайд «Карта ↔ схема»: классы напряжения в одну строку */
+#sc-layers .sc-layer { font-size: 16px; }
+#sc-layers .sc-layer-line { display: none; }
+#sc-layers .sc-layer-dot { order: -1; }
