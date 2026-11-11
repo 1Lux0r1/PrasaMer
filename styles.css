@@ -83,9 +83,6 @@ button { font-family: inherit; cursor: pointer; }
 .demo-head { flex: none; height: 104px; padding: 0 28px 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d394d; }
 .demo-eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; color: #A7B2C2; }
 .demo-head h2 { margin: 6px 0 0; font-size: 34px; line-height: 1.1; font-weight: 800; }
-.demo-close { width: 52px; height: 52px; border-radius: 26px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; }
-.demo-close:hover { background: rgba(255,255,255,0.16); }
-.demo-close svg { fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linecap: round; }
 .demo-body { flex: 1 1 0; display: flex; min-height: 0; }
 .demo-stage { flex: none; width: 1040px; display: flex; align-items: center; justify-content: center; background: #05070b; }
 .demo-stage svg { display: block; font-family: inherit; }
@@ -119,9 +116,9 @@ button { font-family: inherit; cursor: pointer; }
 .demo-bar-head { display: flex; justify-content: space-between; font-size: 18px; color: #C5CEDB; }
 .demo-bar-head b { color: #ffffff; }
 .demo-bar { position: relative; height: 18px; display: flex; border-radius: 9px; background: #222c3d; overflow: hidden; }
-.demo-bar::after { content: ''; position: absolute; left: 80%; top: 0; bottom: 0; width: 2px; background: #E6D72A; }
+.demo-bar::after { content: ''; position: absolute; left: 80%; top: 0; bottom: 0; width: 2px; background: #F2C94C; }
 .demo-bar i { display: block; height: 100%; }
-#planning-base { background: #4FA3E0; }
+#planning-base { background: #56B4E9; }
 
 /* Мини-экран «Планирование застройки» */
 .demo-side-tight { padding: 24px 32px; gap: 12px; }
