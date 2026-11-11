@@ -179,6 +179,12 @@ button { font-family: inherit; cursor: pointer; }
 #sc-layers .sc-layer { font-size: 16px; }
 #sc-layers .sc-layer-line { display: none; }
 #sc-layers .sc-layer-dot { order: -1; }
+
+/* Слайд «Данные»: линии от модели к цифрам — цветом выбранного источника */
+#data [data-out] { transition: stroke 0.15s, opacity 0.15s; }
+#data[data-hl="rosseti"] [data-out], #data[data-hl="oek"] [data-out], #data[data-hl="other"] [data-out], #data[data-hl="sbyt"] [data-out="kpi"] { stroke: var(--hl); }
+#data[data-hl="rosseti"] [data-out]:not(.df-flow), #data[data-hl="oek"] [data-out]:not(.df-flow), #data[data-hl="other"] [data-out]:not(.df-flow), #data[data-hl="sbyt"] [data-out="kpi"]:not(.df-flow) { stroke-width: 2.6; }
+#data[data-hl="sbyt"] [data-out]:not([data-out="kpi"]), #data[data-hl="so"] [data-out] { opacity: 0.25; }
 </style>
 </head>
 <body>
@@ -298,7 +304,9 @@ button { font-family: inherit; cursor: pointer; }
         <path data-of="oek" d="M426 400H480"></path>
         <path data-of="other" d="M410 567C480 567 428 450 488 450"></path>
         <path data-of="sbyt" d="M400 734C480 734 445 500 515 500"></path>
-        <path d="M788 340C850 340 830 115 890 115M800 400C840 400 850 382 890 382M788 460C850 460 830 667 890 667"></path>
+        <path data-out="kpi" d="M788 340C850 340 830 115 890 115"></path>
+        <path data-out="low" d="M800 400C840 400 850 382 890 382"></path>
+        <path data-out="high" d="M788 460C850 460 830 667 890 667"></path>
       </g>
       <g style="fill: none; stroke: #ffffff; stroke-width: 2.4; opacity: 0.75">
         <path class="df-flow" data-of="so" style="stroke: #8FB4F0" d="M400 66C480 66 445 300 515 300"></path>
@@ -306,7 +314,9 @@ button { font-family: inherit; cursor: pointer; }
         <path class="df-flow" data-of="oek" style="stroke: #F0B37E" d="M426 400H480"></path>
         <path class="df-flow" data-of="other" style="stroke: #9BDDB0" d="M410 567C480 567 428 450 488 450"></path>
         <path class="df-flow" data-of="sbyt" style="stroke: #E39AAE" d="M400 734C480 734 445 500 515 500"></path>
-        <path class="df-flow" d="M788 340C850 340 830 115 890 115M800 400C840 400 850 382 890 382M788 460C850 460 830 667 890 667"></path>
+        <path class="df-flow" data-out="kpi" d="M788 340C850 340 830 115 890 115"></path>
+        <path class="df-flow" data-out="low" d="M800 400C840 400 850 382 890 382"></path>
+        <path class="df-flow" data-out="high" d="M788 460C850 460 830 667 890 667"></path>
       </g>
     </svg>
 

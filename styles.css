@@ -166,3 +166,9 @@ button { font-family: inherit; cursor: pointer; }
 #sc-layers .sc-layer { font-size: 16px; }
 #sc-layers .sc-layer-line { display: none; }
 #sc-layers .sc-layer-dot { order: -1; }
+
+/* Слайд «Данные»: линии от модели к цифрам — цветом выбранного источника */
+#data [data-out] { transition: stroke 0.15s, opacity 0.15s; }
+#data[data-hl="rosseti"] [data-out], #data[data-hl="oek"] [data-out], #data[data-hl="other"] [data-out], #data[data-hl="sbyt"] [data-out="kpi"] { stroke: var(--hl); }
+#data[data-hl="rosseti"] [data-out]:not(.df-flow), #data[data-hl="oek"] [data-out]:not(.df-flow), #data[data-hl="other"] [data-out]:not(.df-flow), #data[data-hl="sbyt"] [data-out="kpi"]:not(.df-flow) { stroke-width: 2.6; }
+#data[data-hl="sbyt"] [data-out]:not([data-out="kpi"]), #data[data-hl="so"] [data-out] { opacity: 0.25; }
