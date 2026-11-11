@@ -11,128 +11,11 @@
 </head>
 <body>
 <div id="stage">
-<section class="slide" id="intro" style="background: #182233">
-
-  <div data-map="dim" data-cx="1330" data-cy="540" data-scale="430" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></div>
-  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(90deg, rgba(24,34,51,0.96) 0%, rgba(24,34,51,0.74) 32%, rgba(24,34,51,0) 60%); pointer-events: none"></div>
-
-  <svg viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="Линии электропередачи связывают электростанцию, подстанции и потребителей на карте города" style="position: absolute; left: 0; top: 0; display: block">
-    <style>
-      .pw-flow { stroke-dasharray: 4 22; stroke-linecap: round; animation: pw-run 1.6s linear infinite; }
-      @keyframes pw-run { to { stroke-dashoffset: -26; } }
-      @media (prefers-reduced-motion: reduce) { .pw-flow { animation: none; } }
-    </style>
-    <defs>
-      <symbol id="pw-pylon" viewBox="0 0 56 76">
-        <path d="M28 4L16 72M28 4L40 72M6 20H50M10 34H46M6 20L22 12M50 20L34 12M10 34L20 26M46 34L36 26M19 54H37M21 44L37 54M35 44L19 54M6 20v6M50 20v6M10 34v6M46 34v6M12 72H44" style="fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round"></path>
-      </symbol>
-    </defs>
-
-    <g style="fill: none; stroke-linecap: round">
-      <path d="M1900 70L1560 210" style="stroke: #E5202E; stroke-width: 5; filter: drop-shadow(0 0 8px rgba(229,32,46,0.8))"></path>
-      <path d="M1560 210L1380 520M1080 250L1380 520" style="stroke: #E6D72A; stroke-width: 4.5; filter: drop-shadow(0 0 8px rgba(230,215,42,0.7))"></path>
-      <path d="M1380 520L1680 660M1380 520L1120 760" style="stroke: #4FA3E0; stroke-width: 4; filter: drop-shadow(0 0 8px rgba(79,163,224,0.8))"></path>
-      <path d="M1680 660L1420 880M1120 760L1420 880" style="stroke: #59C27A; stroke-width: 3; stroke-dasharray: 2 9; filter: drop-shadow(0 0 6px rgba(89,194,122,0.7))"></path>
-      <path class="pw-flow" d="M1900 70L1560 210L1380 520L1680 660M1080 250L1380 520L1120 760" style="stroke: #ffffff; stroke-width: 3; opacity: 0.9"></path>
-    </g>
-
-    <g style="stroke-width: 9; color: #10151f; opacity: 0.9">
-      <use href="#pw-pylon" x="1694" y="88" width="72" height="98"></use>
-      <use href="#pw-pylon" x="1464" y="260" width="72" height="98"></use>
-      <use href="#pw-pylon" x="1404" y="364" width="72" height="98"></use>
-      <use href="#pw-pylon" x="1144" y="288" width="72" height="98"></use>
-      <use href="#pw-pylon" x="1244" y="378" width="72" height="98"></use>
-      <use href="#pw-pylon" x="1494" y="538" width="72" height="98"></use>
-      <use href="#pw-pylon" x="1214" y="588" width="72" height="98"></use>
-    </g>
-    <g style="stroke-width: 2.6">
-      <use href="#pw-pylon" x="1694" y="88" width="72" height="98" style="color: #FF6B76"></use>
-      <use href="#pw-pylon" x="1464" y="260" width="72" height="98" style="color: #F2E76A"></use>
-      <use href="#pw-pylon" x="1404" y="364" width="72" height="98" style="color: #F2E76A"></use>
-      <use href="#pw-pylon" x="1144" y="288" width="72" height="98" style="color: #F2E76A"></use>
-      <use href="#pw-pylon" x="1244" y="378" width="72" height="98" style="color: #F2E76A"></use>
-      <use href="#pw-pylon" x="1494" y="538" width="72" height="98" style="color: #8CC6F2"></use>
-      <use href="#pw-pylon" x="1214" y="588" width="72" height="98" style="color: #8CC6F2"></use>
-    </g>
-
-    <g style="fill: #10151f; stroke-width: 4">
-      <circle cx="1080" cy="250" r="70" style="stroke: #C77DD6; filter: drop-shadow(0 0 14px rgba(199,125,214,0.65))"></circle>
-      <circle cx="1560" cy="210" r="70" style="stroke: #E5202E; filter: drop-shadow(0 0 14px rgba(229,32,46,0.7))"></circle>
-      <circle cx="1380" cy="520" r="78" style="stroke: #E6D72A; filter: drop-shadow(0 0 14px rgba(230,215,42,0.6))"></circle>
-      <circle cx="1680" cy="660" r="62" style="stroke: #4FA3E0; filter: drop-shadow(0 0 14px rgba(79,163,224,0.7))"></circle>
-      <circle cx="1120" cy="760" r="62" style="stroke: #4FA3E0; filter: drop-shadow(0 0 14px rgba(79,163,224,0.7))"></circle>
-      <circle cx="1420" cy="880" r="66" style="stroke: #59C27A; filter: drop-shadow(0 0 14px rgba(89,194,122,0.65))"></circle>
-    </g>
-
-    <g style="fill: none; stroke: #ffffff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round">
-      <g transform="translate(1036 206) scale(1.375)">
-        <path d="M8 56C12 42 12 30 10 18H26C24 30 24 42 28 56M36 56V12h9v44M49 56V26h7v30M4 56H60" ></path>
-        <path d="M14 10c0-4 5-4 5-8M40 6c0-3 4-3 4-6" style="stroke: #C77DD6"></path>
-      </g>
-      <g transform="translate(1516 166) scale(1.375)">
-        <path d="M8 56V20H56V56M8 30H56M4 56H60M20 20V12M32 20V12M44 20V12"></path>
-        <circle cx="26" cy="44" r="8" style="stroke: #E5202E"></circle><circle cx="38" cy="44" r="8" style="stroke: #E6D72A"></circle>
-      </g>
-      <g transform="translate(1330 470) scale(1.5625)">
-        <path d="M8 56V20H56V56M8 30H56M4 56H60M20 20V12M32 20V12M44 20V12"></path>
-        <circle cx="26" cy="44" r="8" style="stroke: #E6D72A"></circle><circle cx="38" cy="44" r="8" style="stroke: #4FA3E0"></circle>
-      </g>
-      <g transform="translate(1641 621) scale(1.22)">
-        <path d="M8 56V20H56V56M8 30H56M4 56H60M20 20V12M32 20V12M44 20V12"></path>
-        <circle cx="26" cy="44" r="8" style="stroke: #4FA3E0"></circle><circle cx="38" cy="44" r="8" style="stroke: #59C27A"></circle>
-      </g>
-      <g transform="translate(1081 721) scale(1.22)">
-        <path d="M8 56V20H56V56M8 30H56M4 56H60M20 20V12M32 20V12M44 20V12"></path>
-        <circle cx="26" cy="44" r="8" style="stroke: #4FA3E0"></circle><circle cx="38" cy="44" r="8" style="stroke: #59C27A"></circle>
-      </g>
-      <g transform="translate(1378 838) scale(1.3)">
-        <path d="M8 56V28h14v28M22 56V10h20v46M42 56V34h14v22M4 56H60"></path>
-        <path d="M28 20h8M28 30h8M28 40h8M13 38h4M13 46h4M47 44h4" style="stroke: #59C27A"></path>
-      </g>
-    </g>
-  </svg>
-
-  <div style="position: absolute; left: 1080px; top: 330px; transform: translateX(-50%); padding: 5px 14px; border-radius: 16px; background: rgba(16,21,31,0.88); font-size: 21px; font-weight: 600; white-space: nowrap">ТЭЦ</div>
-  <div style="position: absolute; left: 1704px; top: 204px; transform: translateX(-50%); padding: 5px 14px; border-radius: 16px; background: rgba(16,21,31,0.88); font-size: 21px; font-weight: 600; white-space: nowrap">ПС 500 кВ</div>
-  <div style="position: absolute; left: 1380px; top: 608px; transform: translateX(-50%); padding: 5px 14px; border-radius: 16px; background: rgba(16,21,31,0.88); font-size: 21px; font-weight: 600; white-space: nowrap">ПС 220 кВ</div>
-  <div style="position: absolute; left: 1680px; top: 732px; transform: translateX(-50%); padding: 5px 14px; border-radius: 16px; background: rgba(16,21,31,0.88); font-size: 21px; font-weight: 600; white-space: nowrap">ПС 110 кВ</div>
-  <div style="position: absolute; left: 1120px; top: 832px; transform: translateX(-50%); padding: 5px 14px; border-radius: 16px; background: rgba(16,21,31,0.88); font-size: 21px; font-weight: 600; white-space: nowrap">ПС 110 кВ</div>
-  <div style="position: absolute; left: 1420px; top: 956px; transform: translateX(-50%); padding: 5px 14px; border-radius: 16px; background: rgba(16,21,31,0.88); font-size: 21px; font-weight: 600; white-space: nowrap">Потребители</div>
-
-  <div style="position: absolute; right: 64px; bottom: 44px; display: flex; flex-direction: column; gap: 8px; font-size: 17px; color: #C5CEDB">
-    <span style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 34px; border-top: 4px solid #E5202E"></span>ЛЭП 500 кВ</span>
-    <span style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 34px; border-top: 4px solid #E6D72A"></span>ЛЭП 220 кВ</span>
-    <span style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 34px; border-top: 4px solid #4FA3E0"></span>ЛЭП 110 кВ</span>
-  </div>
-
-  <div style="position: absolute; left: 96px; top: 64px; font-size: 16px; font-weight: 600; letter-spacing: 0.14em; color: #A7B2C2">ЦИФРОВОЙ ДВОЙНИК · МОСКВА</div>
-
-  <div style="position: absolute; left: 96px; bottom: 168px; width: 860px; display: flex; flex-direction: column; gap: 28px">
-    <div aria-hidden="true" style="width: 84px; height: 12px; margin-left: 4px; background: #FF2D46; transform: skewX(-28deg)"></div>
-    <h1 style="margin: 0; font-size: 76px; line-height: 1.04; font-weight: 800; letter-spacing: -0.02em">Схема электроснабжения города</h1>
-    <p style="margin: 0; max-width: 720px; font-size: 30px; line-height: 1.4; color: #C5CEDB">Два представления одной модели: объекты на карте и ортогональная схема топологии сети.</p>
-    <div style="display: flex; gap: 10px; margin-top: 4px">
-      <span style="height: 44px; padding: 0 20px; display: flex; align-items: center; border-radius: 22px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); font-size: 18px; color: #C5CEDB">ДИТ г. Москвы</span>
-      <span style="height: 44px; padding: 0 20px; display: flex; align-items: center; border-radius: 22px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); font-size: 18px; color: #C5CEDB">2026</span>
-    </div>
-  </div>
-
-  <a href="#about" style="position: absolute; left: 96px; bottom: 64px; height: 54px; padding: 0 24px 0 18px; display: flex; align-items: center; gap: 12px; border-radius: 27px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px); font-size: 18px; font-weight: 500">
-    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linejoin: round"><path d="M6 4l10 6-10 6z"></path></svg>
-    Начать показ
-  </a>
-  <a href="#scheme" style="position: absolute; left: 300px; bottom: 64px; height: 54px; padding: 0 8px; display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; color: #C5CEDB">
-    Сразу к схеме
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #C5CEDB; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M3 9h12M10 4l5 5-5 5"></path></svg>
-  </a>
-
-</section>
-
 <section class="slide" id="about" style="background: #161d2b">
 
   <div data-map="network" data-cx="430" data-cy="640" data-scale="520" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></div>
   <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(180deg, rgba(22,29,43,0.97) 0%, rgba(22,29,43,0.9) 34%, rgba(22,29,43,0.62) 62%, rgba(22,29,43,0.9) 100%); pointer-events: none"></div>
-  <div data-nav="2" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
+  <div data-nav="1" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
 
   <header style="position: absolute; left: 96px; top: 52px; width: 700px; display: flex; flex-direction: column; gap: 14px">
     <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
@@ -146,7 +29,7 @@
   <div style="position: absolute; left: 96px; bottom: 134px; width: 700px; display: flex; flex-direction: column; gap: 18px">
     <div aria-hidden="true" style="width: 84px; height: 12px; margin-left: 4px; background: #FF2D46; transform: skewX(-28deg)"></div>
     <div style="font-size: 72px; line-height: 1; font-weight: 800; letter-spacing: -0.02em">Единственная<br>в России</div>
-    <p style="margin: 0; font-size: 28px; line-height: 1.35; color: #C5CEDB">цифровая модель, включающая все уровни сети всех электросетевых организаций</p>
+    <p style="margin: 0; font-size: 28px; line-height: 1.35; color: #C5CEDB">цифровая модель <span style="color: #FF5468; font-weight: 700">в контуре Правительства Москвы</span>, включающая все уровни сети всех электросетевых организаций</p>
   </div>
 
   <div style="position: absolute; left: 872px; top: 52px; width: 952px; height: 894px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: 26px minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; row-gap: 20px">
@@ -155,11 +38,16 @@
     <article style="grid-column: 1 / span 3; padding: 30px 32px; border-radius: 20px; background: rgba(29,38,54,0.82); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 14px">
       <div style="display: flex; align-items: center; justify-content: space-between">
         <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.06em; color: #5FD6A2">01</span>
-        <svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #FF5468; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6zM8.5 12l2.5 2.5 4.5-5"></path></svg>
+        <svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #FF5468; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round"><path d="M12 3l9 4.5-9 4.5-9-4.5zM3 12l9 4.5 9-4.5M3 16.5L12 21l9-4.5"></path></svg>
       </div>
-      <h2 style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 800; letter-spacing: -0.01em">По ГОСТу</h2>
-      <p style="margin: 0; font-size: 21px; line-height: 1.45; color: #C5CEDB">Построена в соответствии с национальным стандартом</p>
-      <div style="margin-top: auto; align-self: flex-start; padding: 10px 18px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); font-size: 22px; font-weight: 700; letter-spacing: 0.02em">ГОСТ Р 58651.1-2019</div>
+      <h2 style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 800; letter-spacing: -0.01em">Вся сеть</h2>
+      <p style="margin: 0; font-size: 21px; line-height: 1.45; color: #C5CEDB">Включает все уровни сети по всем классам напряжения</p>
+      <div aria-hidden="true" style="margin-top: auto; display: flex; flex-direction: column; gap: 9px">
+        <span style="height: 6px; border-radius: 3px; background: #E5202E; width: 100%"></span>
+        <span style="height: 6px; border-radius: 3px; background: #E6D72A; width: 82%"></span>
+        <span style="height: 6px; border-radius: 3px; background: #4FA3E0; width: 64%"></span>
+        <span style="height: 6px; border-radius: 3px; background: #59C27A; width: 46%"></span>
+      </div>
     </article>
 
     <article style="grid-column: 4 / span 3; padding: 30px 32px; border-radius: 20px; background: rgba(29,38,54,0.82); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 14px">
@@ -174,6 +62,13 @@
 
     <article style="grid-column: 1 / span 2; padding: 26px 26px; border-radius: 20px; background: rgba(29,38,54,0.82); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 12px">
       <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.06em; color: #5FD6A2">03</span>
+      <h2 style="margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800">По ГОСТу</h2>
+      <p style="margin: 0; font-size: 19px; line-height: 1.45; color: #C5CEDB">Построена в соответствии с национальным стандартом</p>
+      <div style="margin-top: auto; align-self: flex-start; padding: 8px 14px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); font-size: 18px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap">Серия ГОСТ Р 58651</div>
+    </article>
+
+    <article style="grid-column: 3 / span 2; padding: 26px 26px; border-radius: 20px; background: rgba(29,38,54,0.82); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 12px">
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.06em; color: #5FD6A2">04</span>
       <h2 style="margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800">Перспективные нагрузки</h2>
       <p style="margin: 0; font-size: 19px; line-height: 1.45; color: #C5CEDB">Расчёт нагрузок перспективных объектов и проверка резервов сети</p>
       <svg viewBox="0 0 260 60" width="100%" height="60" aria-hidden="true" preserveAspectRatio="none" style="margin-top: auto; display: block">
@@ -183,26 +78,13 @@
       </svg>
     </article>
 
-    <article style="grid-column: 3 / span 2; padding: 26px 26px; border-radius: 20px; background: rgba(255,45,70,0.16); border: 1px solid rgba(255,45,70,0.55); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 12px">
-      <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.06em; color: #FF8A99">04</span>
-      <h2 style="margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800">Оперативный мониторинг</h2>
-      <p style="margin: 0; font-size: 19px; line-height: 1.45; color: #E3E8EF">Оперативный мониторинг состояния и аварийных ситуаций на объектах электроснабжения города</p>
-      <div aria-hidden="true" style="margin-top: auto; display: flex; align-items: center; gap: 14px; padding-left: 6px">
-        <span style="width: 14px; height: 14px; border-radius: 50%; background: #FF2D46; box-shadow: 0 0 0 6px rgba(255,45,70,0.25), 0 0 16px rgba(255,45,70,0.9)"></span>
-        <span style="flex: 1 1 0; height: 2px; border-radius: 1px; background: linear-gradient(90deg, rgba(255,45,70,0.9), rgba(255,45,70,0))"></span>
-      </div>
-    </article>
-
     <article style="grid-column: 5 / span 2; padding: 26px 26px; border-radius: 20px; background: rgba(29,38,54,0.82); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 12px">
       <span style="font-size: 20px; font-weight: 700; letter-spacing: 0.06em; color: #5FD6A2">05</span>
-      <h2 style="margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800">Вся сеть</h2>
-      <p style="margin: 0; font-size: 19px; line-height: 1.45; color: #C5CEDB">Включает все уровни сети по всем классам напряжения</p>
-      <div aria-hidden="true" style="margin-top: auto; display: flex; flex-direction: column; gap: 7px">
-        <span style="height: 5px; border-radius: 3px; background: #E5202E; width: 100%"></span>
-        <span style="height: 5px; border-radius: 3px; background: #E6D72A; width: 82%"></span>
-        <span style="height: 5px; border-radius: 3px; background: #4FA3E0; width: 64%"></span>
-        <span style="height: 5px; border-radius: 3px; background: #59C27A; width: 46%"></span>
-      </div>
+      <h2 style="margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800">Оперативный мониторинг</h2>
+      <p style="margin: 0; font-size: 19px; line-height: 1.45; color: #C5CEDB">Оперативный мониторинг состояния и аварийных ситуаций на объектах электроснабжения города</p>
+      <svg viewBox="0 0 260 60" width="100%" height="60" aria-hidden="true" preserveAspectRatio="none" style="margin-top: auto; display: block">
+        <path d="M0 38H52L66 14L84 52L100 26L114 38H170L182 22L196 46L208 38H260" style="fill: none; stroke: #5FD6A2; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round"></path>
+      </svg>
     </article>
   </div>
 
@@ -212,7 +94,7 @@
 
   <div data-map="dim" data-cx="736" data-cy="572" data-scale="560" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></div>
   <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: radial-gradient(circle at 736px 572px, rgba(22,29,43,0.55) 0%, rgba(22,29,43,0.9) 46%, rgba(22,29,43,0.97) 100%); pointer-events: none"></div>
-  <div data-nav="3" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
+  <div data-nav="2" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
 
   <header style="position: absolute; left: 96px; top: 36px; width: 1728px; display: flex; align-items: flex-end; justify-content: space-between">
     <div style="display: flex; flex-direction: column; gap: 10px">
@@ -283,7 +165,7 @@
       <div style="font-size: 14px; line-height: 1.3; color: #C5CEDB">электросетевого комплекса Москвы</div>
       <div style="padding: 6px 14px; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); font-size: 15px; font-weight: 700">АИС «РКИИЭ»</div>
     </div>
-    <div style="position: absolute; left: 480px; top: 584px; width: 320px; text-align: center; font-size: 14px; line-height: 1.4; color: #A7B2C2">формат CIMXML · ГОСТ Р 58651.1-2019</div>
+    <div style="position: absolute; left: 480px; top: 584px; width: 320px; text-align: center; font-size: 14px; line-height: 1.4; color: #A7B2C2">формат CIMXML · серия ГОСТ Р 58651</div>
 
     <div style="position: absolute; left: 890px; top: 0; width: 838px; height: 800px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: 230px minmax(0, 1fr) minmax(0, 1fr); gap: 16px">
       <div data-kpi="objects" style="grid-column: 1 / span 4; padding: 22px 30px; border-radius: 20px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); display: flex; flex-direction: column; justify-content: space-between; gap: 10px">
@@ -368,7 +250,7 @@
 </section>
 
 <section class="slide" id="scheme" style="background: #161d2b">
-  <div data-nav="4" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
+  <div data-nav="3" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
 
   <div style="position: absolute; left: 56px; top: 32px; width: 1824px; height: 96px; display: flex; gap: 16px">
     <div style="flex: 1 1 0; min-width: 0; padding: 0 26px; border-radius: 16px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 20px">
@@ -485,7 +367,7 @@
 
 <section class="slide" id="tasks" style="background: #161d2b">
 
-  <div data-nav="5" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
+  <div data-nav="4" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
 
   <header style="position: absolute; left: 96px; top: 52px; width: 1350px; display: flex; flex-direction: column; gap: 12px">
     <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
@@ -640,7 +522,7 @@
 
   <div data-map="network" data-cx="1440" data-cy="590" data-scale="440" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></div>
   <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(90deg, rgba(24,34,51,0.97) 0%, rgba(24,34,51,0.9) 44%, rgba(24,34,51,0) 72%); pointer-events: none"></div>
-  <div data-nav="6" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
+  <div data-nav="5" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
 
   <div style="position: absolute; left: 96px; top: 52px; width: 980px; display: flex; flex-direction: column; gap: 14px">
     <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
@@ -677,6 +559,6 @@
 
 </section>
 </div>
-<script src="app.js?v=6bb73dab"></script>
+<script src="app.js?v=56b71d4a"></script>
 </body>
 </html>

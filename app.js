@@ -3,7 +3,6 @@
   'use strict';
 
   var SLIDES = [
-    { id: 'intro', name: 'Введение', icon: 'M11 2L4 11h5l-1 7 7-9h-5z' },
     { id: 'about', name: 'О системе', icon: 'M10 9v5M10 6h.01M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16z' },
     { id: 'data', name: 'Данные', icon: 'M3 5c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM3 5v10c0 1.7 3.1 3 7 3s7-1.3 7-3V5M3 10c0 1.7 3.1 3 7 3s7-1.3 7-3' },
     { id: 'scheme', name: 'Карта ↔ схема', icon: 'M2 5l5-2 6 2 5-2v12l-5 2-6-2-5 2zM7 3v12M13 5v12' },
@@ -828,7 +827,7 @@
     };
     var current = 0;
     var show = function () {
-      var id = (location.hash || '#intro').slice(1), idx = 0;
+      var id = (location.hash || '#about').slice(1), idx = 0;
       SLIDES.forEach(function (s, i) { if (s.id === id) idx = i; });
       current = idx;
       SLIDES.forEach(function (s, i) { document.getElementById(s.id).classList.toggle('is-active', i === idx); });
