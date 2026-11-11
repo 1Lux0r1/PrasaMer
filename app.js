@@ -771,6 +771,7 @@
       note.textContent = (card && card.dataset.note) || noteDefault;
       if (!src) return;
       card.classList.add('is-hl');
+      root.style.setProperty('--hl', card.dataset.color || '#ffffff');
       root.querySelectorAll('[data-of="' + src + '"]').forEach((el) => el.classList.add('is-hl'));
       const kpi = src === 'sbyt' ? 'consumers' : (card.dataset.note ? 'objects' : null);
       if (kpi) root.querySelector('[data-kpi="' + kpi + '"]').classList.add('is-hl');
