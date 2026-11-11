@@ -152,3 +152,14 @@ button { font-family: inherit; cursor: pointer; }
 .demo-card-works li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 12px; border-radius: 10px; background: rgba(245,160,74,0.1); }
 .demo-card-works li.is-none { background: rgba(95,214,162,0.1); color: #8FE6BF; }
 .demo-card-works b { flex: none; }
+
+/* Слайд «Данные»: подсветка источника */
+#data [data-src] { transition: border-color 0.15s, background 0.15s; }
+#data [data-of], #data [data-kpi] { transition: opacity 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s; }
+#data [data-src].is-hl { border-color: #FF2D46 !important; background: #243044 !important; }
+#data[data-hl] [data-of]:not(.is-hl) { opacity: 0.25; }
+#data span[data-of].is-hl { color: #ffffff !important; font-weight: 800; }
+#data div[data-of].is-hl { background: #FF2D46 !important; }
+#data path[data-of].is-hl { stroke: #FF2D46 !important; stroke-width: 3; }
+#data [data-kpi].is-hl { box-shadow: inset 0 0 0 2px #FF2D46; }
+#data [data-kpi].is-hl [data-kpi-note] { color: #ffffff !important; font-weight: 600; }

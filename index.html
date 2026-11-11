@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=6bac4b70">
+<link rel="stylesheet" href="styles.css?v=fc9406cf">
 </head>
 <body>
 <div id="stage">
@@ -212,53 +212,57 @@
 
   <div data-nav="3" style="position: absolute; left: 0; top: 0; width: 1920px; height: 76px"></div>
 
-  <header style="position: absolute; left: 96px; top: 100px; display: flex; flex-direction: column; gap: 10px">
-    <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
-      <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
-      ДАННЫЕ
+  <header style="position: absolute; left: 96px; top: 100px; width: 1728px; display: flex; align-items: flex-end; justify-content: space-between">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
+        <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
+        ДАННЫЕ
+      </div>
+      <h1 style="margin: 0; font-size: 48px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em">Единая модель: <span style="color: #FF3D55">что город получает в итоге</span></h1>
     </div>
-    <h1 style="margin: 0; font-size: 48px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em">Единая модель: <span style="color: #FF3D55">что город получает в итоге</span></h1>
+    <div style="padding-bottom: 10px; font-size: 16px; color: #A7B2C2">Наведите на источник — его объекты подсветятся в цифрах справа</div>
   </header>
 
   <div style="position: absolute; left: 96px; top: 236px; width: 1728px; height: 800px; display: flex; align-items: stretch">
 
-    <div style="width: 470px; flex: none; display: flex; flex-direction: column; gap: 20px">
-      <div style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border-left: 4px solid #4FA3E0; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
-        <div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 22px; font-weight: 700">СО ЕЭС · МосРДУ</div><div style="font-size: 16px; line-height: 1.35; color: #C5CEDB">Магистральные сети города и показания приборов</div></div>
-        <div style="flex: none; text-align: right; font-size: 15px; font-weight: 600; color: #8CC6F2">телеметрия</div>
-      </div>
-      <div style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border-left: 4px solid #FF2D46; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
-        <div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 22px; font-weight: 700">ПАО «Россети МР»</div><div style="font-size: 16px; line-height: 1.35; color: #C5CEDB">Городские распределительные сети</div></div>
-        <div style="flex: none; text-align: right"><div style="font-size: 30px; font-weight: 700; line-height: 1.1">227 386</div><div style="font-size: 14px; color: #A7B2C2">объектов</div></div>
-      </div>
-      <div style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border-left: 4px solid #8FA0B6; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
-        <div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 22px; font-weight: 700">АО «ОЭК»</div><div style="font-size: 16px; line-height: 1.35; color: #C5CEDB">Распределительные сети в своей зоне</div></div>
-        <div style="flex: none; text-align: right"><div style="font-size: 30px; font-weight: 700; line-height: 1.1">32 601</div><div style="font-size: 14px; color: #A7B2C2">объект</div></div>
-      </div>
-      <div style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border-left: 4px solid #F5A04A; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
-        <div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 22px; font-weight: 700">Прочие РСО</div><div style="font-size: 16px; line-height: 1.35; color: #C5CEDB">Остальные сетевые организации, по данным ДЖКХ</div></div>
-        <div style="flex: none; text-align: right"><div style="font-size: 30px; font-weight: 700; line-height: 1.1">344</div><div style="font-size: 14px; color: #A7B2C2">объекта</div></div>
-      </div>
-      <div style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border-left: 4px solid #5FD6A2; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
-        <div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 22px; font-weight: 700">ПАО «Мосэнергосбыт»</div><div style="font-size: 16px; line-height: 1.35; color: #C5CEDB">Сведения о потребителях электроэнергии</div></div>
-        <div style="flex: none; text-align: right"><div style="font-size: 30px; font-weight: 700; line-height: 1.1">314 080</div><div style="font-size: 14px; color: #A7B2C2">потребителей</div></div>
-      </div>
+    <div style="width: 470px; flex: none; display: flex; flex-direction: column; gap: 16px">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.06em; color: #A7B2C2">ИСТОЧНИКИ ДАННЫХ</div>
+      <button type="button" data-src="so" style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border: 1px solid #2d394d; border-radius: 12px; color: #ffffff; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+        <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 21px; font-weight: 700">СО ЕЭС · МосРДУ</span><span style="font-size: 15px; line-height: 1.35; color: #A7B2C2">Магистральные сети города и показания приборов</span></span>
+        <span style="flex: none; text-align: right; font-size: 15px; color: #A7B2C2">телеметрия</span>
+      </button>
+      <button type="button" data-src="rosseti" data-note="ПАО «Россети МР» — 227 386 · 87,3 %" style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border: 1px solid #2d394d; border-radius: 12px; color: #ffffff; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+        <span style="display: flex; align-items: center; gap: 14px"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; background: #56657B"></span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 21px; font-weight: 700">ПАО «Россети МР»</span><span style="font-size: 15px; line-height: 1.35; color: #A7B2C2">Городские распределительные сети</span></span></span>
+        <span style="flex: none; text-align: right"><span style="display: block; font-size: 28px; font-weight: 700; line-height: 1.1">227 386</span><span style="display: block; font-size: 14px; color: #A7B2C2">объектов</span></span>
+      </button>
+      <button type="button" data-src="oek" data-note="АО «ОЭК» — 32 601 · 12,5 %" style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border: 1px solid #2d394d; border-radius: 12px; color: #ffffff; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+        <span style="display: flex; align-items: center; gap: 14px"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; background: #8292A8"></span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 21px; font-weight: 700">АО «ОЭК»</span><span style="font-size: 15px; line-height: 1.35; color: #A7B2C2">Распределительные сети в своей зоне</span></span></span>
+        <span style="flex: none; text-align: right"><span style="display: block; font-size: 28px; font-weight: 700; line-height: 1.1">32 601</span><span style="display: block; font-size: 14px; color: #A7B2C2">объект</span></span>
+      </button>
+      <button type="button" data-src="other" data-note="Прочие РСО — 344 · 0,1 %" style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border: 1px solid #2d394d; border-radius: 12px; color: #ffffff; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+        <span style="display: flex; align-items: center; gap: 14px"><span aria-hidden="true" style="flex: none; width: 12px; height: 12px; border-radius: 3px; background: #B4BFCE"></span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 21px; font-weight: 700">Прочие РСО</span><span style="font-size: 15px; line-height: 1.35; color: #A7B2C2">Остальные сетевые организации, по данным ДЖКХ</span></span></span>
+        <span style="flex: none; text-align: right"><span style="display: block; font-size: 28px; font-weight: 700; line-height: 1.1">344</span><span style="display: block; font-size: 14px; color: #A7B2C2">объекта</span></span>
+      </button>
+      <button type="button" data-src="sbyt" style="flex: 1 1 0; padding: 0 22px; background: #1d2636; border: 1px solid #2d394d; border-radius: 12px; color: #ffffff; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+        <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 21px; font-weight: 700">ПАО «Мосэнергосбыт»</span><span style="font-size: 15px; line-height: 1.35; color: #A7B2C2">Сведения о потребителях электроэнергии</span></span>
+        <span style="flex: none; text-align: right"><span style="display: block; font-size: 28px; font-weight: 700; line-height: 1.1">314 080</span><span style="display: block; font-size: 14px; color: #A7B2C2">потребителей</span></span>
+      </button>
     </div>
 
     <svg viewBox="0 0 90 800" width="90" height="800" aria-hidden="true" style="flex: none; display: block">
-      <g style="fill: none; stroke-width: 2.5; stroke-linecap: round">
-        <path d="M0 72C52 72 38 364 90 364" style="stroke: #4FA3E0"></path>
-        <path d="M0 236C52 236 38 382 90 382" style="stroke: #FF2D46"></path>
-        <path d="M0 400H90" style="stroke: #8FA0B6"></path>
-        <path d="M0 564C52 564 38 418 90 418" style="stroke: #F5A04A"></path>
-        <path d="M0 728C52 728 38 436 90 436" style="stroke: #5FD6A2"></path>
+      <g style="fill: none; stroke-width: 2; stroke-linecap: round">
+        <path data-of="so" d="M0 102C52 102 38 368 90 368" style="stroke: #3F4D63"></path>
+        <path data-of="rosseti" d="M0 258C52 258 38 384 90 384" style="stroke: #3F4D63"></path>
+        <path data-of="oek" d="M0 415H90" style="stroke: #3F4D63"></path>
+        <path data-of="other" d="M0 572C52 572 38 446 90 446" style="stroke: #3F4D63"></path>
+        <path data-of="sbyt" d="M0 728C52 728 38 462 90 462" style="stroke: #3F4D63"></path>
       </g>
     </svg>
 
-    <div style="width: 270px; flex: none; display: flex; align-items: center">
-      <div style="width: 100%; box-sizing: border-box; padding: 30px 22px; border: 2px solid #5FD6A2; border-radius: 18px; background: #10151f; box-shadow: 0 0 30px rgba(95,214,162,0.28); display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
-        <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #5FD6A2; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round"><path d="M12 3l9 4.5-9 4.5-9-4.5zM3 12l9 4.5 9-4.5M3 16.5L12 21l9-4.5"></path></svg>
-        <div style="font-size: 27px; line-height: 1.15; font-weight: 800">Единая информационная модель</div>
+    <div style="width: 270px; flex: none; display: flex; align-items: center; padding-top: 30px; box-sizing: border-box">
+      <div style="width: 100%; box-sizing: border-box; padding: 28px 22px; border: 1px solid rgba(255,255,255,0.28); border-radius: 18px; background: #10151f; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+        <svg width="46" height="46" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #C5CEDB; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round"><path d="M12 3l9 4.5-9 4.5-9-4.5zM3 12l9 4.5 9-4.5M3 16.5L12 21l9-4.5"></path></svg>
+        <div style="font-size: 26px; line-height: 1.15; font-weight: 800">Единая информационная модель</div>
         <div style="font-size: 16px; line-height: 1.35; color: #C5CEDB">электросетевого комплекса города Москвы</div>
         <div style="padding: 7px 14px; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); font-size: 17px; font-weight: 700">АИС «РКИИЭ»</div>
         <div style="font-size: 14px; line-height: 1.35; color: #A7B2C2">формат CIMXML<br>ГОСТ Р 58651.1-2019</div>
@@ -266,61 +270,64 @@
     </div>
 
     <svg viewBox="0 0 90 800" width="90" height="800" aria-hidden="true" style="flex: none; display: block">
-      <g style="fill: none; stroke: #5FD6A2; stroke-width: 2.5; stroke-linecap: round">
-        <path d="M0 370C52 370 38 90 90 90"></path>
-        <path d="M0 382C52 382 38 248 90 248"></path>
-        <path d="M0 394C52 394 38 370 90 370"></path>
-        <path d="M0 406C52 406 38 492 90 492"></path>
-        <path d="M0 418C52 418 38 614 90 614"></path>
-        <path d="M0 430C52 430 38 736 90 736"></path>
+      <g style="fill: none; stroke: #3F4D63; stroke-width: 2; stroke-linecap: round">
+        <path d="M0 385C52 385 38 120 90 120"></path>
+        <path d="M0 397C52 397 38 274 90 274"></path>
+        <path d="M0 409C52 409 38 391 90 391"></path>
+        <path d="M0 421C52 421 38 508 90 508"></path>
+        <path d="M0 433C52 433 38 625 90 625"></path>
+        <path d="M0 445C52 445 38 742 90 742"></path>
       </g>
     </svg>
 
     <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 14px">
-      <div style="height: 180px; flex: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
-        <div style="padding: 0 28px; background: #1d2636; border-top: 2px solid #B3263A; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; gap: 8px">
-          <div style="font-size: 68px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: #FF2D46">260 331</div>
-          <div style="font-size: 18px; line-height: 1.3; color: #C5CEDB">объект электроснабжения в единой модели</div>
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.06em; color: #A7B2C2">ЧТО В МОДЕЛИ</div>
+      <div style="height: 172px; flex: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+        <div data-kpi="objects" style="padding: 0 28px; background: #1d2636; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div style="font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.02em">260 331</div>
+          <div style="font-size: 18px; line-height: 1.3; color: #C5CEDB">объект электроснабжения</div>
+          <div data-kpi-note style="font-size: 15px; line-height: 1.3; color: #A7B2C2">от трёх групп сетевых организаций</div>
         </div>
-        <div style="padding: 0 28px; background: #1d2636; border-top: 2px solid #5FD6A2; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; gap: 8px">
-          <div style="font-size: 68px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: #5FD6A2">314 080</div>
+        <div data-kpi="consumers" style="padding: 0 28px; background: #1d2636; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div style="font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.02em">314 080</div>
           <div style="font-size: 18px; line-height: 1.3; color: #C5CEDB">потребителей электроэнергии</div>
+          <div style="font-size: 15px; line-height: 1.3; color: #A7B2C2">по данным ПАО «Мосэнергосбыт»</div>
         </div>
       </div>
 
       <div style="flex: 1 1 0; padding: 0 26px; background: #1d2636; border-radius: 12px; display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 26px; align-items: center">
-        <div><div style="font-size: 16px; color: #C5CEDB">ЦП 35 кВ и выше</div><div style="font-size: 36px; font-weight: 700; line-height: 1.1">194</div></div>
+        <div><div style="font-size: 16px; color: #C5CEDB">ЦП 35 кВ и выше</div><div style="font-size: 34px; font-weight: 700; line-height: 1.1">194</div></div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 700"><span style="color: #FF8A99">137</span><span style="color: #C5CEDB">27</span><span style="color: #F5A04A">30</span></div>
-          <div style="display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 3px"><div style="flex: 137 1 0; background: #FF2D46"></div><div style="flex: 27 1 0; background: #8FA0B6"></div><div style="flex: 30 1 0; background: #F5A04A"></div></div>
+          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 600; color: #C5CEDB"><span data-of="rosseti">137</span><span data-of="oek">27</span><span data-of="other">30</span></div>
+          <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 3px"><div data-of="rosseti" style="flex: 137 1 0; background: #56657B"></div><div data-of="oek" style="flex: 27 1 0; background: #8292A8"></div><div data-of="other" style="flex: 30 1 0; background: #B4BFCE"></div></div>
         </div>
       </div>
       <div style="flex: 1 1 0; padding: 0 26px; background: #1d2636; border-radius: 12px; display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 26px; align-items: center">
-        <div><div style="font-size: 16px; color: #C5CEDB">РП, СП 6–10–20 кВ</div><div style="font-size: 36px; font-weight: 700; line-height: 1.1">123</div></div>
+        <div><div style="font-size: 16px; color: #C5CEDB">РП, СП 6–10–20 кВ</div><div style="font-size: 34px; font-weight: 700; line-height: 1.1">123</div></div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <div style="display: flex; justify-content: flex-end; font-size: 17px; font-weight: 700"><span style="color: #F5A04A">123</span></div>
-          <div style="display: flex; height: 12px; border-radius: 6px; overflow: hidden"><div style="flex: 1 1 0; background: #F5A04A"></div></div>
+          <div style="display: flex; justify-content: flex-end; font-size: 17px; font-weight: 600; color: #C5CEDB"><span data-of="other">123</span></div>
+          <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden"><div data-of="other" style="flex: 1 1 0; background: #B4BFCE"></div></div>
         </div>
       </div>
       <div style="flex: 1 1 0; padding: 0 26px; background: #1d2636; border-radius: 12px; display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 26px; align-items: center">
-        <div><div style="font-size: 16px; color: #C5CEDB">РТП, ТП, ТПП 6–10–20 кВ</div><div style="font-size: 36px; font-weight: 700; line-height: 1.1">21 346</div></div>
+        <div><div style="font-size: 16px; color: #C5CEDB">РТП, ТП, ТПП 6–10–20 кВ</div><div style="font-size: 34px; font-weight: 700; line-height: 1.1">21 346</div></div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 700"><span style="color: #FF8A99">17 420</span><span style="color: #C5CEDB">3 773</span><span style="color: #F5A04A">153</span></div>
-          <div style="display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 3px"><div style="flex: 17420 1 0; background: #FF2D46"></div><div style="flex: 3773 1 0; background: #8FA0B6"></div><div style="flex: 153 1 0; min-width: 5px; background: #F5A04A"></div></div>
+          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 600; color: #C5CEDB"><span data-of="rosseti">17 420</span><span data-of="oek">3 773</span><span data-of="other">153</span></div>
+          <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 3px"><div data-of="rosseti" style="flex: 17420 1 0; background: #56657B"></div><div data-of="oek" style="flex: 3773 1 0; background: #8292A8"></div><div data-of="other" style="flex: 153 1 0; min-width: 5px; background: #B4BFCE"></div></div>
         </div>
       </div>
       <div style="flex: 1 1 0; padding: 0 26px; background: #1d2636; border-radius: 12px; display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 26px; align-items: center">
-        <div><div style="font-size: 16px; color: #C5CEDB">ЛЭП 35 кВ и выше</div><div style="font-size: 36px; font-weight: 700; line-height: 1.1">796</div></div>
+        <div><div style="font-size: 16px; color: #C5CEDB">ЛЭП 35 кВ и выше</div><div style="font-size: 34px; font-weight: 700; line-height: 1.1">796</div></div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 700"><span style="color: #FF8A99">648</span><span style="color: #C5CEDB">110</span><span style="color: #F5A04A">38</span></div>
-          <div style="display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 3px"><div style="flex: 648 1 0; background: #FF2D46"></div><div style="flex: 110 1 0; background: #8FA0B6"></div><div style="flex: 38 1 0; background: #F5A04A"></div></div>
+          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 600; color: #C5CEDB"><span data-of="rosseti">648</span><span data-of="oek">110</span><span data-of="other">38</span></div>
+          <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 3px"><div data-of="rosseti" style="flex: 648 1 0; background: #56657B"></div><div data-of="oek" style="flex: 110 1 0; background: #8292A8"></div><div data-of="other" style="flex: 38 1 0; background: #B4BFCE"></div></div>
         </div>
       </div>
       <div style="flex: 1 1 0; padding: 0 26px; background: #1d2636; border-radius: 12px; display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 26px; align-items: center">
-        <div><div style="font-size: 16px; color: #C5CEDB">ЛЭП 0,4–6–10–20 кВ</div><div style="font-size: 36px; font-weight: 700; line-height: 1.1">237 872</div></div>
+        <div><div style="font-size: 16px; color: #C5CEDB">ЛЭП 0,4–6–10–20 кВ</div><div style="font-size: 34px; font-weight: 700; line-height: 1.1">237 872</div></div>
         <div style="display: flex; flex-direction: column; gap: 6px">
-          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 700"><span style="color: #FF8A99">209 181</span><span style="color: #C5CEDB">28 691</span><span style="color: #F5A04A">0</span></div>
-          <div style="display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 3px"><div style="flex: 209181 1 0; background: #FF2D46"></div><div style="flex: 28691 1 0; background: #8FA0B6"></div></div>
+          <div style="display: flex; justify-content: space-between; font-size: 17px; font-weight: 600; color: #C5CEDB"><span data-of="rosseti">209 181</span><span data-of="oek">28 691</span><span data-of="other">0</span></div>
+          <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 3px"><div data-of="rosseti" style="flex: 209181 1 0; background: #56657B"></div><div data-of="oek" style="flex: 28691 1 0; background: #8292A8"></div></div>
         </div>
       </div>
     </div>
@@ -697,6 +704,6 @@
 
 </section>
 </div>
-<script src="app.js?v=8cc83bf3"></script>
+<script src="app.js?v=3fbd2045"></script>
 </body>
 </html>

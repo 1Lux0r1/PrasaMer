@@ -760,6 +760,31 @@
     })();
   }
 
+  /* ---------- Слайд «Данные»: подсветка объектов выбранного источника ---------- */
+  function initData(root) {
+    const note = root.querySelector('[data-kpi-note]'), noteDefault = note.textContent;
+    let locked = null;
+    function show(src) {
+      root.querySelectorAll('.is-hl').forEach((el) => el.classList.remove('is-hl'));
+      if (src) root.setAttribute('data-hl', src); else root.removeAttribute('data-hl');
+      const card = src && root.querySelector('[data-src="' + src + '"]');
+      note.textContent = (card && card.dataset.note) || noteDefault;
+      if (!src) return;
+      card.classList.add('is-hl');
+      root.querySelectorAll('[data-of="' + src + '"]').forEach((el) => el.classList.add('is-hl'));
+      const kpi = src === 'sbyt' ? 'consumers' : (card.dataset.note ? 'objects' : null);
+      if (kpi) root.querySelector('[data-kpi="' + kpi + '"]').classList.add('is-hl');
+    }
+    root.querySelectorAll('[data-src]').forEach((b) => {
+      const src = b.dataset.src;
+      b.addEventListener('mouseenter', () => show(src));
+      b.addEventListener('focus', () => show(src));
+      b.addEventListener('mouseleave', () => show(locked));
+      b.addEventListener('blur', () => show(locked));
+      b.addEventListener('click', () => { locked = locked === src ? null : src; b.setAttribute('aria-pressed', String(locked === src)); show(locked || src); });
+    });
+  }
+
   /* ---------- Запуск ---------- */
   function start() {
     document.querySelectorAll('[data-map]').forEach(function (el) {
@@ -768,6 +793,7 @@
     document.querySelectorAll('[data-nav]').forEach(function (el) { el.innerHTML = navHTML(+el.dataset.nav - 1); });
     initScheme(document.getElementById('scheme'));
     initSolutions(document.getElementById('tasks'));
+    initData(document.getElementById('data'));
 
     var stage = document.getElementById('stage');
     var fit = function () {
