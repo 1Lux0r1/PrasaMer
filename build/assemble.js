@@ -4,7 +4,7 @@ const path = require('path');
 // Запуск из корня репозитория: node build/assemble.js  (аргументы необязательны: <папка со слайдами> <index.html>)
 const src = process.argv[2] || path.join(__dirname, 'canvas/project');
 const out = process.argv[3] || path.join(__dirname, '..', 'index.html');
-const map = { PowerAbout: 'about', PowerData: 'data', PowerScheme: 'scheme', PowerTasks: 'tasks', PowerEffect: 'effect' };
+const map = { PowerAbout: 'about', PowerData: 'data', PowerScheme: 'scheme', PowerTasks: 'tasks' };
 
 function body(name) {
   const html = fs.readFileSync(path.join(src, name + '.dc.html'), 'utf8');

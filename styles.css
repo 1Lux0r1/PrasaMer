@@ -183,3 +183,8 @@ button { font-family: inherit; cursor: pointer; }
 #data[data-hl="rosseti"] [data-out], #data[data-hl="oek"] [data-out], #data[data-hl="other"] [data-out], #data[data-hl="sbyt"] [data-out="kpi"] { stroke: var(--hl); }
 #data[data-hl="rosseti"] [data-out]:not(.df-flow), #data[data-hl="oek"] [data-out]:not(.df-flow), #data[data-hl="other"] [data-out]:not(.df-flow), #data[data-hl="sbyt"] [data-out="kpi"]:not(.df-flow) { stroke-width: 2.6; }
 #data[data-hl="sbyt"] [data-out]:not([data-out="kpi"]), #data[data-hl="so"] [data-out] { opacity: 0.25; }
+
+/* Слайд «Карта ↔ схема»: объект не выбран */
+.sc-open-btn:disabled, .sc-off-btn:disabled, .sc-switch button:disabled { opacity: 0.4; cursor: default; }
+.sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
+.sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }

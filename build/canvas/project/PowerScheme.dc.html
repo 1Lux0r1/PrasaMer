@@ -88,7 +88,7 @@ button{font-family:inherit;cursor:pointer}
       </sc-if>
     </section>
 
-    <div style="margin-top: auto; font-size: 15px; line-height: 1.4; color: #A7B2C2">Демонстрационные данные. Нажмите на объект, чтобы выбрать его; двойное нажатие открывает его схему.</div>
+    <div style="margin-top: auto; font-size: 15px; line-height: 1.4; color: #A7B2C2">Демонстрационные данные. Нажмите на объект, чтобы выбрать его; повторное нажатие снимает выделение, двойное открывает схему объекта.</div>
   </aside>
 
   <main style="position: absolute; left: 500px; top: 148px; width: 1380px; height: 944px; transform: scale(0.877); transform-origin: top right; overflow: hidden; border-radius: 16px; border: 1px solid #2d394d; background: #05070b">
@@ -347,23 +347,24 @@ class Component extends DCLogic {
           lc: isSel ? '#ffffff' : '#C5CEDB', lw: isSel ? 700 : 500
         };
       });
-      const sn = byId[sel];
+      const sn = sel ? byId[sel] : null; // объект может быть не выбран
       const deadCount = off ? nodes.filter((n) => n.id !== off && dead(n.id)).length : 0;
-      const dl = cache[sel] || (cache[sel] = detailLabels(sn));
-      const selOff = off === sel, selDead = dead(sel);
+      const dl = sn ? (cache[sel] || (cache[sel] = detailLabels(sn))) : { labels: [], hi: CLR[220], lo: CLR[110] };
+      const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
         dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
-        origin: sn.s[0] + 'px ' + sn.s[1] + 'px',
+        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '690px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
         detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
         detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
-        selTitle: sn.title,
-        selType: sn.type === 'tec' ? 'Электростанция' : 'Подстанция',
-        selCls: sn.cls + ' кВ',
-        selConn: String(lines.filter((l) => l.a === sel || l.b === sel).length),
-        selState: selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением'),
-        selStateColor: (selOff || selDead) ? '#FF8A99' : '#5FD6A2',
+        hasSel: !!sn,
+        selTitle: sn ? sn.title : 'Объект не выбран',
+        selType: !sn ? '—' : (sn.type === 'tec' ? 'Электростанция' : 'Подстанция'),
+        selCls: sn ? sn.cls + ' кВ' : '—',
+        selConn: sn ? String(lines.filter((l) => l.a === sel || l.b === sel).length) : '—',
+        selState: !sn ? '—' : (selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением')),
+        selStateColor: !sn ? '#A7B2C2' : ((selOff || selDead) ? '#FF8A99' : '#5FD6A2'),
         selOff: selOff, hasOff: !!off,
         offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.')) : ''
       };
@@ -372,6 +373,7 @@ class Component extends DCLogic {
   }
 
   go(view) {
+    if (view === 'object' && !(this.state || {}).sel) return;
     const st = this.state || {};
     const tT = view === 'map' ? 0 : 1, zT = view === 'object' ? 1 : 0;
     const t0v = st.t || 0, z0v = st.z || 0;
@@ -399,7 +401,7 @@ class Component extends DCLogic {
     const st = this.state || {};
     if (!this._core) this._core = this.makeCore();
     const core = this._core;
-    const view = st.view || 'map', sel = st.sel || 'i';
+    const view = st.view || 'map', sel = st.sel === undefined ? 'i' : st.sel;
     const show = { 500: st.s500 !== false, 220: st.s220 !== false, 110: st.s110 !== false };
     const v = core.compute({ t: st.t || 0, z: st.z || 0, sel: sel, off: st.off || null, show: show });
     const on = 'rgba(255,255,255,0.18)';
@@ -426,14 +428,14 @@ class Component extends DCLogic {
         b220: n.art.bus[220], p220: n.art.dots[220],
         b500: n.art.bus[500], p500: n.art.dots[500],
         pgen: n.art.dots.gen,
-        pick: () => this.setState({ sel: n.id }),
+        pick: () => this.setState({ sel: (sel === n.id && view !== 'object') ? null : n.id }),
         open: () => { this.setState({ sel: n.id }); this.go('object'); }
       })),
       layers: [layer(500, 's500'), layer(220, 's220'), layer(110, 's110')],
       selOn: !v.selOff,
       offBg: v.selOff ? 'rgba(255,255,255,0.1)' : 'rgba(255,45,70,0.22)',
       offBorder: v.selOff ? 'rgba(255,255,255,0.3)' : '#FF2D46',
-      toggleOff: () => this.setState({ off: v.selOff ? null : sel })
+      toggleOff: () => this.setState({ off: (!sel || v.selOff) ? null : sel })
     });
   }
 }

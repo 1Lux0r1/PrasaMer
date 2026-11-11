@@ -6,8 +6,7 @@
     { id: 'about', name: 'О системе', icon: 'M10 9v5M10 6h.01M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16z' },
     { id: 'data', name: 'Данные', icon: 'M3 5c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM3 5v10c0 1.7 3.1 3 7 3s7-1.3 7-3V5M3 10c0 1.7 3.1 3 7 3s7-1.3 7-3' },
     { id: 'scheme', name: 'Карта ↔ схема', icon: 'M2 5l5-2 6 2 5-2v12l-5 2-6-2-5 2zM7 3v12M13 5v12' },
-    { id: 'tasks', name: 'Область применения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' },
-    { id: 'effect', name: 'Эффект', icon: 'M3 17V3M3 17h14M6 13l3-4 3 2 4-6M13 5h3v3' }
+    { id: 'tasks', name: 'Область применения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' }
   ];
 
   /* ---------- Карта Москвы (процедурная, условная) ---------- */
@@ -315,23 +314,24 @@
           lc: isSel ? '#ffffff' : '#C5CEDB', lw: isSel ? 700 : 500
         };
       });
-      const sn = byId[sel];
+      const sn = sel ? byId[sel] : null; // объект может быть не выбран
       const deadCount = off ? nodes.filter((n) => n.id !== off && dead(n.id)).length : 0;
-      const dl = cache[sel] || (cache[sel] = detailLabels(sn));
-      const selOff = off === sel, selDead = dead(sel);
+      const dl = sn ? (cache[sel] || (cache[sel] = detailLabels(sn))) : { labels: [], hi: CLR[220], lo: CLR[110] };
+      const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
         dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
-        origin: sn.s[0] + 'px ' + sn.s[1] + 'px',
+        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '690px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
         detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
         detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
-        selTitle: sn.title,
-        selType: sn.type === 'tec' ? 'Электростанция' : 'Подстанция',
-        selCls: sn.cls + ' кВ',
-        selConn: String(lines.filter((l) => l.a === sel || l.b === sel).length),
-        selState: selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением'),
-        selStateColor: (selOff || selDead) ? '#FF8A99' : '#5FD6A2',
+        hasSel: !!sn,
+        selTitle: sn ? sn.title : 'Объект не выбран',
+        selType: !sn ? '—' : (sn.type === 'tec' ? 'Электростанция' : 'Подстанция'),
+        selCls: sn ? sn.cls + ' кВ' : '—',
+        selConn: sn ? String(lines.filter((l) => l.a === sel || l.b === sel).length) : '—',
+        selState: !sn ? '—' : (selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением')),
+        selStateColor: !sn ? '#A7B2C2' : ((selOff || selDead) ? '#FF8A99' : '#5FD6A2'),
         selOff: selOff, hasOff: !!off,
         offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.')) : ''
       };
@@ -359,7 +359,7 @@
       });
       b.innerHTML = '<span class="sc-box" aria-hidden="true">' + svg + '</svg></span>' +
         '<span class="sc-mk" aria-hidden="true"><i></i></span><span class="sc-label">' + n.title + '</span>';
-      b.addEventListener('click', () => { state.sel = n.id; render(); });
+      b.addEventListener('click', (e) => { e.stopPropagation(); state.sel = state.sel === n.id ? null : n.id; render(); }); // повторный клик снимает выделение
       b.addEventListener('dblclick', () => { state.sel = n.id; go('object'); });
       box.appendChild(b);
       els[n.id] = { el: b, box: b.children[0], mk: b.children[1], gen: b.children[1].firstChild, label: b.children[2] };
@@ -400,7 +400,7 @@
       net.style.pointerEvents = state.z > 0.01 ? 'none' : '';
       det.style.transformOrigin = v.origin; det.style.transform = v.detTf; det.style.opacity = v.detOp;
       det.style.visibility = state.z > 0.01 ? 'visible' : 'hidden';
-      if (lastSel !== state.sel) {
+      if (state.sel && lastSel !== state.sel) {
         lastSel = state.sel;
         ['hiThin', 'hiFill', 'hiBus', 'loThin', 'loFill', 'loBus'].forEach((k) => {
           const p = $('#sc-d-' + k), c = k.slice(0, 2) === 'hi' ? v.hi : v.lo;
@@ -429,14 +429,17 @@
       $('#sc-conn').textContent = v.selConn;
       $('#sc-state').textContent = v.selState; $('#sc-state').style.color = v.selStateColor;
       $('#sc-open-btn').textContent = state.view === 'object' ? 'Вернуться к схеме сети' : 'Открыть схему объекта';
-      const btn = $('#sc-off-btn');
-      btn.textContent = v.selOff ? 'Вернуть в работу' : 'Смоделировать отключение';
-      btn.classList.toggle('is-off', v.selOff);
+      $('#sc-open-btn').disabled = !v.hasSel; $('#sc-to-object').disabled = !v.hasSel;
+      const btn = $('#sc-off-btn'), restore = v.selOff || (!v.hasSel && v.hasOff);
+      btn.textContent = restore ? 'Вернуть в работу' : 'Смоделировать отключение';
+      btn.classList.toggle('is-off', restore); btn.disabled = !v.hasSel && !v.hasOff;
+      $('#sc-hint').textContent = v.hasSel ? 'Нажмите на объект ещё раз или на свободное место, чтобы снять выделение.' : 'Нажмите на объект, чтобы выбрать его; двойное нажатие открывает его схему.';
       $('#sc-off-note').hidden = !v.hasOff; $('#sc-off-note').textContent = v.offNote;
     }
 
     let raf = 0;
     function go(view) {
+      if (view === 'object' && !state.sel) return;
       const tT = view === 'map' ? 0 : 1, zT = view === 'object' ? 1 : 0;
       cancelAnimationFrame(raf);
       state.view = view;
@@ -461,7 +464,10 @@
     }
     ['map', 'scheme', 'object'].forEach((name) => { $('#sc-to-' + name).addEventListener('click', () => go(name)); });
     $('#sc-open-btn').addEventListener('click', () => go(state.view === 'object' ? 'scheme' : 'object'));
-    $('#sc-off-btn').addEventListener('click', () => { state.off = state.off === state.sel ? null : state.sel; render(); });
+    $('#sc-off-btn').addEventListener('click', () => { state.off = (!state.sel || state.off === state.sel) ? null : state.sel; render(); });
+    const deselect = () => { if (state.sel && state.view !== 'object') { state.sel = null; render(); } };
+    $('#sc-net').addEventListener('click', deselect); // клик по свободному месту
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && root.classList.contains('is-active')) deselect(); });
     render();
   }
 

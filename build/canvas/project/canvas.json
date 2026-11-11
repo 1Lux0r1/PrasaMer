@@ -106,15 +106,6 @@
    "title": "02 · Данные",
    "is_interactive": true,
    "page": "deck"
-  },
-  "PowerEffect.dc.html": {
-   "x": 8000,
-   "y": 0,
-   "w": 1920,
-   "h": 1080,
-   "title": "05 · Эффект для города",
-   "is_interactive": true,
-   "page": "deck"
   }
  },
  "order": [
@@ -127,8 +118,7 @@
   "PowerAbout.dc.html",
   "PowerTasks.dc.html",
   "PowerScheme.dc.html",
-  "PowerData.dc.html",
-  "PowerEffect.dc.html"
+  "PowerData.dc.html"
  ],
  "notes": {
   "t-slides": {
@@ -152,7 +142,7 @@
    "y": -300,
    "text": "Схема электроснабжения в цифровом двойнике",
    "kind": "title1",
-   "maxW": 9920,
+   "maxW": 7920,
    "page": "deck"
   }
  },
