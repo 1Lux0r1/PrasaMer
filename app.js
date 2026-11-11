@@ -171,7 +171,7 @@
 
     const nodes = [], byId = {};
     /* На карте объекты стоят на трёх «кольцах» вокруг центра: 500, 220 и 110 кВ */
-    const MC = [690, 455], KY = 0.72;
+    const DX = 110, MC = [690 + DX, 455], KY = 0.72; // сцена 1600×944, сеть сдвинута к центру
     const pol = (deg, r) => [MC[0] + r * Math.cos(deg * Math.PI / 180), MC[1] + KY * r * Math.sin(deg * Math.PI / 180)];
     [ // id, тип, класс, на карте [угол, радиус], на схеме, ширина, высота, шины, генераторы
       ['a', 'ps', 500, [175, 560], [120, 470], 160, 100, [500, 220, 110], 0],
@@ -189,15 +189,15 @@
       ['c', 'ps', 110, [215, 450], [160, 250], 110, 46, [110], 0],
       ['b', 'tec', 110, [150, 450], [160, 690], 130, 70, [110], 2]
     ].forEach((d) => {
-      const n = { id: d[0], type: d[1], cls: d[2], pol: d[3], m: pol(d[3][0], d[3][1]), s: d[4], w: d[5], h: d[6], buses: d[7], gens: d[8] };
+      const n = { id: d[0], type: d[1], cls: d[2], pol: d[3], m: pol(d[3][0], d[3][1]), s: [d[4][0] + DX, d[4][1]], w: d[5], h: d[6], buses: d[7], gens: d[8] };
       n.title = n.type === 'tec' ? 'ТЭЦ' : 'ПС ' + n.cls + ' кВ';
       n.art = busArt(n);
       nodes.push(n); byId[n.id] = n;
     });
     /* внешняя сеть 500 кВ: линии уходят за край карты */
     byId.x1 = { id: 'x1', ext: true, m: [-20, 470], s: [0, 470] };
-    byId.x2 = { id: 'x2', ext: true, m: [1400, 40], s: [1380, 50] };
-    byId.x3 = { id: 'x3', ext: true, m: [1400, 860], s: [1380, 870] };
+    byId.x2 = { id: 'x2', ext: true, m: [1620, 40], s: [1600, 50] };
+    byId.x3 = { id: 'x3', ext: true, m: [1620, 860], s: [1600, 870] };
 
     const lines = [ // класс, от, до, трасса на схеме (V: верт-гор-верт, H: гор-верт-гор), средняя координата, смещения на концах, кольцо
       [500, 'a', 'm', 'V', 96, -40, -60, 1], [500, 'm', 'n', 'H', 1320, 0, 0, 1], [500, 'a', 'n', 'V', 850, -40, -60, 1],
@@ -209,7 +209,7 @@
       [110, 'f', 'd', 'H', 390, -10, 0], [110, 'i', 'e', 'H', 950, -10, 0], [110, 'l', 'g', 'V', 670, -20, 20], [110, 'k', 'j', 'V', 670, 20, 0],
       [110, 'a', 'c', 'V', 360, 20, -20], [110, 'c', 'd', 'H', 440, 10, -10], [110, 'a', 'b', 'V', 580, 20, -20], [110, 'b', 'j', 'H', 420, -10, 10]
     ].map((d) => {
-      const a = byId[d[1]], b = byId[d[2]], mid = d[4], oa = d[5], ob = d[6];
+      const a = byId[d[1]], b = byId[d[2]], mid = d[3] === 'H' ? d[4] + DX : d[4], oa = d[5], ob = d[6];
       const mix = (p, q, k) => [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k];
       const six = (q) => [q[0], q[1], mix(q[1], q[2], 1 / 3), mix(q[1], q[2], 2 / 3), q[2], q[3]]; // шесть точек на линию — для плавного перехода
       const s = six(d[3] === 'V'
@@ -321,7 +321,7 @@
       return {
         dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
-        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '690px 472px',
+        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '800px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
         detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
         detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
