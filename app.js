@@ -4,6 +4,7 @@
 
   var SLIDES = [
     { id: 'intro', name: 'Введение', icon: 'M11 2L4 11h5l-1 7 7-9h-5z' },
+    { id: 'about', name: 'О системе', icon: 'M10 9v5M10 6h.01M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16z' },
     { id: 'tasks', name: 'Решения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' },
     { id: 'data', name: 'Данные', icon: 'M3 5c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM3 5v10c0 1.7 3.1 3 7 3s7-1.3 7-3V5M3 10c0 1.7 3.1 3 7 3s7-1.3 7-3' },
     { id: 'views', name: 'Представление', icon: 'M2 4h7v12H2zM11 4h7v12h-7z' },
@@ -131,9 +132,9 @@
       return '<a href="#' + href + '" aria-label="' + label + '" class="deck-arrow' + (strong ? ' is-strong' : '') + '">' +
         '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="' + d + '"></path></svg></a>';
     };
-    h += '</div><div class="deck-side"><div class="deck-count">0' + (cur + 1) + ' / 06</div><div class="deck-group">' +
-      arrow(SLIDES[(cur + 5) % 6].id, 'Предыдущий слайд', 'M11 4L6 9l5 5', false) +
-      arrow(SLIDES[(cur + 1) % 6].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div></nav>';
+    h += '</div><div class="deck-side"><div class="deck-count">0' + (cur + 1) + ' / 0' + SLIDES.length + '</div><div class="deck-group">' +
+      arrow(SLIDES[(cur + SLIDES.length - 1) % SLIDES.length].id, 'Предыдущий слайд', 'M11 4L6 9l5 5', false) +
+      arrow(SLIDES[(cur + 1) % SLIDES.length].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div></nav>';
     return h;
   }
 
