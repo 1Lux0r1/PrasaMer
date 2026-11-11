@@ -493,7 +493,10 @@
     }
     cards.forEach((b) => b.addEventListener('click', () => open(b.dataset.demo, b)));
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && opener) close(true); });
-    window.addEventListener('hashchange', () => close(false));
+    /* первый сценарий открыт сразу, чтобы слайд не начинался с пустой области */
+    const openFirst = () => open(cards[0].dataset.demo, cards[0]);
+    window.addEventListener('hashchange', openFirst);
+    openFirst();
 
     const box = (x, y, w, h, bus, label, dead) =>
       '<rect x="' + (x - w / 2) + '" y="' + (y - h / 2) + '" width="' + w + '" height="' + h + '" style="fill:#05070b;stroke:' + (dead ? GRAY : '#8b95a3') + ';stroke-width:1.5;stroke-dasharray:5 4"></rect>' +
@@ -841,7 +844,7 @@
     window.addEventListener('hashchange', show);
     window.addEventListener('keydown', function (e) {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
-      if (document.querySelector('.demo:not([hidden])')) return; // открыт мини-экран: стрелки нужны ему
+      if (e.target && e.target.matches && e.target.matches('input, textarea, select')) return; // стрелки нужны ползунку
       var d = (e.key === 'ArrowRight' || e.key === 'PageDown') ? 1 : ((e.key === 'ArrowLeft' || e.key === 'PageUp') ? -1 : 0);
       if (!d) return;
       e.preventDefault();

@@ -16,43 +16,46 @@ button{font-family:inherit;cursor:pointer}
 </style>
 </helmet>
 <div style="width: 1920px; height: 1080px; position: relative; overflow: hidden; background: #161d2b; font-family: 'Onest', system-ui, sans-serif; color: #ffffff">
+  <div style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px">
+    <dc-import name="MoscowMap" mode="dim" cx="330" cy="620" scale="560" hint-size="1920px,1080px"></dc-import>
+  </div>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(180deg, rgba(22,29,43,0.97) 0%, rgba(22,29,43,0.9) 30%, rgba(22,29,43,0.72) 62%, rgba(22,29,43,0.92) 100%); pointer-events: none"></div>
   <div style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px">
     <dc-import name="PowerNav" current="4" hint-size="1920px,76px"></dc-import>
   </div>
 
-  <header style="position: absolute; left: 96px; top: 52px; width: 1350px; display: flex; flex-direction: column; gap: 12px">
+  <header style="position: absolute; left: 96px; top: 36px; width: 1300px; display: flex; flex-direction: column; gap: 10px">
     <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
       <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
       ОБЛАСТЬ ПРИМЕНЕНИЯ
     </div>
-    <h1 style="margin: 0; font-size: 58px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Область <span style="color: #FF3D55">применения</span></h1>
-    <p style="margin: 6px 0 0; font-size: 23px; line-height: 1.5; color: #C5CEDB">Каждый блок — пример будущего функционала и план на 2027 год. Нажмите на блок, чтобы открыть демонстрацию.</p>
+    <h1 style="margin: 0; font-size: 48px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em">Примеры <span style="color: #FF3D55">будущего функционала</span></h1>
   </header>
 
-  <div style="position: absolute; left: 1532px; top: 52px; padding: 14px 24px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.08); box-shadow: 0 0 18px rgba(230,215,42,0.12), inset 0 0 12px rgba(230,215,42,0.05); display: flex; align-items: center; gap: 12px">
-    <span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #E6D72A; box-shadow: 0 0 8px rgba(230,215,42,0.8)"></span>
-    <span style="font-size: 17px; font-weight: 700; letter-spacing: 0.06em; color: #F2E76A">ЗАЛОЖЕНА ОСНОВА</span>
+  <div style="position: absolute; right: 96px; top: 44px; height: 76px; box-sizing: border-box; padding: 0 34px 0 28px; border-radius: 20px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.10); box-shadow: 0 0 26px rgba(230,215,42,0.14), inset 0 1px 0 rgba(255,255,255,0.10); display: flex; align-items: center; gap: 16px">
+    <span aria-hidden="true" style="flex: none; width: 14px; height: 14px; border-radius: 50%; background: #F2E76A; box-shadow: 0 0 0 6px rgba(230,215,42,0.18), 0 0 14px rgba(230,215,42,0.9)"></span>
+    <span style="font-size: 30px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; color: #F2E76A">План на 2027</span>
   </div>
 
   <div class="task-list" aria-label="Сценарии применения">
     <button type="button" class="task-card" data-demo="outage" aria-controls="demo-outage" aria-pressed="false">
       <span class="task-number">01</span>
       <span class="task-title">Последствия аварий и переключения</span>
-      <span class="task-plan">План на 2027 год</span>
+      <span class="task-desc">Кто останется без электроснабжения и как переключить потребителей</span>
       <span class="task-arrow" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
     </button>
 
     <button type="button" class="task-card" data-demo="forecast" aria-controls="demo-forecast" aria-pressed="false">
       <span class="task-number">02</span>
       <span class="task-title">Прогноз потребления города</span>
-      <span class="task-plan">План на 2027 год</span>
+      <span class="task-desc">Ожидаемая нагрузка с учётом погоды и состояния оборудования</span>
       <span class="task-arrow" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
     </button>
 
     <button type="button" class="task-card" data-demo="planning" aria-controls="demo-planning" aria-pressed="false">
       <span class="task-number">03</span>
       <span class="task-title">Планирование застройки</span>
-      <span class="task-plan">План на 2027 год</span>
+      <span class="task-desc">Хватит ли резервов сети и источника для новых объектов</span>
       <span class="task-arrow" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
     </button>
   </div>

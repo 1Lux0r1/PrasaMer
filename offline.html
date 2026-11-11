@@ -75,23 +75,23 @@ button { font-family: inherit; cursor: pointer; }
 .sc-d-labels span { position: absolute; white-space: nowrap; line-height: 1; }
 
 /* Слайд «Область применения»: вертикальный выбор сценария и демонстрация справа */
-.task-list { position: absolute; left: 96px; top: 222px; width: 476px; height: 738px; display: flex; flex-direction: column; gap: 18px; }
-.task-card { position: relative; flex: 1 1 0; width: 100%; box-sizing: border-box; padding: 26px 28px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; background: #1d2636; color: #ffffff; text-align: left; transition: background 0.18s, border-color 0.18s, transform 0.18s; }
-.task-card:hover { background: #243044; border-color: rgba(255,255,255,0.3); transform: translateX(4px); }
-.task-card.is-on { background: #243044; border-color: #FF3D55; box-shadow: inset 0 0 0 1px #FF3D55; }
-.task-number { font-size: 38px; font-weight: 600; line-height: 1; color: #5FD6A2; }
-.task-title { max-width: 370px; font-size: 30px; line-height: 1.15; font-weight: 700; }
-.task-plan { margin-top: auto; padding: 8px 14px; border-radius: 10px; background: rgba(230,215,42,0.10); border: 1px solid rgba(230,215,42,0.4); font-size: 16px; font-weight: 700; letter-spacing: 0.02em; color: #F2E76A; }
-.task-arrow { position: absolute; right: 26px; top: 26px; width: 42px; height: 42px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.18); border-radius: 50%; color: #C5CEDB; transition: color 0.18s, background 0.18s, border-color 0.18s; }
+.task-list { position: absolute; left: 96px; top: 172px; width: 476px; height: 800px; display: flex; flex-direction: column; gap: 16px; }
+.task-card { position: relative; flex: 1 1 0; width: 100%; box-sizing: border-box; padding: 28px 30px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; background: rgba(29,38,54,0.88); backdrop-filter: blur(10px); color: #ffffff; text-align: left; transition: background 0.18s, border-color 0.18s, box-shadow 0.18s; }
+.task-card:hover { background: rgba(36,48,68,0.94); border-color: rgba(255,255,255,0.3); }
+.task-card.is-on { background: rgba(36,48,68,0.96); border-color: #FF3D55; box-shadow: inset 0 0 0 1px #FF3D55, 0 0 26px rgba(255,61,85,0.16); }
+.task-number { font-size: 20px; font-weight: 700; letter-spacing: 0.06em; line-height: 1; color: #5FD6A2; }
+.task-title { max-width: 350px; margin-top: 6px; font-size: 32px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em; }
+.task-desc { max-width: 380px; margin-top: auto; font-size: 19px; line-height: 1.45; color: #C5CEDB; }
+.task-arrow { position: absolute; right: 26px; top: 22px; width: 44px; height: 44px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.18); border-radius: 50%; color: #C5CEDB; transition: color 0.18s, background 0.18s, border-color 0.18s; }
 .task-arrow svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .task-card:hover .task-arrow, .task-card.is-on .task-arrow { color: #ffffff; border-color: #FF3D55; background: rgba(255,61,85,0.18); }
-.demo-workspace { position: absolute; left: 600px; top: 222px; width: 1224px; height: 738px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px dashed #46546A; border-radius: 20px; background: rgba(16,21,31,0.55); color: #C5CEDB; }
+.demo-workspace { position: absolute; left: 600px; top: 172px; width: 1224px; height: 800px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; background: rgba(29,38,54,0.6); color: #C5CEDB; }
 .demo-workspace svg { margin-bottom: 10px; fill: none; stroke: #8FB4F0; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .demo-workspace > span { font-size: 28px; font-weight: 700; color: #ffffff; }
 .demo-workspace p { margin: 0; font-size: 19px; }
-.demo { position: absolute; left: 600px; top: 246px; width: 1560px; height: 880px; box-sizing: border-box; display: flex; flex-direction: column; background: #10151f; border: 1px solid #334058; border-radius: 20px; box-shadow: 0 22px 56px rgba(0,0,0,0.42); overflow: hidden; transform: scale(0.784615); transform-origin: top left; animation: demo-in 0.2s ease-out; }
+.demo { position: absolute; left: 600px; top: 172px; width: 1560px; height: 1019.6px; box-sizing: border-box; display: flex; flex-direction: column; background: #10151f; border: 1px solid rgba(255,255,255,0.16); border-radius: 26px; box-shadow: 0 22px 56px rgba(0,0,0,0.42); overflow: hidden; transform: scale(0.784615); transform-origin: top left; animation: demo-in 0.2s ease-out; }
 @keyframes demo-in { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .task-card, .task-arrow { transition: none; } .task-card:hover { transform: none; } .demo { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .task-card, .task-arrow { transition: none; } .demo { animation: none; } }
 .demo.is-alarm { border-color: rgba(255,45,70,0.7); }
 .demo-head { flex: none; height: 104px; padding: 0 28px 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d394d; }
 .demo-eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; color: #A7B2C2; }
@@ -557,41 +557,42 @@ button { font-family: inherit; cursor: pointer; }
 
 <section class="slide" id="tasks" style="background: #161d2b">
 
+  <div data-map="dim" data-cx="330" data-cy="620" data-scale="560" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></div>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(180deg, rgba(22,29,43,0.97) 0%, rgba(22,29,43,0.9) 30%, rgba(22,29,43,0.72) 62%, rgba(22,29,43,0.92) 100%); pointer-events: none"></div>
   <div data-nav="4" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
 
-  <header style="position: absolute; left: 96px; top: 52px; width: 1350px; display: flex; flex-direction: column; gap: 12px">
+  <header style="position: absolute; left: 96px; top: 36px; width: 1300px; display: flex; flex-direction: column; gap: 10px">
     <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
       <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
       ОБЛАСТЬ ПРИМЕНЕНИЯ
     </div>
-    <h1 style="margin: 0; font-size: 58px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Область <span style="color: #FF3D55">применения</span></h1>
-    <p style="margin: 6px 0 0; font-size: 23px; line-height: 1.5; color: #C5CEDB">Каждый блок — пример будущего функционала и план на 2027 год. Нажмите на блок, чтобы открыть демонстрацию.</p>
+    <h1 style="margin: 0; font-size: 48px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em">Примеры <span style="color: #FF3D55">будущего функционала</span></h1>
   </header>
 
-  <div style="position: absolute; left: 1532px; top: 52px; padding: 14px 24px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.08); box-shadow: 0 0 18px rgba(230,215,42,0.12), inset 0 0 12px rgba(230,215,42,0.05); display: flex; align-items: center; gap: 12px">
-    <span aria-hidden="true" style="flex: none; width: 10px; height: 10px; border-radius: 50%; background: #E6D72A; box-shadow: 0 0 8px rgba(230,215,42,0.8)"></span>
-    <span style="font-size: 17px; font-weight: 700; letter-spacing: 0.06em; color: #F2E76A">ЗАЛОЖЕНА ОСНОВА</span>
+  <div style="position: absolute; right: 96px; top: 44px; height: 76px; box-sizing: border-box; padding: 0 34px 0 28px; border-radius: 20px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.10); box-shadow: 0 0 26px rgba(230,215,42,0.14), inset 0 1px 0 rgba(255,255,255,0.10); display: flex; align-items: center; gap: 16px">
+    <span aria-hidden="true" style="flex: none; width: 14px; height: 14px; border-radius: 50%; background: #F2E76A; box-shadow: 0 0 0 6px rgba(230,215,42,0.18), 0 0 14px rgba(230,215,42,0.9)"></span>
+    <span style="font-size: 30px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; color: #F2E76A">План на 2027</span>
   </div>
 
   <div class="task-list" aria-label="Сценарии применения">
     <button type="button" class="task-card" data-demo="outage" aria-controls="demo-outage" aria-pressed="false">
       <span class="task-number">01</span>
       <span class="task-title">Последствия аварий и переключения</span>
-      <span class="task-plan">План на 2027 год</span>
+      <span class="task-desc">Кто останется без электроснабжения и как переключить потребителей</span>
       <span class="task-arrow" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
     </button>
 
     <button type="button" class="task-card" data-demo="forecast" aria-controls="demo-forecast" aria-pressed="false">
       <span class="task-number">02</span>
       <span class="task-title">Прогноз потребления города</span>
-      <span class="task-plan">План на 2027 год</span>
+      <span class="task-desc">Ожидаемая нагрузка с учётом погоды и состояния оборудования</span>
       <span class="task-arrow" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
     </button>
 
     <button type="button" class="task-card" data-demo="planning" aria-controls="demo-planning" aria-pressed="false">
       <span class="task-number">03</span>
       <span class="task-title">Планирование застройки</span>
-      <span class="task-plan">План на 2027 год</span>
+      <span class="task-desc">Хватит ли резервов сети и источника для новых объектов</span>
       <span class="task-arrow" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
     </button>
   </div>
@@ -1220,7 +1221,10 @@ button { font-family: inherit; cursor: pointer; }
     }
     cards.forEach((b) => b.addEventListener('click', () => open(b.dataset.demo, b)));
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && opener) close(true); });
-    window.addEventListener('hashchange', () => close(false));
+    /* первый сценарий открыт сразу, чтобы слайд не начинался с пустой области */
+    const openFirst = () => open(cards[0].dataset.demo, cards[0]);
+    window.addEventListener('hashchange', openFirst);
+    openFirst();
 
     const box = (x, y, w, h, bus, label, dead) =>
       '<rect x="' + (x - w / 2) + '" y="' + (y - h / 2) + '" width="' + w + '" height="' + h + '" style="fill:#05070b;stroke:' + (dead ? GRAY : '#8b95a3') + ';stroke-width:1.5;stroke-dasharray:5 4"></rect>' +
@@ -1568,7 +1572,7 @@ button { font-family: inherit; cursor: pointer; }
     window.addEventListener('hashchange', show);
     window.addEventListener('keydown', function (e) {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
-      if (document.querySelector('.demo:not([hidden])')) return; // открыт мини-экран: стрелки нужны ему
+      if (e.target && e.target.matches && e.target.matches('input, textarea, select')) return; // стрелки нужны ползунку
       var d = (e.key === 'ArrowRight' || e.key === 'PageDown') ? 1 : ((e.key === 'ArrowLeft' || e.key === 'PageUp') ? -1 : 0);
       if (!d) return;
       e.preventDefault();
