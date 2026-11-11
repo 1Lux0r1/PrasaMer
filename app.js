@@ -465,31 +465,35 @@
     render();
   }
 
-  /* ---------- Слайд «Решения»: мини-экраны «Как это работает» ---------- */
+  /* ---------- Слайд «Область применения»: интерактивные сценарии справа ---------- */
   function initSolutions(root) {
     const $ = (sel) => root.querySelector(sel);
     const Y = '#F2C94C', B = '#56B4E9', GRAY = '#6b7480', MUTED = '#A7B2C2';
-    const scrim = $('#demo-scrim');
+    const workspace = $('#demo-workspace');
+    const cards = Array.from(root.querySelectorAll('[data-demo]'));
     let opener = null;
 
-    function close() {
+    function close(restoreFocus) {
       root.querySelectorAll('.demo').forEach((d) => { d.hidden = true; });
-      scrim.hidden = true;
-      if (opener) { opener.focus(); opener = null; }
+      workspace.hidden = false;
+      cards.forEach((b) => { b.classList.remove('is-on'); b.setAttribute('aria-pressed', 'false'); });
+      if (restoreFocus && opener) opener.focus();
+      opener = null;
     }
     function open(name, from) {
-      close();
+      root.querySelectorAll('.demo').forEach((d) => { d.hidden = true; });
+      workspace.hidden = true;
       opener = from;
-      scrim.hidden = false;
-      const d = $('#demo-' + name);
-      d.hidden = false;
-      d.querySelector('.demo-close').focus();
+      cards.forEach((b) => {
+        const on = b === from;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+      $('#demo-' + name).hidden = false;
     }
-    root.querySelectorAll('[data-demo]').forEach((b) => b.addEventListener('click', () => open(b.dataset.demo, b)));
-    root.querySelectorAll('.demo-close').forEach((b) => b.addEventListener('click', close));
-    scrim.addEventListener('click', close);
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-    window.addEventListener('hashchange', close);
+    cards.forEach((b) => b.addEventListener('click', () => open(b.dataset.demo, b)));
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && opener) close(true); });
+    window.addEventListener('hashchange', () => close(false));
 
     const box = (x, y, w, h, bus, label, dead) =>
       '<rect x="' + (x - w / 2) + '" y="' + (y - h / 2) + '" width="' + w + '" height="' + h + '" style="fill:#05070b;stroke:' + (dead ? GRAY : '#8b95a3') + ';stroke-width:1.5;stroke-dasharray:5 4"></rect>' +
