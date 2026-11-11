@@ -1,0 +1,160 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-10T12:00:00Z"
+ },
+ "title": "Цифровой двойник — стилистика презентации",
+ "launch": {
+  "view": "canvas",
+  "page": "deck"
+ },
+ "pages": [
+  {
+   "id": "deck",
+   "name": "Электроснабжение"
+  },
+  {
+   "id": "style",
+   "name": "Стилистика"
+  }
+ ],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "01 · Обложка — кольцо разделов",
+   "is_interactive": true,
+   "page": "style"
+  },
+  "Story.dc.html": {
+   "x": 2000,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "02 · Сценарий на карте",
+   "is_interactive": true,
+   "page": "style"
+  },
+  "Section.dc.html": {
+   "x": 4000,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "03 · Слайд раздела",
+   "is_interactive": true,
+   "page": "style"
+  },
+  "StyleGuide.dc.html": {
+   "x": 0,
+   "y": 1500,
+   "w": 1920,
+   "h": 1080,
+   "title": "Цвет, шрифт, компоненты",
+   "page": "style"
+  },
+  "MoscowMap.dc.html": {
+   "x": 2000,
+   "y": 1500,
+   "w": 1920,
+   "h": 1080,
+   "title": "Компонент · карта Москвы",
+   "page": "style"
+  },
+  "PowerNav.dc.html": {
+   "x": 4000,
+   "y": 1500,
+   "w": 1920,
+   "h": 76,
+   "title": "Компонент · навигация колоды",
+   "page": "style"
+  },
+  "PowerAbout.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "01 · О системе",
+   "is_interactive": true,
+   "page": "deck"
+  },
+  "PowerTasks.dc.html": {
+   "x": 6000,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "04 · Область применения",
+   "is_interactive": true,
+   "page": "deck"
+  },
+  "PowerScheme.dc.html": {
+   "x": 4000,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "03 · Карта ↔ схема (интерактив)",
+   "is_interactive": true,
+   "page": "deck"
+  },
+  "PowerData.dc.html": {
+   "x": 2000,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "02 · Данные",
+   "is_interactive": true,
+   "page": "deck"
+  },
+  "PowerEffect.dc.html": {
+   "x": 8000,
+   "y": 0,
+   "w": 1920,
+   "h": 1080,
+   "title": "05 · Эффект для города",
+   "is_interactive": true,
+   "page": "deck"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Story.dc.html",
+  "Section.dc.html",
+  "StyleGuide.dc.html",
+  "MoscowMap.dc.html",
+  "PowerNav.dc.html",
+  "PowerAbout.dc.html",
+  "PowerTasks.dc.html",
+  "PowerScheme.dc.html",
+  "PowerData.dc.html",
+  "PowerEffect.dc.html"
+ ],
+ "notes": {
+  "t-slides": {
+   "x": 0,
+   "y": -300,
+   "text": "Слайды презентации",
+   "kind": "title1",
+   "maxW": 5920,
+   "page": "style"
+  },
+  "t-base": {
+   "x": 0,
+   "y": 1200,
+   "text": "Основа стиля",
+   "kind": "title1",
+   "maxW": 5920,
+   "page": "style"
+  },
+  "t-power": {
+   "x": 0,
+   "y": -300,
+   "text": "Схема электроснабжения в цифровом двойнике",
+   "kind": "title1",
+   "maxW": 9920,
+   "page": "deck"
+  }
+ },
+ "designSystems": []
+}

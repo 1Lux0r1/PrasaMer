@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Обложка — кольцо разделов</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#ffffff;text-decoration:none}a:hover{color:#ffffff}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; position: relative; overflow: hidden; background: #182233; font-family: 'Onest', system-ui, sans-serif; color: #ffffff">
+  <div style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px">
+    <dc-import name="MoscowMap" mode="dim" cx="1200" cy="530" scale="360" ring="true" hint-size="1920px,1080px"></dc-import>
+  </div>
+
+  <div aria-hidden="true" style="position: absolute; left: {{haloX}}px; top: {{haloY}}px; width: 420px; height: 420px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, {{haloColor}} 0%, rgba(24,34,51,0) 65%); pointer-events: none"></div>
+  <div aria-hidden="true" style="position: absolute; left: {{haloX}}px; top: {{haloY}}px; width: 30px; height: 30px; box-sizing: border-box; transform: translate(-50%, -50%); border-radius: 50%; border: 3px solid {{markColor}}; background: #10151f; display: flex; align-items: center; justify-content: center; pointer-events: none">
+    <div style="width: 10px; height: 10px; border-radius: 50%; background: #ffffff"></div>
+  </div>
+
+  <div style="position: absolute; left: 96px; top: 64px; font-size: 16px; font-weight: 600; letter-spacing: 0.14em; color: #97A3B4">ЦИФРОВОЙ ДВОЙНИК · МОСКВА</div>
+
+  <div style="position: absolute; left: 96px; top: 372px; display: flex; flex-direction: column; gap: 22px">
+    <h1 style="margin: 0; font-size: 60px; line-height: 1.02; font-weight: 800; letter-spacing: -0.02em">Результаты<br>работы</h1>
+    <div style="font-size: 36px; color: #C5CEDB">Цифрового двойника</div>
+    <div style="font-size: 26px; color: #97A3B4">за <span style="color: #ffffff; font-weight: 700">2026</span> г.</div>
+    <div aria-hidden="true" style="width: 84px; height: 12px; margin-top: 18px; margin-left: 4px; background: #FF2D46; transform: skewX(-28deg)"></div>
+  </div>
+
+  <sc-for list="{{items}}" as="it" hint-placeholder-count="14">
+    <a href="Section.dc.html" onMouseEnter="{{it.hover}}" onFocus="{{it.hover}}" style="position: absolute; left: {{it.x}}px; top: {{it.y}}px; transform: {{it.tf}}; display: flex; flex-direction: {{it.dir}}; align-items: center; gap: 14px; min-height: 44px">
+      <span style="font-size: 36px; font-weight: 600; line-height: 1; color: {{it.numColor}}">{{it.num}}</span>
+      <span style="font-size: 24px; line-height: 1.25; font-weight: {{it.weight}}; color: {{it.labelColor}}; white-space: pre-line; text-align: {{it.align}}">{{it.label}}</span>
+    </a>
+  </sc-for>
+
+  <a href="Story.dc.html" style="position: absolute; left: 96px; bottom: 64px; height: 52px; padding: 0 24px 0 18px; display: flex; align-items: center; gap: 12px; border-radius: 26px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px); font-size: 18px; font-weight: 500">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linejoin: round"><path d="M6 4l10 6-10 6z"></path></svg>
+    Смотреть сценарий
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  state = { active: 1 };
+  renderVals() {
+    const CX = 1200, CY = 530, R = 360, OFF = 40;
+    const active = (this.state && this.state.active != null) ? this.state.active : 1;
+    const rf = (t) => 1 - 0.05 * Math.cos(2 * t) + 0.025 * Math.cos(3 * t + 0.8) + 0.015 * Math.sin(5 * t + 0.3);
+    const labels = [
+      'Статистика', 'Календарно-\nсетевые\nграфики', 'Инструмент\nрасчета\nрасстояний', 'ОСМ',
+      'Оптимизация\nсводного плана', 'ГСП', 'ЦД Парков', 'Киноиндустрия',
+      'Городская\nинформационная\nмодель', 'Доклады\nи совещания', 'Лучшие\nпрактики\nАГР',
+      'Оптимизация\nсистемы', 'ГИМ 4', 'Развитие\nтелеметрии'
+    ];
+    let haloX = CX, haloY = CY, orangeActive = false;
+    const items = labels.map((label, i) => {
+      const t = (-10 + 25.5 * i) * Math.PI / 180;
+      const c = Math.cos(t), s = Math.sin(t), r = R * rf(t);
+      const right = c > -0.02;
+      const ty = s < -0.95 ? '-100%' : (s > 0.95 ? '0' : '-50%');
+      const orange = i >= 11;
+      const on = i === active;
+      if (on) { haloX = CX + r * c; haloY = CY + r * s; orangeActive = orange; }
+      return {
+        num: (i < 9 ? '0' : '') + (i + 1),
+        label: label,
+        x: (CX + (r + OFF) * c).toFixed(0),
+        y: (CY + (r + OFF) * s).toFixed(0),
+        tf: 'translate(' + (right ? '0' : '-100%') + ', ' + ty + ')',
+        dir: right ? 'row' : 'row-reverse',
+        align: right ? 'left' : 'right',
+        numColor: orange ? '#F5A04A' : '#5FD6A2',
+        labelColor: on ? '#ffffff' : '#C5CEDB',
+        weight: on ? 600 : 400,
+        hover: () => this.setState({ active: i })
+      };
+    });
+    return {
+      items: items,
+      haloX: haloX.toFixed(0), haloY: haloY.toFixed(0),
+      haloColor: orangeActive ? 'rgba(245,160,74,0.26)' : 'rgba(95,214,162,0.26)',
+      markColor: orangeActive ? '#F5A04A' : '#5FD6A2'
+    };
+  }
+}
+</script>
+</body>
+</html>

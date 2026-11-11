@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Сценарий на карте</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#ffffff;text-decoration:none}a:hover{color:#ffffff}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; position: relative; overflow: hidden; background: #182233; font-family: 'Onest', system-ui, sans-serif; color: #ffffff">
+  <div style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px">
+    <dc-import name="MoscowMap" mode="{{mapMode}}" cx="{{mapCx}}" cy="{{mapCy}}" scale="{{mapScale}}" marker="{{mapMarker}}" zone="{{mapZone}}" hint-size="1920px,1080px"></dc-import>
+  </div>
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(90deg, rgba(24,34,51,0.94) 0%, rgba(24,34,51,0.66) 28%, rgba(24,34,51,0) 56%); pointer-events: none"></div>
+
+  <div aria-hidden="true" style="position: absolute; left: 0; top: 8px; width: 1920px; display: flex">
+    <sc-for list="{{segments}}" as="seg" hint-placeholder-count="5">
+      <div style="flex: 1 1 0; height: 2px; position: relative; background: {{seg.line}}">
+        <span style="position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: {{seg.dot}}"></span>
+      </div>
+    </sc-for>
+    <div style="flex: 1 1 0; height: 2px; background: rgba(255,255,255,0.16)"></div>
+  </div>
+
+  <a href="Main.dc.html" style="position: absolute; left: 96px; top: 52px; height: 44px; display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; letter-spacing: 0.14em; color: #C5CEDB">
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #C5CEDB; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round"><path d="M11 4L6 9l5 5"></path></svg>
+    ЦИФРОВОЙ ДВОЙНИК
+  </a>
+
+  <div style="position: absolute; left: 96px; bottom: 176px; width: 660px; display: flex; flex-direction: column; gap: 28px">
+    <sc-if value="{{is1}}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin: 0; font-size: 60px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em">[Заголовок главы «Город»]</h1>
+      <p style="margin: 0; max-width: 560px; font-size: 28px; line-height: 1.4; color: #C5CEDB">[Подзаголовок — одна-две строки о том, что видно на карте.]</p>
+    </sc-if>
+    <sc-if value="{{is2}}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin: 0; font-size: 60px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em">Исходные данные по участку — сразу</h1>
+      <p style="margin: 0; max-width: 560px; font-size: 28px; line-height: 1.4; color: #C5CEDB">Все сети под участком — на одном плане, от магистралей до вводов в дома.</p>
+    </sc-if>
+    <sc-if value="{{is3}}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin: 0; font-size: 60px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em">[Заголовок главы «Охранная зона»]</h1>
+      <p style="margin: 0; max-width: 560px; font-size: 28px; line-height: 1.4; color: #C5CEDB">[Подзаголовок — одна-две строки об ограничениях участка.]</p>
+    </sc-if>
+    <sc-if value="{{is4}}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin: 0; font-size: 60px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em">[Заголовок главы «Решение»]</h1>
+      <p style="margin: 0; max-width: 560px; font-size: 28px; line-height: 1.4; color: #C5CEDB">[Подзаголовок — одна-две строки о результате.]</p>
+    </sc-if>
+    <sc-if value="{{is5}}" hint-placeholder-val="{{ true }}">
+      <h1 style="margin: 0; font-size: 60px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em">Так — для любого участка Москвы</h1>
+      <p style="margin: 0; max-width: 560px; font-size: 28px; line-height: 1.4; color: #C5CEDB">Сети и охранные зоны всего города — в одной модели.</p>
+    </sc-if>
+  </div>
+
+  <nav aria-label="Главы" style="position: absolute; left: 92px; bottom: 56px; display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px)">
+    <sc-for list="{{chapters}}" as="ch" hint-placeholder-count="5">
+      <button type="button" onClick="{{ch.pick}}" style="height: 46px; padding: 0 18px; display: flex; align-items: center; gap: 10px; border: 0; border-radius: 23px; background: {{ch.bg}}; color: {{ch.color}}; font-size: 18px; font-weight: 500">
+        <span style="font-size: 12px; color: #A7B2C2">{{ch.num}}</span>
+        <span>{{ch.name}}</span>
+      </button>
+    </sc-for>
+  </nav>
+
+  <div style="position: absolute; right: 92px; bottom: 56px; display: flex; gap: 16px; align-items: center">
+    <a href="Section.dc.html" style="height: 54px; padding: 0 22px 0 18px; display: flex; align-items: center; gap: 10px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px); font-size: 18px; font-weight: 500">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round"><path d="M4 4l9 6-9 6zM16 4v12"></path></svg>
+      Пропустить
+    </a>
+    <div style="display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px)">
+      <button type="button" aria-label="Предыдущая глава" onClick="{{prev}}" style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 23px; background: transparent">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M11 4L6 9l5 5"></path></svg>
+      </button>
+      <button type="button" aria-label="Автопоказ: пуск и пауза" onClick="{{toggle}}" style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 23px; background: rgba(255,255,255,0.16)">
+        <sc-if value="{{playing}}" hint-placeholder-val="{{ false }}">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linejoin: round"><path d="M5 3h3v12H5zM10 3h3v12h-3z"></path></svg>
+        </sc-if>
+        <sc-if value="{{paused}}" hint-placeholder-val="{{ true }}">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linejoin: round"><path d="M5 3l10 6-10 6z"></path></svg>
+        </sc-if>
+      </button>
+      <button type="button" aria-label="Следующая глава" onClick="{{next}}" style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 23px; background: transparent">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M7 4l5 5-5 5"></path></svg>
+      </button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"interval":{"editor":"range","default":5,"min":2,"max":15,"step":1,"unit":"с"},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  state = { ch: 4, playing: false };
+  componentDidMount() {
+    const sec = Number((this.props && this.props.interval) ?? 5) || 5;
+    this._timer = setInterval(() => {
+      if (this.state && this.state.playing) this.setState({ ch: ((this.state.ch ?? 4) + 1) % 5 });
+    }, sec * 1000);
+  }
+  componentWillUnmount() { clearInterval(this._timer); }
+  renderVals() {
+    const st = this.state || {};
+    const ch = st.ch ?? 4, playing = !!st.playing;
+    const names = ['Город', 'Под землёй', 'Охранная зона', 'Решение', 'Вся Москва'];
+    const views = [
+      { mode: 'dim', cx: 1280, cy: 520, scale: 900, marker: false, zone: false },
+      { mode: 'network', cx: 1280, cy: 520, scale: 900, marker: false, zone: false },
+      { mode: 'network', cx: 1100, cy: 420, scale: 900, marker: true, zone: true },
+      { mode: 'network', cx: 1200, cy: 480, scale: 620, marker: true, zone: false },
+      { mode: 'network', cx: 1260, cy: 530, scale: 400, marker: true, zone: false }
+    ];
+    const v = views[ch];
+    return {
+      is1: ch === 0, is2: ch === 1, is3: ch === 2, is4: ch === 3, is5: ch === 4,
+      playing: playing, paused: !playing,
+      mapMode: v.mode, mapCx: v.cx, mapCy: v.cy, mapScale: v.scale, mapMarker: v.marker, mapZone: v.zone,
+      chapters: names.map((name, i) => ({
+        num: '0' + (i + 1), name: name,
+        bg: i === ch ? 'rgba(255,255,255,0.16)' : 'transparent',
+        color: i === ch ? '#ffffff' : '#C5CEDB',
+        pick: () => this.setState({ ch: i })
+      })),
+      segments: names.map((n, i) => ({
+        line: i <= ch ? '#FF2D46' : 'rgba(255,255,255,0.16)',
+        dot: i === ch ? '#FF2D46' : (i < ch ? '#B3263A' : '#5B677A')
+      })),
+      prev: () => this.setState({ ch: (ch + 4) % 5 }),
+      next: () => this.setState({ ch: (ch + 1) % 5 }),
+      toggle: () => this.setState({ playing: !playing })
+    };
+  }
+}
+</script>
+</body>
+</html>

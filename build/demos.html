@@ -1,0 +1,84 @@
+
+  <div class="demo-scrim" id="demo-scrim" hidden></div>
+
+  <div class="demo" id="demo-outage" role="dialog" aria-modal="true" aria-labelledby="demo-outage-h" hidden>
+    <header class="demo-head">
+      <div><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 01</div><h2 id="demo-outage-h">Последствия аварий и переключения</h2></div>
+      <button type="button" class="demo-close" aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"></path></svg></button>
+    </header>
+    <div class="demo-body">
+      <div class="demo-stage" id="outage-stage"></div>
+      <aside class="demo-side">
+        <div class="demo-step" id="outage-step"></div>
+        <p class="demo-text" id="outage-text"></p>
+        <div class="demo-stats">
+          <div><b id="outage-n1">0</b><span>жилых домов без питания</span></div>
+          <div><b id="outage-n2">0</b><span>социальных объектов</span></div>
+          <div><b id="outage-n3">0</b><span>промышленных объектов</span></div>
+        </div>
+        <button type="button" class="demo-action" id="outage-btn"></button>
+        <div class="demo-note">Демонстрация на условных данных.</div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="demo" id="demo-forecast" role="dialog" aria-modal="true" aria-labelledby="demo-forecast-h" hidden>
+    <header class="demo-head">
+      <div><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 02</div><h2 id="demo-forecast-h">Прогноз потребления города</h2></div>
+      <button type="button" class="demo-close" aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"></path></svg></button>
+    </header>
+    <div class="demo-body">
+      <div class="demo-stage" id="forecast-stage"></div>
+      <aside class="demo-side">
+        <div class="demo-step">Прогноз на сутки</div>
+        <p class="demo-text">Меняйте температуру воздуха — решение пересчитывает суточный график нагрузки и сравнивает пик с располагаемой мощностью.</p>
+        <label class="demo-range"><span>Температура воздуха: <b id="forecast-t"></b></span>
+          <input type="range" id="forecast-range" min="-30" max="35" step="1" value="-5">
+          <span class="demo-range-scale"><i>−30 °C</i><i>+35 °C</i></span>
+        </label>
+        <div class="demo-stats">
+          <div><b id="forecast-peak"></b><span id="forecast-peak-l"></span></div>
+          <div><b id="forecast-res"></b><span id="forecast-res-l"></span></div>
+        </div>
+        <div class="demo-verdict" id="forecast-verdict"></div>
+        <div class="demo-note">Демонстрация на условных данных: нагрузка в процентах от располагаемой мощности.</div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="demo" id="demo-planning" role="dialog" aria-modal="true" aria-labelledby="demo-planning-h" hidden>
+    <header class="demo-head">
+      <div><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 03</div><h2 id="demo-planning-h">Планирование застройки</h2></div>
+      <button type="button" class="demo-close" aria-label="Закрыть"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"></path></svg></button>
+    </header>
+    <div class="demo-body">
+      <div class="demo-stage" id="planning-stage"></div>
+      <aside class="demo-side demo-side-tight">
+        <div class="demo-step">Что строим в районе</div>
+        <div class="demo-toggles" id="planning-toggles"></div>
+        <div class="demo-bar-wrap">
+          <div class="demo-bar-head"><span>Источник · ПС 110 кВ, 2×40 МВА</span><b id="planning-load"></b></div>
+          <div class="demo-bar demo-bar-src"><i id="planning-base"></i><i id="planning-add"></i></div>
+        </div>
+        <div class="demo-step">Объекты электроснабжения</div>
+        <div class="demo-objs" id="planning-objects"></div>
+        <div class="demo-total"><span>Итого ориентировочно</span><b id="planning-total"></b></div>
+        <div class="demo-note">Район, нагрузки, нормативы и расценки условные.</div>
+
+        <div class="demo-card" id="planning-card" hidden>
+          <button type="button" class="demo-card-back" id="planning-card-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>
+            Ко всем объектам
+          </button>
+          <div class="demo-step">Карточка объекта</div>
+          <h3 id="planning-card-title"></h3>
+          <div class="demo-card-status" id="planning-card-status"></div>
+          <div class="demo-card-facts" id="planning-card-facts"></div>
+          <div class="demo-step">Необходимые мероприятия</div>
+          <ul class="demo-card-works" id="planning-card-works"></ul>
+          <div class="demo-total"><span>Ориентировочная стоимость</span><b id="planning-card-cost"></b></div>
+          <div class="demo-note">Условные расценки: ЛЭП 10 кВ — 12 млн ₽/км, РП 10 кВ — 90 млн ₽, ТП — 14 млн ₽, второй ввод — 25 млн ₽, замена трансформаторов — 480 млн ₽.</div>
+        </div>
+      </aside>
+    </div>
+  </div>

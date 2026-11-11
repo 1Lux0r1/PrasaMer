@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Цвет, шрифт, компоненты</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; padding: 72px 96px; background: #161d2b; font-family: 'Onest', system-ui, sans-serif; color: #ffffff; display: flex; flex-direction: column; gap: 44px">
+  <header style="display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
+      <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
+      ОСНОВА СТИЛЯ
+    </div>
+    <h1 style="margin: 0; font-size: 58px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Тёмная карта, <span style="color: #FF3D55">светящиеся сети</span></h1>
+  </header>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; flex: 1 1 0">
+
+    <section style="background: #1d2636; padding: 36px; display: flex; flex-direction: column; gap: 26px">
+      <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.04em; color: #8FB4F0">ЦВЕТ</div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #182233; border: 1px solid #334058"></div><div style="font-size: 16px; font-weight: 600">Фон</div><div style="font-size: 14px; color: #A7B2C2">#182233</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #10151f; border: 1px solid #334058"></div><div style="font-size: 16px; font-weight: 600">Город</div><div style="font-size: 14px; color: #A7B2C2">#10151F</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #1d2636; border: 1px solid #334058"></div><div style="font-size: 16px; font-weight: 600">Панель</div><div style="font-size: 14px; color: #A7B2C2">#1D2636</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #FF2D46"></div><div style="font-size: 16px; font-weight: 600">Акцент</div><div style="font-size: 14px; color: #A7B2C2">#FF2D46</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #5FD6A2"></div><div style="font-size: 16px; font-weight: 600">Маркер 1</div><div style="font-size: 14px; color: #A7B2C2">#5FD6A2</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #F5A04A"></div><div style="font-size: 16px; font-weight: 600">Маркер 2</div><div style="font-size: 14px; color: #A7B2C2">#F5A04A</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #ffffff"></div><div style="font-size: 16px; font-weight: 600">Текст</div><div style="font-size: 14px; color: #A7B2C2">#FFFFFF</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #C5CEDB"></div><div style="font-size: 16px; font-weight: 600">Вторичный</div><div style="font-size: 14px; color: #A7B2C2">#C5CEDB</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 76px; border-radius: 10px; background: #A7B2C2"></div><div style="font-size: 16px; font-weight: 600">Подписи</div><div style="font-size: 14px; color: #A7B2C2">#A7B2C2</div></div>
+      </div>
+      <div style="font-size: 16px; font-weight: 600; margin-top: 6px">Линии сетей</div>
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center; gap: 16px"><div style="flex: 1 1 0; height: 3px; border-radius: 2px; background: #EADFB4; box-shadow: 0 0 8px rgba(234,223,180,0.7)"></div><div style="width: 80px; font-size: 14px; color: #A7B2C2">#EADFB4</div></div>
+        <div style="display: flex; align-items: center; gap: 16px"><div style="flex: 1 1 0; height: 3px; border-radius: 2px; background: #7CCFD0; box-shadow: 0 0 8px rgba(124,207,208,0.7)"></div><div style="width: 80px; font-size: 14px; color: #A7B2C2">#7CCFD0</div></div>
+        <div style="display: flex; align-items: center; gap: 16px"><div style="flex: 1 1 0; height: 3px; border-radius: 2px; background: #E39AAE; box-shadow: 0 0 8px rgba(227,154,174,0.7)"></div><div style="width: 80px; font-size: 14px; color: #A7B2C2">#E39AAE</div></div>
+        <div style="display: flex; align-items: center; gap: 16px"><div style="flex: 1 1 0; height: 3px; border-radius: 2px; background: #9BDDB0; box-shadow: 0 0 8px rgba(155,221,176,0.7)"></div><div style="width: 80px; font-size: 14px; color: #A7B2C2">#9BDDB0</div></div>
+        <div style="display: flex; align-items: center; gap: 16px"><div style="flex: 1 1 0; height: 3px; border-radius: 2px; background: #F0B37E; box-shadow: 0 0 8px rgba(240,179,126,0.7)"></div><div style="width: 80px; font-size: 14px; color: #A7B2C2">#F0B37E</div></div>
+      </div>
+    </section>
+
+    <section style="background: #1d2636; padding: 36px; display: flex; flex-direction: column; gap: 26px">
+      <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.04em; color: #F0C36A">ШРИФТ · ONEST</div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; color: #A7B2C2">Заголовок слайда · 60 / ExtraBold</div>
+        <div style="font-size: 60px; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em">Результаты работы</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; color: #A7B2C2">Заголовок сцены · 44 / Bold</div>
+        <div style="font-size: 44px; line-height: 1.12; font-weight: 700; letter-spacing: -0.02em">Так — для любого участка</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; color: #A7B2C2">Подзаголовок · 28 / Regular</div>
+        <div style="font-size: 28px; line-height: 1.4; color: #C5CEDB">Сети и охранные зоны всего города — в одной модели.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; color: #A7B2C2">Подпись раздела · 24 / Regular</div>
+        <div style="font-size: 24px; line-height: 1.25; color: #C5CEDB">Городская информационная модель</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; color: #A7B2C2">Рубрика · 18 / Bold, разрядка</div>
+        <div style="font-size: 18px; font-weight: 700; letter-spacing: 0.06em">ДЕМОНСТРАЦИЯ ИНСТРУМЕНТА</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; color: #A7B2C2">Номера · 36 / SemiBold</div>
+        <div style="display: flex; gap: 22px; font-size: 36px; font-weight: 600; line-height: 1"><span style="color: #5FD6A2">01</span><span style="color: #5FD6A2">02</span><span style="color: #5FD6A2">03</span><span style="color: #F5A04A">12</span><span style="color: #F5A04A">13</span></div>
+      </div>
+    </section>
+
+    <section style="background: #182233; padding: 36px; display: flex; flex-direction: column; gap: 30px; border: 1px solid #2d394d">
+      <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.04em; color: #5FD6A2">КОМПОНЕНТЫ</div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="font-size: 14px; color: #A7B2C2">Главы — «стеклянная» панель</div>
+        <div style="align-self: flex-start; display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12)">
+          <div style="height: 46px; padding: 0 16px; display: flex; align-items: center; gap: 8px; border-radius: 23px; font-size: 17px; color: #C5CEDB"><span style="font-size: 12px; color: #A7B2C2">01</span>Город</div>
+          <div style="height: 46px; padding: 0 16px; display: flex; align-items: center; gap: 8px; border-radius: 23px; font-size: 17px; background: rgba(255,255,255,0.16)"><span style="font-size: 12px; color: #A7B2C2">02</span>Под землёй</div>
+          <div style="height: 46px; padding: 0 16px; display: flex; align-items: center; gap: 8px; border-radius: 23px; font-size: 17px; color: #C5CEDB"><span style="font-size: 12px; color: #A7B2C2">03</span>Решение</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="font-size: 14px; color: #A7B2C2">Управление показом</div>
+        <div style="display: flex; gap: 16px; align-items: center">
+          <div style="height: 54px; padding: 0 22px 0 18px; display: flex; align-items: center; gap: 10px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); font-size: 18px; font-weight: 500">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round"><path d="M4 4l9 6-9 6zM16 4v12"></path></svg>
+            Пропустить
+          </div>
+          <div style="display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12)">
+            <div style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M11 4L6 9l5 5"></path></svg></div>
+            <div style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border-radius: 23px; background: rgba(255,255,255,0.16)"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linejoin: round"><path d="M5 3h3v12H5zM10 3h3v12h-3z"></path></svg></div>
+            <div style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M7 4l5 5-5 5"></path></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="font-size: 14px; color: #A7B2C2">Линия прогресса</div>
+        <div style="display: flex; padding: 6px 0">
+          <div style="flex: 1 1 0; height: 2px; position: relative; background: #B3263A"><span style="position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #B3263A"></span></div>
+          <div style="flex: 1 1 0; height: 2px; position: relative; background: #FF2D46"><span style="position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #FF2D46"></span></div>
+          <div style="flex: 1 1 0; height: 2px; position: relative; background: rgba(255,255,255,0.16)"><span style="position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #5B677A"></span></div>
+          <div style="flex: 1 1 0; height: 2px; position: relative; background: rgba(255,255,255,0.16)"><span style="position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #5B677A"></span></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <div style="font-size: 14px; color: #A7B2C2">Пункт кольца · обычный и выбранный</div>
+        <div style="display: flex; gap: 48px; align-items: center">
+          <div style="display: flex; align-items: center; gap: 14px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #5FD6A2"></span><span style="font-size: 36px; font-weight: 600; line-height: 1; color: #5FD6A2">07</span><span style="font-size: 24px; color: #C5CEDB">ЦД Парков</span></div>
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 30px; height: 30px; box-sizing: border-box; border-radius: 50%; border: 3px solid #5FD6A2; background: #10151f; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 24px rgba(95,214,162,0.6)"><span style="width: 10px; height: 10px; border-radius: 50%; background: #ffffff"></span></span>
+            <span style="font-size: 36px; font-weight: 600; line-height: 1; color: #5FD6A2">04</span><span style="font-size: 24px; font-weight: 600">ОСМ</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <div style="font-size: 14px; color: #A7B2C2">Акцентная плашка и точка на карте</div>
+        <div style="display: flex; gap: 48px; align-items: center">
+          <div aria-hidden="true" style="width: 84px; height: 12px; margin-left: 4px; background: #FF2D46; transform: skewX(-28deg)"></div>
+          <span aria-hidden="true" style="width: 48px; height: 48px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid #FF2D46; background: rgba(255,45,70,0.1); display: flex; align-items: center; justify-content: center"><span style="width: 16px; height: 16px; box-sizing: border-box; border-radius: 50%; background: #FF2D46; border: 2.5px solid #ffffff"></span></span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
