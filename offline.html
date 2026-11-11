@@ -196,6 +196,11 @@ button { font-family: inherit; cursor: pointer; }
 #data[data-hl="rosseti"] [data-out], #data[data-hl="oek"] [data-out], #data[data-hl="other"] [data-out], #data[data-hl="sbyt"] [data-out="kpi"] { stroke: var(--hl); }
 #data[data-hl="rosseti"] [data-out]:not(.df-flow), #data[data-hl="oek"] [data-out]:not(.df-flow), #data[data-hl="other"] [data-out]:not(.df-flow), #data[data-hl="sbyt"] [data-out="kpi"]:not(.df-flow) { stroke-width: 2.6; }
 #data[data-hl="sbyt"] [data-out]:not([data-out="kpi"]), #data[data-hl="so"] [data-out] { opacity: 0.25; }
+
+/* Слайд «Карта ↔ схема»: объект не выбран */
+.sc-open-btn:disabled, .sc-off-btn:disabled, .sc-switch button:disabled { opacity: 0.4; cursor: default; }
+.sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
+.sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 </style>
 </head>
 <body>
@@ -495,7 +500,7 @@ button { font-family: inherit; cursor: pointer; }
       <div id="sc-off-note" aria-live="polite" hidden style="font-size: 16px; line-height: 1.4; color: #FF8A99"></div>
     </section>
 
-    <div style="margin-top: auto; font-size: 15px; line-height: 1.4; color: #A7B2C2">Демонстрационные данные. Нажмите на объект, чтобы выбрать его; двойное нажатие открывает его схему.</div>
+    <div style="margin-top: auto; font-size: 15px; line-height: 1.4; color: #A7B2C2">Демонстрационные данные. <span id="sc-hint"></span></div>
   </aside>
 
   <main style="position: absolute; left: 500px; top: 148px; width: 1380px; height: 944px; transform: scale(0.877); transform-origin: top right; overflow: hidden; border-radius: 16px; border: 1px solid #2d394d; background: #05070b">
@@ -683,47 +688,6 @@ button { font-family: inherit; cursor: pointer; }
   </div>
 
 </section>
-
-<section class="slide" id="effect" style="background: #182233">
-
-  <div data-map="network" data-cx="1440" data-cy="590" data-scale="440" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></div>
-  <div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: linear-gradient(90deg, rgba(24,34,51,0.97) 0%, rgba(24,34,51,0.9) 44%, rgba(24,34,51,0) 72%); pointer-events: none"></div>
-  <div data-nav="5" style="position: absolute; left: 0; top: 1004px; width: 1920px; height: 76px"></div>
-
-  <div style="position: absolute; left: 96px; top: 52px; width: 980px; display: flex; flex-direction: column; gap: 14px">
-    <div style="display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em">
-      <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
-      РОЛЬ СХЕМЫ И ЭФФЕКТ ДЛЯ ГОРОДА
-    </div>
-    <h1 style="margin: 0; font-size: 58px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Город целиком, <span style="color: #FF3D55">а не по фрагментам</span></h1>
-    <p style="margin: 6px 0 0; font-size: 23px; line-height: 1.5; color: #C5CEDB">Цель — собрать данные всех энергокомпаний об объектах энергоснабжения Москвы в одну цифровую модель и вести мониторинг системы электроснабжения города целиком, а не анализировать фрагменты по зонам ответственности РСО.</p>
-  </div>
-
-  <div style="position: absolute; left: 96px; top: 436px; width: 900px; display: flex; flex-direction: column; gap: 16px">
-    <div style="padding: 24px 28px; background: rgba(29,38,54,0.92); display: flex; align-items: center; gap: 24px">
-      <span style="flex: none; font-size: 46px; font-weight: 600; line-height: 1; color: #5FD6A2">01</span>
-      <p style="margin: 0; font-size: 22px; line-height: 1.4">Мониторинг и прогноз потребления электроэнергии не только на отдельных участках, но и всего электросетевого комплекса города Москвы</p>
-    </div>
-    <div style="padding: 24px 28px; background: rgba(29,38,54,0.92); display: flex; align-items: center; gap: 24px">
-      <span style="flex: none; font-size: 46px; font-weight: 600; line-height: 1; color: #5FD6A2">02</span>
-      <p style="margin: 0; font-size: 22px; line-height: 1.4">Моделирование сценариев: аварии, дефицит резервов, пиковые нагрузки</p>
-    </div>
-    <div style="padding: 24px 28px; background: rgba(29,38,54,0.92); display: flex; align-items: center; gap: 24px">
-      <span style="flex: none; font-size: 46px; font-weight: 600; line-height: 1; color: #5FD6A2">03</span>
-      <p style="margin: 0; font-size: 22px; line-height: 1.4">Заблаговременное выявление узких мест и объектов, требующих допмероприятий для подключения</p>
-    </div>
-  </div>
-
-  <div style="position: absolute; left: 96px; bottom: 120px; display: flex; align-items: center; gap: 10px">
-    <span style="height: 44px; padding: 0 20px; display: flex; align-items: center; border-radius: 22px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); font-size: 18px; color: #C5CEDB">ДИТ г. Москвы</span>
-    <span style="height: 44px; padding: 0 20px; display: flex; align-items: center; border-radius: 22px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); font-size: 18px; color: #C5CEDB">2026</span>
-    <a href="#scheme" style="height: 44px; margin-left: 16px; padding: 0 8px; display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; color: #C5CEDB">
-      Вернуться к схеме
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="fill: none; stroke: #C5CEDB; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M3 9h12M10 4l5 5-5 5"></path></svg>
-    </a>
-  </div>
-
-</section>
 </div>
 <script>
 /* Схема электроснабжения — рабочий макет презентации. Без сборки и зависимостей. */
@@ -734,8 +698,7 @@ button { font-family: inherit; cursor: pointer; }
     { id: 'about', name: 'О системе', icon: 'M10 9v5M10 6h.01M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16z' },
     { id: 'data', name: 'Данные', icon: 'M3 5c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3zM3 5v10c0 1.7 3.1 3 7 3s7-1.3 7-3V5M3 10c0 1.7 3.1 3 7 3s7-1.3 7-3' },
     { id: 'scheme', name: 'Карта ↔ схема', icon: 'M2 5l5-2 6 2 5-2v12l-5 2-6-2-5 2zM7 3v12M13 5v12' },
-    { id: 'tasks', name: 'Область применения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' },
-    { id: 'effect', name: 'Эффект', icon: 'M3 17V3M3 17h14M6 13l3-4 3 2 4-6M13 5h3v3' }
+    { id: 'tasks', name: 'Область применения', icon: 'M7 14h6M8 17h4M10 2a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z' }
   ];
 
   /* ---------- Карта Москвы (процедурная, условная) ---------- */
@@ -1043,23 +1006,24 @@ button { font-family: inherit; cursor: pointer; }
           lc: isSel ? '#ffffff' : '#C5CEDB', lw: isSel ? 700 : 500
         };
       });
-      const sn = byId[sel];
+      const sn = sel ? byId[sel] : null; // объект может быть не выбран
       const deadCount = off ? nodes.filter((n) => n.id !== off && dead(n.id)).length : 0;
-      const dl = cache[sel] || (cache[sel] = detailLabels(sn));
-      const selOff = off === sel, selDead = dead(sel);
+      const dl = sn ? (cache[sel] || (cache[sel] = detailLabels(sn))) : { labels: [], hi: CLR[220], lo: CLR[110] };
+      const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
         dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
-        origin: sn.s[0] + 'px ' + sn.s[1] + 'px',
+        origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '690px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
         detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
         detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
-        selTitle: sn.title,
-        selType: sn.type === 'tec' ? 'Электростанция' : 'Подстанция',
-        selCls: sn.cls + ' кВ',
-        selConn: String(lines.filter((l) => l.a === sel || l.b === sel).length),
-        selState: selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением'),
-        selStateColor: (selOff || selDead) ? '#FF8A99' : '#5FD6A2',
+        hasSel: !!sn,
+        selTitle: sn ? sn.title : 'Объект не выбран',
+        selType: !sn ? '—' : (sn.type === 'tec' ? 'Электростанция' : 'Подстанция'),
+        selCls: sn ? sn.cls + ' кВ' : '—',
+        selConn: sn ? String(lines.filter((l) => l.a === sel || l.b === sel).length) : '—',
+        selState: !sn ? '—' : (selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением')),
+        selStateColor: !sn ? '#A7B2C2' : ((selOff || selDead) ? '#FF8A99' : '#5FD6A2'),
         selOff: selOff, hasOff: !!off,
         offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.')) : ''
       };
@@ -1087,7 +1051,7 @@ button { font-family: inherit; cursor: pointer; }
       });
       b.innerHTML = '<span class="sc-box" aria-hidden="true">' + svg + '</svg></span>' +
         '<span class="sc-mk" aria-hidden="true"><i></i></span><span class="sc-label">' + n.title + '</span>';
-      b.addEventListener('click', () => { state.sel = n.id; render(); });
+      b.addEventListener('click', (e) => { e.stopPropagation(); state.sel = state.sel === n.id ? null : n.id; render(); }); // повторный клик снимает выделение
       b.addEventListener('dblclick', () => { state.sel = n.id; go('object'); });
       box.appendChild(b);
       els[n.id] = { el: b, box: b.children[0], mk: b.children[1], gen: b.children[1].firstChild, label: b.children[2] };
@@ -1128,7 +1092,7 @@ button { font-family: inherit; cursor: pointer; }
       net.style.pointerEvents = state.z > 0.01 ? 'none' : '';
       det.style.transformOrigin = v.origin; det.style.transform = v.detTf; det.style.opacity = v.detOp;
       det.style.visibility = state.z > 0.01 ? 'visible' : 'hidden';
-      if (lastSel !== state.sel) {
+      if (state.sel && lastSel !== state.sel) {
         lastSel = state.sel;
         ['hiThin', 'hiFill', 'hiBus', 'loThin', 'loFill', 'loBus'].forEach((k) => {
           const p = $('#sc-d-' + k), c = k.slice(0, 2) === 'hi' ? v.hi : v.lo;
@@ -1157,14 +1121,17 @@ button { font-family: inherit; cursor: pointer; }
       $('#sc-conn').textContent = v.selConn;
       $('#sc-state').textContent = v.selState; $('#sc-state').style.color = v.selStateColor;
       $('#sc-open-btn').textContent = state.view === 'object' ? 'Вернуться к схеме сети' : 'Открыть схему объекта';
-      const btn = $('#sc-off-btn');
-      btn.textContent = v.selOff ? 'Вернуть в работу' : 'Смоделировать отключение';
-      btn.classList.toggle('is-off', v.selOff);
+      $('#sc-open-btn').disabled = !v.hasSel; $('#sc-to-object').disabled = !v.hasSel;
+      const btn = $('#sc-off-btn'), restore = v.selOff || (!v.hasSel && v.hasOff);
+      btn.textContent = restore ? 'Вернуть в работу' : 'Смоделировать отключение';
+      btn.classList.toggle('is-off', restore); btn.disabled = !v.hasSel && !v.hasOff;
+      $('#sc-hint').textContent = v.hasSel ? 'Нажмите на объект ещё раз или на свободное место, чтобы снять выделение.' : 'Нажмите на объект, чтобы выбрать его; двойное нажатие открывает его схему.';
       $('#sc-off-note').hidden = !v.hasOff; $('#sc-off-note').textContent = v.offNote;
     }
 
     let raf = 0;
     function go(view) {
+      if (view === 'object' && !state.sel) return;
       const tT = view === 'map' ? 0 : 1, zT = view === 'object' ? 1 : 0;
       cancelAnimationFrame(raf);
       state.view = view;
@@ -1189,7 +1156,10 @@ button { font-family: inherit; cursor: pointer; }
     }
     ['map', 'scheme', 'object'].forEach((name) => { $('#sc-to-' + name).addEventListener('click', () => go(name)); });
     $('#sc-open-btn').addEventListener('click', () => go(state.view === 'object' ? 'scheme' : 'object'));
-    $('#sc-off-btn').addEventListener('click', () => { state.off = state.off === state.sel ? null : state.sel; render(); });
+    $('#sc-off-btn').addEventListener('click', () => { state.off = (!state.sel || state.off === state.sel) ? null : state.sel; render(); });
+    const deselect = () => { if (state.sel && state.view !== 'object') { state.sel = null; render(); } };
+    $('#sc-net').addEventListener('click', deselect); // клик по свободному месту
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && root.classList.contains('is-active')) deselect(); });
     render();
   }
 
