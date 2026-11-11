@@ -10,23 +10,22 @@ button { font-family: inherit; cursor: pointer; }
 .slide { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; display: none; }
 .slide.is-active { display: block; }
 
-/* Верхняя навигация: группа иконок по центру */
-.deck-nav { width: 1920px; height: 76px; box-sizing: border-box; padding: 0 56px; display: flex; align-items: center; justify-content: space-between; }
-.deck-brand { width: 420px; font-size: 14px; font-weight: 600; letter-spacing: 0.14em; color: #A7B2C2; }
-.deck-side { width: 420px; display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+/* Навигация по слайдам: внизу слева, счётчик и стрелки — внизу справа */
+.deck-nav { width: 1920px; height: 76px; box-sizing: border-box; padding: 0 56px 12px; display: flex; align-items: center; justify-content: space-between; }
+.deck-side { display: flex; align-items: center; gap: 18px; }
 .deck-count { font-size: 16px; font-weight: 600; letter-spacing: 0.04em; color: #C5CEDB; }
-.deck-group { display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px); }
-.deck-tab { height: 48px; min-width: 48px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 24px; color: #ffffff; font-size: 17px; font-weight: 600; }
-.deck-tab svg, .deck-arrow svg { flex: none; fill: none; stroke: #C5CEDB; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.deck-tab span { display: none; white-space: nowrap; }
-.deck-tab:hover { background: rgba(255,255,255,0.1); }
-.deck-tab:hover svg { stroke: #ffffff; }
-.deck-tab.is-on { padding: 0 20px 0 16px; background: rgba(255,255,255,0.16); }
-.deck-tab.is-on svg { stroke: #FF5468; }
-.deck-tab.is-on span { display: inline; }
-.deck-arrow { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 24px; }
-.deck-arrow svg { stroke: #ffffff; stroke-width: 1.8; }
+.deck-group { display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(22,29,43,0.82); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px); }
+.deck-tab { height: 48px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; gap: 9px; border-radius: 24px; color: #C5CEDB; font-size: 17px; font-weight: 500; white-space: nowrap; }
+.deck-tab-num { font-size: 12px; font-weight: 600; color: #A7B2C2; }
+.deck-tab:hover { background: rgba(255,255,255,0.1); color: #ffffff; }
+.deck-tab.is-on { background: rgba(255,255,255,0.16); color: #ffffff; font-weight: 700; }
+.deck-tab.is-on .deck-tab-num { color: #FF8A99; }
+.deck-arrow { width: 56px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 24px; }
+.deck-arrow svg, .deck-full svg { flex: none; fill: none; stroke: #ffffff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .deck-arrow.is-strong, .deck-arrow:hover { background: rgba(255,255,255,0.16); }
+.deck-full { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; display: flex; align-items: center; justify-content: center; }
+.deck-full svg { stroke: #C5CEDB; stroke-width: 1.6; }
+.deck-full:hover { background: rgba(255,255,255,0.1); }
 
 /* Слайд «Карта ↔ схема» */
 .sc-row { display: flex; justify-content: space-between; gap: 12px; }

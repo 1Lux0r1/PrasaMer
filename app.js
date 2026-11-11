@@ -122,17 +122,19 @@
 
   /* ---------- Верхняя навигация ---------- */
   function navHTML(cur) {
-    var h = '<nav class="deck-nav" aria-label="Слайды"><div class="deck-brand">ЦИФРОВОЙ ДВОЙНИК · ЭЛЕКТРОСНАБЖЕНИЕ</div><div class="deck-group">';
+    var h = '<nav class="deck-nav" aria-label="Слайды"><div class="deck-group">';
     SLIDES.forEach(function (sl, i) {
       var on = i === cur;
-      h += '<a href="#' + sl.id + '" class="deck-tab' + (on ? ' is-on' : '') + '" title="' + sl.name + '" aria-label="' + sl.name + '"' + (on ? ' aria-current="page"' : '') + '>' +
-        '<svg width="22" height="22" viewBox="0 0 20 20" aria-hidden="true"><path d="' + sl.icon + '"></path></svg><span>' + sl.name + '</span></a>';
+      h += '<a href="#' + sl.id + '" class="deck-tab' + (on ? ' is-on' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' +
+        '<span class="deck-tab-num">0' + (i + 1) + '</span><span>' + sl.name + '</span></a>';
     });
     var arrow = function (href, label, d, strong) {
       return '<a href="#' + href + '" aria-label="' + label + '" class="deck-arrow' + (strong ? ' is-strong' : '') + '">' +
         '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="' + d + '"></path></svg></a>';
     };
-    h += '</div><div class="deck-side"><div class="deck-count">0' + (cur + 1) + ' / 0' + SLIDES.length + '</div><div class="deck-group">' +
+    h += '</div><div class="deck-side"><button type="button" class="deck-full" data-fullscreen aria-label="Во весь экран">' +
+      '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8V3h5M14 3h5v5M19 14v5h-5M8 19H3v-5"></path></svg></button>' +
+      '<div class="deck-count">0' + (cur + 1) + ' / 0' + SLIDES.length + '</div><div class="deck-group">' +
       arrow(SLIDES[(cur + SLIDES.length - 1) % SLIDES.length].id, 'Предыдущий слайд', 'M11 4L6 9l5 5', false) +
       arrow(SLIDES[(cur + 1) % SLIDES.length].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div></nav>';
     return h;
@@ -792,6 +794,12 @@
       el.innerHTML = mapHTML(el.dataset.map, +el.dataset.cx, +el.dataset.cy, +el.dataset.scale);
     });
     document.querySelectorAll('[data-nav]').forEach(function (el) { el.innerHTML = navHTML(+el.dataset.nav - 1); });
+    document.querySelectorAll('[data-fullscreen]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+      });
+    });
     initScheme(document.getElementById('scheme'));
     initSolutions(document.getElementById('tasks'));
     initData(document.getElementById('data'));
