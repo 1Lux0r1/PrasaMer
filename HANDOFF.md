@@ -19,7 +19,7 @@
 
 ## Отдельный слайд «Баланс дома»
 
-Самостоятельная страница вне презентации, в той же стилистике: исходник `build/standalone/balans-doma.html`, результат — `balans-doma.html` в корне (шрифт встроен, работает без интернета), адрес — https://1lux0r1.github.io/PrasaMer/balans-doma.html. Собирается тем же `node build/assemble.js`. Исходный макет заказчика — файл `.page` с текстами; картинки дома в нём не было, дом нарисован в SVG.
+Самостоятельная страница вне презентации, в той же стилистике: исходник `build/standalone/balans-doma.html`, результат — `balans-doma.html` в корне (шрифт встроен, работает без интернета), адрес — https://1lux0r1.github.io/PrasaMer/balans-doma.html. Собирается тем же `node build/assemble.js`. Сцена (дом в изометрии, трубы, линии данных) генерируется скриптом `build/standalone/house.py` и вставляется между метками `SCENE:BEGIN/END` — править геометрию там, затем `python3 -I build/standalone/house.py && node build/assemble.js`. Исходный макет заказчика — файл `.page` с текстами; картинки дома в нём не было, дом нарисован в SVG.
 
 ## Как вносить правку
 
