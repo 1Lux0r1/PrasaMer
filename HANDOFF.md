@@ -17,6 +17,10 @@
 | Шрифт для офлайн-версии | `fonts/` (Onest, OFL) |
 | Холст-дубликат | https://claude.ai/artifact/3tEZz2p6cHSvaQHv4W3HYC — те же `build/canvas/project/*`; интерактив там работает частично |
 
+## Отдельный слайд «Баланс дома»
+
+Самостоятельная страница вне презентации, в той же стилистике: исходник `build/standalone/balans-doma.html`, результат — `balans-doma.html` в корне (шрифт встроен, работает без интернета), адрес — https://1lux0r1.github.io/PrasaMer/balans-doma.html. Собирается тем же `node build/assemble.js`. Исходный макет заказчика — файл `.page` с текстами; картинки дома в нём не было, дом нарисован в SVG.
+
 ## Как вносить правку
 
 1. Изменить разметку слайда в `build/canvas/project/…dc.html` (или `build/scheme.html`, `build/demos.html`), стили — в `styles.css`, логику — в `app.js`.
