@@ -10,8 +10,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PAGE = os.path.join(HERE, 'balans-doma.html')
 
 # --- геометрия дома: изометрия, видны левая стена (в разрезе), правая стена и крыша
-OX, OY, A, B, H, BASE, N = 1095, 665, 200, 150, 370, 80, 10
 KX, KY = 0.9, 0.3
+OX, OY, A, B, H, BASE, N = 1095, 590, 200, 150, 300, 10, 10
+D = 84                 # глубина подвала и разреза грунта
+GROUND = OY + B * KY   # уровень земли на экране слева от дома
 FH = (H - BASE) / N
 GVS, GVS_D, GVS_L = '#F0B37E', '#7A4E22', '#FFE2BF'
 CO, CO_D, CO_L = '#FF7A8A', '#8A2C3A', '#FFD0D6'
@@ -50,10 +52,21 @@ o.append('<defs>'
          '<radialGradient id="gl"><stop offset="0" stop-color="rgba(255,122,138,0.30)"></stop><stop offset="0.55" stop-color="rgba(240,179,126,0.10)"></stop><stop offset="1" stop-color="rgba(240,179,126,0)"></stop></radialGradient>'
          '</defs>')
 
-# площадка и свечение под домом
-g = 18
-o.append('<ellipse cx="1118" cy="742" rx="250" ry="62" style="fill: url(#gl)"></ellipse>')
-o.append('<path d="%s" style="fill: rgba(29,38,54,0.6); stroke: rgba(255,255,255,0.12)"></path>' % poly([P(-g, -g), P(A + g, -g), P(A + g, B + g), P(-g, B + g)]))
+# земля: поверхность за домом, разрез грунта спереди, подвал под домом
+g = 22
+o.append('<defs><pattern id="soil" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect width="9" height="9" style="fill: #2a2422"></rect><path d="M0 0v9" style="stroke: rgba(255,214,170,0.13); stroke-width: 1.2"></path></pattern>'
+         '<linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#161d2b" stop-opacity="1"></stop><stop offset="1" stop-color="#161d2b" stop-opacity="0"></stop></linearGradient></defs>')
+o.append('<ellipse cx="1118" cy="%.1f" rx="250" ry="56" style="fill: url(#gl)"></ellipse>' % (GROUND + 40))
+o.append('<path d="%s" style="fill: rgba(29,38,54,0.7); stroke: rgba(255,255,255,0.12)"></path>' % poly([P(-g, -g), P(A + g, -g), P(A + g, B), P(-g, B)]))
+o.append('<path d="%s" style="fill: #171312; stroke: rgba(255,255,255,0.14)"></path>' % poly([P(A + g, B, 0), P(A + g, -g, 0), P(A + g, -g, -D), P(A + g, B, -D)]))
+cut = [(536, GROUND), L(0, 0), L(A + g, 0), L(A + g, -D), L(0, -D), (536, GROUND + D)]
+o.append('<path d="%s" style="fill: url(#soil)"></path>' % poly(cut))
+o.append('<rect x="536" y="%.1f" width="110" height="%.1f" style="fill: url(#fade)"></rect>' % (GROUND - 2, D + 4))
+o.append('<path d="%s" style="fill: none; stroke: rgba(255,255,255,0.55); stroke-width: 2"></path>' % line([(560, GROUND), L(0, 0)]))
+o.append('<path d="%s" style="fill: none; stroke: rgba(255,255,255,0.16)"></path>' % line([L(A + g, 0), L(A + g, -D), L(0, -D), (600, GROUND + D)]))
+o.append('<text x="566" y="%.1f" style="fill: #A7B2C2; font-size: 13px">уровень земли</text>' % (GROUND - 10))
+o.append('<path d="%s" style="fill: #070a10; stroke: rgba(255,255,255,0.3); stroke-width: 1.4; stroke-linejoin: round"></path>' % poly([L(0, 0), L(A, 0), L(A, -D), L(0, -D)]))
+o.append('<text x="%.1f" y="%.1f" style="fill: #A7B2C2; font-size: 13px">подвал</text>' % (L(128, -D + 12)[0], L(128, -D + 12)[1]))
 
 # стены и крыша
 o.append('<path d="%s" style="fill: url(#fl); %s"></path>' % (poly([L(0, 0), L(A, 0), L(A, H), L(0, H)]), EDGE))
@@ -96,35 +109,40 @@ for k in range(N):
 o.append('<path d="%s" style="fill: none; stroke: %s; stroke-width: 1.5; opacity: 0.8"></path>' % (bg, GVS))
 o.append('<path d="%s" style="fill: none; stroke: %s; stroke-width: 1.5; opacity: 0.8"></path>' % (bc, CO))
 
-# трубы: ввод в цоколь, вдоль цоколя до шахты, стояк вверх
-YG, YC = 650, 690
-zg, zc = L(0, 0)[1] - YG, L(0, 0)[1] - YC
+# трубы идут под землёй, входят в подвал, по подвалу до шахты и вверх стояками
+YG, YC = GROUND + 28, GROUND + 62
+zg, zc = GROUND - YG, GROUND - YC
 xl = L(0, 0)[0]
+SG, SC = 778, 822   # где на трубах стоят датчики приборов учёта
 o.append(tube(line([L(0, zg), L(91, zg), L(91, H - 10)]), GVS, GVS_D, 7.5, 'flowB'))
 o.append(tube(line([L(0, zc), L(109, zc), L(109, H - 10)]), CO, CO_D, 7.5, 'flowB'))
 o.append('<path d="%s" style="fill: none; stroke: rgba(255,255,255,0.6); stroke-width: 1.6"></path>' % line([L(A, 0), L(A, H)]))
-o.append(tube('M506 %d H%.1f' % (YG, xl), GVS, GVS_D, 15))
-o.append(tube('M506 %d H%.1f' % (YC, xl), CO, CO_D, 15))
-for x in (530, 700, 905):
+o.append('<path d="M%d %.1fV%.1f" style="stroke: %s; stroke-width: 1.6; stroke-dasharray: 3 4"></path>' % (SC, 604, YC, TEAL))
+o.append(tube('M506 %.1f H%.1f' % (YG, xl), GVS, GVS_D, 15))
+o.append(tube('M506 %.1f H%.1f' % (YC, xl), CO, CO_D, 15))
+o.append('<path d="M%d %.1fV%.1f" style="stroke: %s; stroke-width: 1.6; stroke-dasharray: 3 4"></path>' % (SG, 604, YG - 9, TEAL))
+for x in (566, 900):
     o.append(flange(x, YG, 15, GVS_L, GVS_D) + flange(x, YC, 15, CO_L, CO_D))
 o.append('<rect x="%.1f" y="%.1f" width="12" height="27" rx="3" style="fill: %s; stroke: %s; stroke-width: 1.5"></rect>' % (xl - 8, YG - 13.5, GVS_L, GVS_D))
 o.append('<rect x="%.1f" y="%.1f" width="12" height="27" rx="3" style="fill: %s; stroke: %s; stroke-width: 1.5"></rect>' % (xl - 8, YC - 13.5, CO_L, CO_D))
+for (x, y) in ((SG, YG), (SC, YC)):
+    o.append('<rect x="%.1f" y="%.1f" width="13" height="25" rx="4" style="fill: #0c1118; stroke: %s; stroke-width: 2; filter: drop-shadow(0 0 6px rgba(124,207,208,0.7))"></rect>' % (x - 6.5, y - 12.5, TEAL))
 
-# узел учёта
-o.append('<rect x="740" y="616" width="120" height="108" rx="16" style="fill: rgba(12,17,24,0.9); stroke: %s; stroke-width: 1.5; filter: drop-shadow(0 0 10px rgba(124,207,208,0.45))"></rect>' % TEAL)
-o.append('<text x="812" y="604" style="fill: %s; font-size: 15px; font-weight: 700; letter-spacing: 0.06em">ОДПУ</text>' % TEAL)
-for (y, c) in ((YG, GVS), (YC, CO)):
-    o.append('<g transform="translate(800 %d)"><circle r="17" style="fill: #0c1118; stroke: %s; stroke-width: 3"></circle>'
+# приборы учёта: над землёй, датчики — на трубах
+o.append('<rect x="740" y="546" width="120" height="58" rx="16" style="fill: rgba(12,17,24,0.92); stroke: %s; stroke-width: 1.5; filter: drop-shadow(0 0 10px rgba(124,207,208,0.45))"></rect>' % TEAL)
+o.append('<text x="812" y="534" style="fill: %s; font-size: 15px; font-weight: 700; letter-spacing: 0.06em">ОДПУ</text>' % TEAL)
+for (x, c) in ((SG, GVS), (SC, CO)):
+    o.append('<g transform="translate(%d 575)"><circle r="17" style="fill: #0c1118; stroke: %s; stroke-width: 3"></circle>'
              '<path d="M-11 0h3M8 0h3M0 -11v3M-8 -8l2 2M8 -8l-2 2" style="fill: none; stroke: rgba(255,255,255,0.45); stroke-width: 1.4; stroke-linecap: round"></path>'
-             '<path class="needle" d="M0 3V-10" style="fill: none; stroke: #ffffff; stroke-width: 2.2; stroke-linecap: round"></path><circle r="2.4" style="fill: #ffffff"></circle></g>' % (y, c))
+             '<path class="needle" d="M0 3V-10" style="fill: none; stroke: #ffffff; stroke-width: 2.2; stroke-linecap: round"></path><circle r="2.4" style="fill: #ffffff"></circle></g>' % (x, c))
 
 # данные в АСУПР и подтверждённые объёмы
 rso = 'M506 385H640Q660 385 660 365V330Q660 310 680 310H709'
-odpu = 'M800 616V392'
+odpu = 'M800 546V392'
 o.append('<g style="fill: none; stroke: %s; stroke-width: 1.8; stroke-dasharray: 6 6; opacity: 0.7"><path d="%s"></path><path d="%s"></path></g>' % (TEAL, rso, odpu))
 o.append('<g style="fill: none; stroke: %s; stroke-width: 2.6"><path class="flow" d="%s"></path><path class="flow" d="%s"></path></g>' % (TEAL, rso, odpu))
 o.append('<text x="520" y="374" style="fill: #A7B2C2; font-size: 14px">данные РСО</text>')
-o.append('<text x="814" y="508" style="fill: #A7B2C2; font-size: 14px">показания ОДПУ</text>')
+o.append('<text x="814" y="474" style="fill: #A7B2C2; font-size: 14px">показания ОДПУ</text>')
 o.append('<path d="M877 250H1378" marker-end="url(#arr)" style="fill: none; stroke: #5FD6A2; stroke-width: 2"></path>')
 o.append('<path class="flow" d="M877 250H1370" style="fill: none; stroke: #5FD6A2; stroke-width: 2.6"></path>')
 o.append('<text x="1128" y="238" style="fill: #A7B2C2; font-size: 14px; text-anchor: middle">подтверждённые объёмы</text>')
