@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Баланс дома — учёт тепловой энергии</title>
+<!--FONTS-->
+<style>
+html, body { height: 100%; }
+body { margin: 0; overflow: hidden; background: #0d1118; color: #ffffff; font-family: 'Onest', system-ui, sans-serif; }
+button { font-family: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid #8FB4F0; outline-offset: 2px; }
+#stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; background: #161d2b; transform-origin: center center; }
+
+.rubric { display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em; }
+.rubric i { width: 6px; height: 20px; background: #FF2D46; }
+h1 { margin: 0; font-size: 56px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; }
+.lead { margin: 0; font-size: 24px; line-height: 1.4; color: #C5CEDB; }
+.plan { position: absolute; right: 96px; top: 44px; height: 76px; box-sizing: border-box; padding: 0 34px 0 28px; display: flex; align-items: center; gap: 16px; border-radius: 20px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.10); box-shadow: 0 0 26px rgba(230,215,42,0.14), inset 0 1px 0 rgba(255,255,255,0.10); font-size: 30px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; color: #F2E76A; }
+.plan i { flex: none; width: 14px; height: 14px; border-radius: 50%; background: #F2E76A; box-shadow: 0 0 0 6px rgba(230,215,42,0.18), 0 0 14px rgba(230,215,42,0.9); }
+
+.card { position: absolute; top: 210px; width: 440px; height: 640px; box-sizing: border-box; border-radius: 20px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); }
+.card h2 { position: absolute; left: 30px; right: 30px; top: 28px; margin: 0; font-size: 32px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em; }
+.card .sub { position: absolute; left: 30px; right: 30px; margin: 0; font-size: 18px; line-height: 1.35; color: #C5CEDB; }
+.label { position: absolute; left: 30px; font-size: 14px; font-weight: 700; letter-spacing: 0.06em; color: #A7B2C2; }
+.row { position: absolute; left: 30px; right: 30px; box-sizing: border-box; padding: 0 16px; display: flex; align-items: center; gap: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); font-size: 19px; }
+.row i { flex: none; width: 12px; height: 12px; border-radius: 3px; }
+.row b { font-weight: 700; }
+.row span { color: #C5CEDB; }
+.out { position: absolute; left: 30px; right: 30px; height: 76px; box-sizing: border-box; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid rgba(255,255,255,0.10); font-size: 22px; }
+.out svg { flex: none; fill: none; stroke: #5FD6A2; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.equal { position: absolute; left: 30px; right: 30px; top: 490px; height: 120px; box-sizing: border-box; padding: 0 22px; display: flex; align-items: center; gap: 20px; border-radius: 16px; background: rgba(95,214,162,0.10); border: 1px solid rgba(95,214,162,0.4); font-size: 19px; line-height: 1.35; color: #C5CEDB; }
+.equal b { flex: none; font-size: 64px; font-weight: 800; line-height: 1; color: #5FD6A2; }
+
+.node { position: absolute; left: 868px; top: 238px; width: 184px; height: 184px; box-sizing: border-box; border-radius: 50%; border: 1px solid rgba(255,255,255,0.32); background: radial-gradient(circle at 50% 35%, #232e42 0%, #10151f 72%); box-shadow: 0 0 60px rgba(255,45,70,0.2), inset 0 1px 0 rgba(255,255,255,0.14); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+.node svg { fill: none; stroke: #FF5468; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.node b { font-size: 30px; font-weight: 800; letter-spacing: 0.02em; line-height: 1; }
+.node span { font-size: 14px; line-height: 1.25; color: #C5CEDB; }
+
+.status { position: absolute; left: 50%; top: 786px; transform: translateX(-50%); height: 52px; padding: 0 26px; display: flex; align-items: center; gap: 22px; border-radius: 26px; background: rgba(22,29,43,0.9); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); font-size: 18px; font-weight: 700; white-space: nowrap; }
+.status span { display: flex; align-items: center; gap: 10px; color: #5FD6A2; }
+.status .dot { width: 10px; height: 10px; border-radius: 50%; background: #5FD6A2; box-shadow: 0 0 10px rgba(95,214,162,0.9); }
+.status .sep { width: 1px; height: 26px; background: rgba(255,255,255,0.22); }
+.status svg { fill: none; stroke: #F5A04A; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.foot { position: absolute; top: 878px; width: 852px; height: 118px; box-sizing: border-box; padding: 0 32px; display: flex; flex-direction: column; justify-content: center; gap: 8px; border-radius: 20px; background: rgba(29,38,54,0.88); border: 1px solid rgba(255,255,255,0.12); border-top: 2px solid #B3263A; }
+.foot b { font-size: 24px; font-weight: 700; line-height: 1.2; }
+.foot span { font-size: 18px; line-height: 1.4; color: #C5CEDB; }
+
+.full { position: absolute; right: 96px; top: 1014px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; display: flex; align-items: center; justify-content: center; }
+.full:hover { background: rgba(255,255,255,0.1); }
+.full svg { fill: none; stroke: #C5CEDB; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.flow { stroke-dasharray: 3 16; stroke-linecap: round; animation: run 1.8s linear infinite; }
+@keyframes run { to { stroke-dashoffset: -19; } }
+@media (prefers-reduced-motion: reduce) { .flow { animation: none; } }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <header style="position: absolute; left: 96px; top: 40px; width: 1300px; display: flex; flex-direction: column; gap: 10px">
+    <div class="rubric"><i aria-hidden="true"></i>РАЗВИТИЕ УЧЁТА РЕСУРСОВ</div>
+    <h1>«Баланс дома»</h1>
+    <p class="lead">Расчёт «Баланса дома» обеспечит прозрачность учёта тепловой энергии.</p>
+  </header>
+  <div class="plan"><i aria-hidden="true"></i>План на 2027</div>
+
+  <section class="card" style="left: 96px">
+    <h2>Поступило в дом</h2>
+    <p class="sub" style="top: 74px">Объём по общедомовому учёту</p>
+    <div class="label" style="top: 172px">ИСТОЧНИКИ ДАННЫХ</div>
+    <div class="row" style="top: 204px; height: 46px"><i aria-hidden="true" style="background: #7CCFD0"></i>Данные РСО</div>
+    <div class="row" style="top: 258px; height: 46px"><i aria-hidden="true" style="background: #7CCFD0"></i>Показания ОДПУ</div>
+    <div class="label" style="top: 404px">РЕСУРСЫ</div>
+    <div class="row" style="top: 436px; height: 44px"><i aria-hidden="true" style="background: #F0B37E"></i><b>ГВС</b><span>горячее водоснабжение</span></div>
+    <div class="row" style="top: 484px; height: 44px"><i aria-hidden="true" style="background: #FF7A8A"></i><b>ЦО</b><span>центральное отопление</span></div>
+  </section>
+
+  <section class="card" style="left: 1384px">
+    <h2>Подтверждено и распределено</h2>
+    <div class="out" style="top: 138px"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.8 2.8L16 9.5"></path></svg>Жилые помещения</div>
+    <div class="out" style="top: 214px"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.8 2.8L16 9.5"></path></svg>Нежилые помещения</div>
+    <div class="out" style="top: 290px"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.8 2.8L16 9.5"></path></svg>Прямые договоры с РСО</div>
+    <div class="out" style="top: 366px; border-bottom: 0"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.8 2.8L16 9.5"></path></svg>Общедомовые нужды</div>
+    <div class="equal"><b aria-hidden="true">=</b><span>Распределённый объём равен объёму, поступившему в дом</span></div>
+  </section>
+
+  <svg viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="ГВС и ЦО поступают в дом через общедомовые приборы учёта; показания и данные РСО передаются в АСУПР, которая рассчитывает баланс и передаёт подтверждённые объёмы" style="position: absolute; left: 0; top: 0; display: block; pointer-events: none; font-family: inherit">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M1 1l7 4-7 4" style="fill: none; stroke: #5FD6A2; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round"></path></marker>
+    </defs>
+
+    <!-- дом -->
+    <path d="M560 760H1360" style="stroke: #2d394d; stroke-width: 2"></path>
+    <rect x="800" y="452" width="320" height="308" style="fill: #10151f; stroke: rgba(255,255,255,0.3); stroke-width: 1.5"></rect>
+    <rect x="788" y="438" width="344" height="14" rx="3" style="fill: #1d2636; stroke: rgba(255,255,255,0.3); stroke-width: 1.5"></rect>
+    <path d="M800 650H1120" style="stroke: rgba(255,255,255,0.18); stroke-dasharray: 4 6"></path>
+    <g style="fill: rgba(240,179,126,0.14); stroke: rgba(255,255,255,0.14)">
+      <path d="M872 474h36v28h-36zM928 474h36v28h-36zM984 474h36v28h-36zM1040 474h36v28h-36zM872 518h36v28h-36zM928 518h36v28h-36zM984 518h36v28h-36zM1040 518h36v28h-36zM872 562h36v28h-36zM928 562h36v28h-36zM984 562h36v28h-36zM1040 562h36v28h-36zM872 606h36v28h-36zM928 606h36v28h-36zM984 606h36v28h-36zM1040 606h36v28h-36z"></path>
+    </g>
+    <path d="M928 474h36v28h-36zM1040 518h36v28h-36zM872 562h36v28h-36zM984 606h36v28h-36zM984 474h36v28h-36z" style="fill: rgba(240,179,126,0.5)"></path>
+
+    <!-- узел учёта -->
+    <rect x="630" y="640" width="120" height="104" rx="12" style="fill: rgba(16,21,31,0.94); stroke: #7CCFD0; stroke-width: 1.5; stroke-dasharray: 5 4"></rect>
+    <text x="702" y="628" style="fill: #7CCFD0; font-size: 15px; font-weight: 700; letter-spacing: 0.06em">ОДПУ</text>
+
+    <!-- трубы ГВС и ЦО -->
+    <g style="fill: none; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round">
+      <path d="M506 668H836V470" style="stroke: #F0B37E; filter: drop-shadow(0 0 6px rgba(240,179,126,0.6))"></path>
+      <path d="M506 716H1084V470" style="stroke: #FF7A8A; filter: drop-shadow(0 0 6px rgba(255,122,138,0.6))"></path>
+    </g>
+    <g style="fill: none; stroke: #ffffff; stroke-width: 2.4; opacity: 0.85">
+      <path class="flow" d="M506 668H836V470"></path>
+      <path class="flow" d="M506 716H1084V470"></path>
+    </g>
+    <g style="fill: #10151f; stroke-width: 2.5">
+      <circle cx="690" cy="668" r="15" style="stroke: #F0B37E"></circle>
+      <circle cx="690" cy="716" r="15" style="stroke: #FF7A8A"></circle>
+    </g>
+    <path d="M690 668l7-8M690 716l8-5" style="fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round"></path>
+
+    <!-- данные в АСУПР -->
+    <g style="fill: none; stroke: #7CCFD0; stroke-width: 1.8; stroke-dasharray: 6 6; opacity: 0.7">
+      <path d="M506 437H600Q620 437 620 417V330Q620 310 640 310H870"></path>
+      <path d="M690 640V380Q690 350 720 350H870"></path>
+    </g>
+    <g style="fill: none; stroke: #7CCFD0; stroke-width: 2.6">
+      <path class="flow" d="M506 437H600Q620 437 620 417V330Q620 310 640 310H870"></path>
+      <path class="flow" d="M690 640V380Q690 350 720 350H870"></path>
+    </g>
+    <text x="646" y="300" style="fill: #A7B2C2; font-size: 14px">данные РСО</text>
+    <text x="726" y="372" style="fill: #A7B2C2; font-size: 14px">показания ОДПУ</text>
+
+    <!-- подтверждённые объёмы -->
+    <path d="M1052 330H1378" marker-end="url(#arr)" style="fill: none; stroke: #5FD6A2; stroke-width: 2"></path>
+    <path class="flow" d="M1052 330H1370" style="fill: none; stroke: #5FD6A2; stroke-width: 2.6"></path>
+    <text x="1216" y="318" style="fill: #A7B2C2; font-size: 14px; text-anchor: middle">подтверждённые объёмы</text>
+  </svg>
+
+  <div class="node">
+    <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"></path></svg>
+    <b>АСУПР</b>
+    <span>считывает<br>и рассчитывает</span>
+  </div>
+
+  <div class="status">
+    <span><i class="dot" aria-hidden="true"></i>Баланс подтверждён</span>
+    <i class="sep" aria-hidden="true"></i>
+    <span><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3L2 20h20zM12 10v4M12 17h.01"></path></svg>Под контролем</span>
+  </div>
+
+  <div class="foot" style="left: 96px"><b>Корректность расчётов с жителями</b><span>Без необоснованных объёмов за общедомовые помещения и неучтённые расходы.</span></div>
+  <div class="foot" style="left: 972px"><b>Управляющая компания использует</b><span>только подтверждённые объёмы потребления.</span></div>
+
+  <button type="button" class="full" id="full" aria-label="Во весь экран"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8V3h5M14 3h5v5M19 14v5h-5M8 19H3v-5"></path></svg></button>
+</div>
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  function fit() { stage.style.transform = 'translate(-50%, -50%) scale(' + Math.min(window.innerWidth / 1920, window.innerHeight / 1080) + ')'; }
+  window.addEventListener('resize', fit); fit();
+  document.getElementById('full').addEventListener('click', function () {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  });
+})();
+</script>
+</body>
+</html>
