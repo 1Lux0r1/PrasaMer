@@ -79,9 +79,9 @@ h1 { margin: 0; font-size: 56px; line-height: 1.1; font-weight: 800; letter-spac
     <div class="label" style="top: 172px">ИСТОЧНИКИ ДАННЫХ</div>
     <div class="row" style="top: 204px; height: 46px"><i aria-hidden="true" style="background: #7CCFD0"></i>Данные РСО</div>
     <div class="row" style="top: 258px; height: 46px"><i aria-hidden="true" style="background: #7CCFD0"></i>Показания ОДПУ</div>
-    <div class="label" style="top: 404px">РЕСУРСЫ</div>
-    <div class="row" style="top: 436px; height: 44px"><i aria-hidden="true" style="background: #F0B37E"></i><b>ГВС</b><span>горячее водоснабжение</span></div>
-    <div class="row" style="top: 484px; height: 44px"><i aria-hidden="true" style="background: #FF7A8A"></i><b>ЦО</b><span>центральное отопление</span></div>
+    <div class="label" style="top: 380px">РЕСУРСЫ</div>
+    <div class="row" style="top: 412px; height: 36px; font-size: 18px"><i aria-hidden="true" style="background: #F0B37E"></i><b>ГВС</b><span>горячее водоснабжение</span></div>
+    <div class="row" style="top: 452px; height: 36px; font-size: 18px"><i aria-hidden="true" style="background: #FF7A8A"></i><b>ЦО</b><span>центральное отопление</span></div>
   </section>
 
   <section class="card" style="left: 1384px">
@@ -98,43 +98,50 @@ h1 { margin: 0; font-size: 56px; line-height: 1.1; font-weight: 800; letter-spac
       <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M1 1l7 4-7 4" style="fill: none; stroke: #5FD6A2; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round"></path></marker>
     </defs>
 
-    <!-- дом -->
-    <path d="M560 760H1360" style="stroke: #2d394d; stroke-width: 2"></path>
-    <rect x="800" y="452" width="320" height="308" style="fill: #10151f; stroke: rgba(255,255,255,0.3); stroke-width: 1.5"></rect>
-    <rect x="788" y="438" width="344" height="14" rx="3" style="fill: #1d2636; stroke: rgba(255,255,255,0.3); stroke-width: 1.5"></rect>
-    <path d="M800 650H1120" style="stroke: rgba(255,255,255,0.18); stroke-dasharray: 4 6"></path>
-    <g style="fill: rgba(240,179,126,0.14); stroke: rgba(255,255,255,0.14)">
-      <path d="M872 474h36v28h-36zM928 474h36v28h-36zM984 474h36v28h-36zM1040 474h36v28h-36zM872 518h36v28h-36zM928 518h36v28h-36zM984 518h36v28h-36zM1040 518h36v28h-36zM872 562h36v28h-36zM928 562h36v28h-36zM984 562h36v28h-36zM1040 562h36v28h-36zM872 606h36v28h-36zM928 606h36v28h-36zM984 606h36v28h-36zM1040 606h36v28h-36z"></path>
-    </g>
-    <path d="M928 474h36v28h-36zM1040 518h36v28h-36zM872 562h36v28h-36zM984 606h36v28h-36zM984 474h36v28h-36z" style="fill: rgba(240,179,126,0.5)"></path>
+    <!-- дом (изометрия) -->
+    <path d="M946.0 639.4L1163.8 712.0L973.0 775.6L755.2 703.0Z" style="fill: rgba(29,38,54,0.55); stroke: rgba(255,255,255,0.10)"></path>
+    <path d="M1117.0 712.0L1138.1 719.0L994.1 767.0L973.0 760.0Z" style="fill: rgba(0,0,0,0.28)"></path>
+    <defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3650"></stop><stop offset="1" stop-color="#1a2233"></stop></linearGradient><linearGradient id="fr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2435"></stop><stop offset="1" stop-color="#0f141e"></stop></linearGradient><linearGradient id="ft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a4864"></stop><stop offset="1" stop-color="#2a3650"></stop></linearGradient></defs>
+    <path d="M802.0 703.0L973.0 760.0L973.0 554.0L802.0 497.0Z" style="fill: url(#fl); stroke: rgba(255,255,255,0.34); stroke-width: 1.4; stroke-linejoin: round"></path>
+    <path d="M973.0 760.0L1117.0 712.0L1117.0 506.0L973.0 554.0Z" style="fill: url(#fr); stroke: rgba(255,255,255,0.34); stroke-width: 1.4; stroke-linejoin: round"></path>
+    <path d="M946.0 449.0L1117.0 506.0L973.0 554.0L802.0 497.0Z" style="fill: url(#ft); stroke: rgba(255,255,255,0.34); stroke-width: 1.4; stroke-linejoin: round"></path>
+    <path d="M946.0 457.4L1091.8 506.0L973.0 545.6L827.2 497.0Z" style="fill: none; stroke: rgba(255,255,255,0.22)"></path>
+    <path d="M901.0 488.0L946.0 503.0L946.0 487.0L901.0 472.0Z" style="fill: #1a2233; stroke: rgba(255,255,255,0.34); stroke-width: 1.4; stroke-linejoin: round"></path>
+    <path d="M946.0 503.0L991.0 488.0L991.0 472.0L946.0 487.0Z" style="fill: #121925; stroke: rgba(255,255,255,0.34); stroke-width: 1.4; stroke-linejoin: round"></path>
+    <path d="M946.0 457.0L991.0 472.0L946.0 487.0L901.0 472.0Z" style="fill: #33405a; stroke: rgba(255,255,255,0.34); stroke-width: 1.4; stroke-linejoin: round"></path>
+    <path d="M802.0 627.0L973.0 684.0L1117.0 636.0M802.0 594.5L973.0 651.5L1117.0 603.5M802.0 562.0L973.0 619.0L1117.0 571.0M802.0 529.5L973.0 586.5L1117.0 538.5" style="fill: none; stroke: rgba(255,255,255,0.12)"></path>
+    <path d="M802.0 703.0L973.0 760.0L973.0 684.0L802.0 627.0Z" style="fill: rgba(8,11,17,0.35)"></path>
+    <path d="M973.0 760.0L1117.0 712.0L1117.0 636.0L973.0 684.0Z" style="fill: rgba(8,11,17,0.35)"></path>
+    <path d="M832.6 629.2L854.2 636.4L854.2 618.9L832.6 611.7ZM893.8 649.6L915.4 656.8L915.4 639.3L893.8 632.1ZM924.4 659.8L946.0 667.0L946.0 649.5L924.4 642.3ZM1021.6 659.8L1041.4 653.2L1041.4 635.7L1021.6 642.3ZM1054.0 649.0L1073.8 642.4L1073.8 624.9L1054.0 631.5ZM1086.4 638.2L1106.2 631.6L1106.2 614.1L1086.4 620.7ZM863.2 606.9L884.8 614.1L884.8 596.6L863.2 589.4ZM893.8 617.1L915.4 624.3L915.4 606.8L893.8 599.6ZM924.4 627.3L946.0 634.5L946.0 617.0L924.4 609.8ZM989.2 638.1L1009.0 631.5L1009.0 614.0L989.2 620.6ZM1021.6 627.3L1041.4 620.7L1041.4 603.2L1021.6 609.8ZM1086.4 605.7L1106.2 599.1L1106.2 581.6L1086.4 588.2ZM832.6 564.2L854.2 571.4L854.2 553.9L832.6 546.7ZM863.2 574.4L884.8 581.6L884.8 564.1L863.2 556.9ZM893.8 584.6L915.4 591.8L915.4 574.3L893.8 567.1ZM989.2 605.6L1009.0 599.0L1009.0 581.5L989.2 588.1ZM1021.6 594.8L1041.4 588.2L1041.4 570.7L1021.6 577.3ZM1054.0 584.0L1073.8 577.4L1073.8 559.9L1054.0 566.5ZM832.6 531.7L854.2 538.9L854.2 521.4L832.6 514.2ZM863.2 541.9L884.8 549.1L884.8 531.6L863.2 524.4ZM924.4 562.3L946.0 569.5L946.0 552.0L924.4 544.8ZM989.2 573.1L1009.0 566.5L1009.0 549.0L989.2 555.6ZM1054.0 551.5L1073.8 544.9L1073.8 527.4L1054.0 534.0ZM1086.4 540.7L1106.2 534.1L1106.2 516.6L1086.4 523.2Z" style="fill: rgba(143,180,240,0.10); stroke: rgba(255,255,255,0.14); stroke-width: 0.8"></path>
+    <path d="M863.2 639.4L884.8 646.6L884.8 629.1L863.2 621.9ZM989.2 670.6L1009.0 664.0L1009.0 646.5L989.2 653.1ZM832.6 596.7L854.2 603.9L854.2 586.4L832.6 579.2ZM1054.0 616.5L1073.8 609.9L1073.8 592.4L1054.0 599.0ZM924.4 594.8L946.0 602.0L946.0 584.5L924.4 577.3ZM1086.4 573.2L1106.2 566.6L1106.2 549.1L1086.4 555.7ZM893.8 552.1L915.4 559.3L915.4 541.8L893.8 534.6ZM1021.6 562.3L1041.4 555.7L1041.4 538.2L1021.6 544.8Z" style="fill: rgba(240,179,126,0.62); filter: drop-shadow(0 0 5px rgba(240,179,126,0.55))"></path>
 
     <!-- узел учёта -->
-    <rect x="630" y="640" width="120" height="104" rx="12" style="fill: rgba(16,21,31,0.94); stroke: #7CCFD0; stroke-width: 1.5; stroke-dasharray: 5 4"></rect>
-    <text x="702" y="628" style="fill: #7CCFD0; font-size: 15px; font-weight: 700; letter-spacing: 0.06em">ОДПУ</text>
+    <rect x="630" y="612" width="120" height="96" rx="12" style="fill: rgba(16,21,31,0.94); stroke: #7CCFD0; stroke-width: 1.5; stroke-dasharray: 5 4"></rect>
+    <text x="702" y="600" style="fill: #7CCFD0; font-size: 15px; font-weight: 700; letter-spacing: 0.06em">ОДПУ</text>
 
     <!-- трубы ГВС и ЦО -->
     <g style="fill: none; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round">
-      <path d="M506 668H836V470" style="stroke: #F0B37E; filter: drop-shadow(0 0 6px rgba(240,179,126,0.6))"></path>
-      <path d="M506 716H1084V470" style="stroke: #FF7A8A; filter: drop-shadow(0 0 6px rgba(255,122,138,0.6))"></path>
+      <path d="M506 640 H802.0 L816.4 644.8 L816.4 515.8" style="stroke: #F0B37E; filter: drop-shadow(0 0 6px rgba(240,179,126,0.6))"></path>
+      <path d="M506 680 H802.0 L960.4 732.8 L960.4 563.8" style="stroke: #FF7A8A; filter: drop-shadow(0 0 6px rgba(255,122,138,0.6))"></path>
     </g>
     <g style="fill: none; stroke: #ffffff; stroke-width: 2.4; opacity: 0.85">
-      <path class="flow" d="M506 668H836V470"></path>
-      <path class="flow" d="M506 716H1084V470"></path>
+      <path class="flow" d="M506 640 H802.0 L816.4 644.8 L816.4 515.8"></path>
+      <path class="flow" d="M506 680 H802.0 L960.4 732.8 L960.4 563.8"></path>
     </g>
     <g style="fill: #10151f; stroke-width: 2.5">
-      <circle cx="690" cy="668" r="15" style="stroke: #F0B37E"></circle>
-      <circle cx="690" cy="716" r="15" style="stroke: #FF7A8A"></circle>
+      <circle cx="690" cy="640" r="15" style="stroke: #F0B37E"></circle>
+      <circle cx="690" cy="680" r="15" style="stroke: #FF7A8A"></circle>
     </g>
-    <path d="M690 668l7-8M690 716l8-5" style="fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round"></path>
+    <path d="M690 640l7-8M690 680l8-5" style="fill: none; stroke: #ffffff; stroke-width: 2; stroke-linecap: round"></path>
 
     <!-- данные в АСУПР -->
     <g style="fill: none; stroke: #7CCFD0; stroke-width: 1.8; stroke-dasharray: 6 6; opacity: 0.7">
       <path d="M506 437H600Q620 437 620 417V330Q620 310 640 310H870"></path>
-      <path d="M690 640V380Q690 350 720 350H870"></path>
+      <path d="M690 612V380Q690 350 720 350H870"></path>
     </g>
     <g style="fill: none; stroke: #7CCFD0; stroke-width: 2.6">
       <path class="flow" d="M506 437H600Q620 437 620 417V330Q620 310 640 310H870"></path>
-      <path class="flow" d="M690 640V380Q690 350 720 350H870"></path>
+      <path class="flow" d="M690 612V380Q690 350 720 350H870"></path>
     </g>
     <text x="646" y="300" style="fill: #A7B2C2; font-size: 14px">данные РСО</text>
     <text x="726" y="372" style="fill: #A7B2C2; font-size: 14px">показания ОДПУ</text>
