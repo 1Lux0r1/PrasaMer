@@ -68,7 +68,7 @@ fs.writeFileSync(out, `<!doctype html>
   // Отдельные самостоятельные слайды: build/standalone/*.html -> корень репозитория, шрифт встраивается
   const sa = path.join(__dirname, 'standalone');
   if (fs.existsSync(sa)) fs.readdirSync(sa).filter((f) => f.endsWith('.html')).forEach((f) => {
-    fs.writeFileSync(path.join(dir, f), fs.readFileSync(path.join(sa, f), 'utf8').replace('<!--FONTS-->', () => '<style>\n' + fontCss + '\n</style>'));
+    fs.writeFileSync(path.join(dir, f), fs.readFileSync(path.join(sa, f), 'utf8').replace('<!--FONTS-->', () => '<style>\n' + fontCss + '\n</style>').split('img/moscow-base.svg').join('data:image/svg+xml;base64,' + b64('img/moscow-base.svg')));
     console.log('ok', f);
   });
   console.log('ok offline.html', Math.round(page.length / 1024) + ' KB');
