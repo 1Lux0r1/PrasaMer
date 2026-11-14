@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Название слайда</title>
+<!--FONTS-->
+<style>
+:root { --bg: #1b2435; --panel: rgba(29,38,54,0.88); --line: rgba(255,255,255,0.12); --text: #ffffff; --text2: #C5CEDB; --text3: #8794A8; --red: #FF2D46; --done: #5FD6A2; --plan: #F2C24C; }
+html, body { height: 100%; }
+body { margin: 0; overflow: hidden; background: #0d1118; color: var(--text); font-family: 'Onest', system-ui, sans-serif; }
+button { font-family: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid #8FB4F0; outline-offset: 2px; }
+/* сцена 1920×1080 масштабируется под окно — вёрстка в абсолютных пикселях */
+#stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); transform-origin: center center; }
+.rubric { position: absolute; left: 96px; top: 60px; display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 700; letter-spacing: 0.06em; }
+.rubric i { width: 6px; height: 20px; background: var(--red); }
+h1 { position: absolute; left: 96px; top: 104px; margin: 0; font-size: 56px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; }
+.lead { position: absolute; left: 96px; top: 184px; width: 1100px; margin: 0; font-size: 24px; line-height: 1.4; color: var(--text2); }
+.card { position: absolute; box-sizing: border-box; padding: 28px 30px; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08); }
+.card h2 { margin: 0 0 10px; font-size: 30px; font-weight: 800; }
+.card p { margin: 0; font-size: 19px; line-height: 1.4; color: var(--text2); }
+.full { position: absolute; right: 96px; top: 1014px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; display: flex; align-items: center; justify-content: center; }
+.full:hover { background: rgba(255,255,255,0.1); }
+.full svg { fill: none; stroke: var(--text2); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="rubric"><i></i>РУБРИКА</div>
+  <h1>Заголовок слайда</h1>
+  <p class="lead">Одна мысль слайда — одним предложением.</p>
+  <div class="card" style="left: 96px; top: 300px; width: 560px; height: 260px"><h2>Блок</h2><p>Текст блока.</p></div>
+  <button class="full" id="full" aria-label="На весь экран"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+</div>
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  function fit() { var k = Math.min(innerWidth / 1920, innerHeight / 1080); stage.style.transform = 'translate(-50%, -50%) scale(' + k + ')'; }
+  addEventListener('resize', fit); fit();
+  document.getElementById('full').onclick = function () { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); };
+})();
+</script>
+</body>
+</html>
