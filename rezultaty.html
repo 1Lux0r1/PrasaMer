@@ -20,11 +20,11 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
 #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; background: #1b2435; transform-origin: center center; }
 
 /* геоподложка: карта Москвы, центр города совпадает с центром круга */
-.geo { position: absolute; left: 246px; top: -5px; width: 2000px; height: 1175px; mix-blend-mode: lighten; filter: brightness(1.35) saturate(0.8); opacity: 0.6; }
+.geo { position: absolute; left: 226px; top: -5px; width: 2000px; height: 1175px; mix-blend-mode: lighten; filter: brightness(1.35) saturate(0.8); opacity: 0.6; }
 .shade { position: absolute; inset: 0; background:
-  radial-gradient(circle 190px at 1290px 545px, rgba(27,36,53,0.78) 40%, rgba(27,36,53,0) 100%),
+  radial-gradient(circle 190px at 1270px 545px, rgba(27,36,53,0.78) 40%, rgba(27,36,53,0) 100%),
   linear-gradient(180deg, #1b2435 0, rgba(27,36,53,0.9) 130px, rgba(27,36,53,0) 230px),
-  radial-gradient(ellipse 640px 620px at 1290px 545px, rgba(27,36,53,0) 42%, rgba(27,36,53,0.7) 72%, #1b2435 100%),
+  radial-gradient(ellipse 640px 620px at 1270px 545px, rgba(27,36,53,0) 42%, rgba(27,36,53,0.7) 72%, #1b2435 100%),
   linear-gradient(90deg, #1b2435 0, #1b2435 600px, rgba(27,36,53,0) 900px); }
 
 .logos { position: absolute; left: 82px; top: 36px; height: 60px; display: flex; align-items: center; gap: 36px; }
@@ -60,35 +60,29 @@ h1 { position: absolute; left: 82px; top: 272px; margin: 0; font-size: 78px; lin
 .tools svg { fill: none; stroke: #C5CEDB; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .tools .nav { width: 140px; height: 70px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.22); background: rgba(29,38,54,0.88); display: flex; align-items: center; justify-content: space-around; }
 
-/* инженерная структура: узлы-разделы, связи по ресурсам, ядро */
+/* оглавление: тематические узлы по порядку 01 → 06 вокруг ядра */
 .net { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
-.net path { fill: none; stroke-linecap: round; transition: opacity .25s; }
-.net .base { stroke-width: 3; opacity: 0.38; }
-.net .run { stroke-width: 3; stroke-dasharray: 14 22; animation: run 1.6s linear infinite; }
-.net .data { stroke: #5FD6A2; stroke-width: 2; stroke-dasharray: 2 10; opacity: 0.8; animation: data 1.2s linear infinite; }
+.net path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.net .base { stroke-width: 3; opacity: 0.75; }
+.net .run { stroke-width: 5; opacity: 0.9; stroke-dasharray: 3 33; animation: run 1.6s linear infinite; }
+.net .arrow { stroke: none; fill: #ffffff; }
+.net .spoke { stroke-width: 2; stroke-dasharray: 2 10; opacity: 0.55; }
 @keyframes run { to { stroke-dashoffset: -36; } }
-@keyframes data { to { stroke-dashoffset: -12; } }
-.net .tag { transition: opacity .25s; }
-.net .tag rect { fill: #1b2435; stroke-width: 1; }
-.net .tag text { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-anchor: middle; }
-.net.sel .lk:not(.hit) { opacity: 0.12; }
-.hub { position: absolute; left: 1180px; top: 435px; width: 220px; height: 220px; box-sizing: border-box; border-radius: 50%; border: 1px solid rgba(255,255,255,0.28); background: radial-gradient(circle at 50% 35%, #2a3850 0%, #151c2a 78%); box-shadow: 0 0 50px rgba(255,45,70,0.25), inset 0 1px 0 rgba(255,255,255,0.14); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.hub { position: absolute; left: 1160px; top: 435px; width: 220px; height: 220px; box-sizing: border-box; border-radius: 50%; border: 1px solid rgba(255,255,255,0.28); background: radial-gradient(circle at 50% 35%, #2a3850 0%, #151c2a 78%); box-shadow: 0 0 50px rgba(255,45,70,0.25), inset 0 1px 0 rgba(255,255,255,0.14); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .hub i { width: 58px; height: 58px; border-radius: 50%; background: #C8102E; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.9); }
 .hub b { margin-top: 10px; font-size: 25px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; }
 .hub span { margin-top: 6px; font-size: 13px; line-height: 1.25; color: #A7B2C2; }
 .sec { position: absolute; padding: 0; border: 0; background: none; display: flex; align-items: center; gap: 16px; text-align: left; font-size: 24px; line-height: 1.22; color: #ffffff; white-space: nowrap; transform: translate(-40px, -50%); }
 .sec.l { flex-direction: row-reverse; text-align: right; transform: translate(40px, -50%); }
-.sec .ic { flex: none; width: 80px; height: 80px; box-sizing: border-box; border-radius: 50%; border: 2px solid #5FD6A2; background: radial-gradient(circle at 50% 30%, #2a3850 0%, #151c2a 80%); box-shadow: 0 0 0 7px rgba(27,36,53,0.9), 0 0 22px rgba(95,214,162,0.35); display: flex; align-items: center; justify-content: center; transition: transform .2s, box-shadow .2s; }
-.sec .ic svg { fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.sec b { font-size: 36px; font-weight: 800; color: #5FD6A2; }
-.sec.plan b { color: #F5A04A; }
-.sec.plan .ic { border-color: #F5A04A; box-shadow: 0 0 0 7px rgba(27,36,53,0.9), 0 0 22px rgba(245,160,74,0.35); }
+.sec .ic { flex: none; width: 80px; height: 80px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--c); background: radial-gradient(circle at 50% 30%, #2a3850 0%, #151c2a 80%); box-shadow: 0 0 0 7px rgba(27,36,53,0.9), 0 0 22px color-mix(in srgb, var(--c) 40%, transparent); display: flex; align-items: center; justify-content: center; transition: transform .2s, box-shadow .2s; }
+.sec .ic svg { fill: none; stroke: var(--c); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.sec b { font-size: 36px; font-weight: 800; color: var(--c); }
 .sec .tx { padding: 6px 10px; margin: 0 -10px; border-radius: 10px; background: rgba(27,36,53,0.72); }
-.sec:hover .ic, .sec.on .ic { transform: scale(1.12); box-shadow: 0 0 0 7px rgba(27,36,53,0.9), 0 0 34px rgba(95,214,162,0.8); }
-.sec.plan:hover .ic, .sec.plan.on .ic { box-shadow: 0 0 0 7px rgba(27,36,53,0.9), 0 0 34px rgba(245,160,74,0.8); }
-.links { position: absolute; left: 82px; top: 836px; display: flex; gap: 26px; font-size: 16px; color: #A7B2C2; }
-.links span { display: flex; align-items: center; gap: 10px; }
-.links i { width: 20px; height: 3px; border-radius: 2px; }
+.sec.d { flex-direction: column; gap: 6px; text-align: center; transform: translate(-50%, -40px); }
+.sec.d b { margin-top: 8px; line-height: 1; }
+.sec em, .legend em { display: inline-block; padding: 2px 10px; border-radius: 10px; border: 1px solid rgba(245,160,74,0.7); background: rgba(245,160,74,0.12); font-style: normal; font-size: 14px; font-weight: 700; letter-spacing: 0.03em; color: #F5A04A; }
+.sec em { margin-top: 6px; }
+.sec:hover .ic, .sec.on .ic { transform: scale(1.12); box-shadow: 0 0 0 7px rgba(27,36,53,0.9), 0 0 36px color-mix(in srgb, var(--c) 85%, transparent); }
 </style>
 </head>
 <body>
@@ -114,8 +108,7 @@ h1 { position: absolute; left: 82px; top: 272px; margin: 0; font-size: 78px; lin
   <p class="lead">Цифровизация сферы ресурсоснабжения города Москвы</p>
   <p class="year">за <b>2026</b> г.</p>
   <div class="bar"></div>
-  <div class="links"><span><i style="background:#56B4E9"></i>Электроэнергия</span><span><i style="background:#FF6B5A"></i>Тепло</span><span><i style="background:#F2C94C"></i>Газ</span><span><i style="background:#5FD6A2"></i>Данные</span></div>
-  <div class="legend"><span><i style="background:#5FD6A2"></i>Разделы результатов</span><span><i style="background:#F5A04A"></i>Планы на 2027</span></div>
+  <div class="legend"><span><em>План 2027</em>разделы с планами на 2027 год</span></div>
 
   <div class="pill" style="left: 82px; width: 190px">Москва 2026</div>
   <div class="pill" style="left: 290px; width: 62px; font-size: 26px">?</div>
@@ -127,19 +120,29 @@ h1 { position: absolute; left: 82px; top: 272px; margin: 0; font-size: 78px; lin
   </div>
 
   <svg class="net" viewBox="0 0 1920 1080">
-    <g class="lk" data-n="4 3"><path class="base" d="M1290 850 L1530 690" stroke="#F2C94C"/><path class="run" d="M1290 850 L1530 690" stroke="#F2C94C"/><g class="tag"><rect x="1386" y="758" width="49" height="24" rx="12" stroke="#F2C94C"/><text x="1410" y="775" fill="#F2C94C">ГАЗ</text></g></g>
-    <g class="lk" data-n="3 2"><path class="base" d="M1530 690 L1530 400" stroke="#FF6B5A"/><path class="run" d="M1530 690 L1530 400" stroke="#FF6B5A"/><g class="tag"><rect x="1496" y="533" width="67" height="24" rx="12" stroke="#FF6B5A"/><text x="1530" y="550" fill="#FF6B5A">ТЕПЛО</text></g></g>
-    <g class="lk" data-n="4 5"><path class="base" d="M1290 850 L1050 690" stroke="#F2C94C"/><path class="run" d="M1290 850 L1050 690" stroke="#F2C94C"/><g class="tag"><rect x="1146" y="758" width="49" height="24" rx="12" stroke="#F2C94C"/><text x="1170" y="775" fill="#F2C94C">ГАЗ</text></g></g>
-    <g class="lk" data-n="6 5"><path class="base" d="M1050 400 L1050 690" stroke="#56B4E9"/><path class="run" d="M1050 400 L1050 690" stroke="#56B4E9"/><g class="tag"><rect x="1008" y="533" width="85" height="24" rx="12" stroke="#56B4E9"/><text x="1050" y="550" fill="#56B4E9">ЭЛЕКТРО</text></g></g>
-    <g class="lk" data-n="6 1"><path class="base" d="M1050 400 L1290 236" stroke="#56B4E9"/><path class="run" d="M1050 400 L1290 236" stroke="#56B4E9"/><g class="tag"><rect x="1128" y="306" width="85" height="24" rx="12" stroke="#56B4E9"/><text x="1170" y="323" fill="#56B4E9">ЭЛЕКТРО</text></g></g>
-    <g class="lk" data-n="3 6"><path class="base" d="M1530 690 L1440 690 L1440 400 L1050 400" stroke="#FF6B5A"/><path class="run" d="M1530 690 L1440 690 L1440 400 L1050 400" stroke="#FF6B5A"/><g class="tag"><rect x="1220" y="388" width="49" height="24" rx="12" stroke="#FF6B5A"/><text x="1245" y="405" fill="#FF6B5A">ТЭЦ</text></g></g>
-    <g class="lk" data-n="1 2"><path class="data" d="M1530 400 L1290 236"/></g>
-    <g class="lk" data-n="1 0"><path class="data" d="M1290 236 L1290 545"/></g>
-    <g class="lk" data-n="2 0"><path class="data" d="M1530 400 L1290 545"/></g>
-    <g class="lk" data-n="3 0"><path class="data" d="M1530 690 L1290 545"/></g>
-    <g class="lk" data-n="4 0"><path class="data" d="M1290 850 L1290 545"/></g>
-    <g class="lk" data-n="5 0"><path class="data" d="M1050 690 L1290 545"/></g>
-    <g class="lk" data-n="6 0"><path class="data" d="M1050 400 L1290 545"/></g>
+    <defs>
+      <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="1270" y1="245" x2="1530" y2="395"><stop offset="0" stop-color="#DCE4F0"/><stop offset="1" stop-color="#5FD6A2"/></linearGradient>
+      <linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="1530" y1="395" x2="1530" y2="695"><stop offset="0" stop-color="#5FD6A2"/><stop offset="1" stop-color="#FF6B5A"/></linearGradient>
+      <linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="1530" y1="695" x2="1270" y2="845"><stop offset="0" stop-color="#FF6B5A"/><stop offset="1" stop-color="#F2C94C"/></linearGradient>
+      <linearGradient id="g4" gradientUnits="userSpaceOnUse" x1="1270" y1="845" x2="1010" y2="695"><stop offset="0" stop-color="#F2C94C"/><stop offset="1" stop-color="#B58BF0"/></linearGradient>
+      <linearGradient id="g5" gradientUnits="userSpaceOnUse" x1="1010" y1="695" x2="1010" y2="395"><stop offset="0" stop-color="#B58BF0"/><stop offset="1" stop-color="#56B4E9"/></linearGradient>
+    </defs>
+    <path class="base" d="M1270 245 A300 300 0 0 1 1530 395" stroke="url(#g1)"/><path class="run" d="M1270 245 A300 300 0 0 1 1530 395" stroke="url(#g1)"/>
+    <path class="arrow" d="M-10 -11 L10 0 L-10 11 L-5 0 Z" fill="#ffffff" transform="translate(1420.0 285.2) rotate(30.0)"/>
+    <path class="base" d="M1530 395 A300 300 0 0 1 1530 695" stroke="url(#g2)"/><path class="run" d="M1530 395 A300 300 0 0 1 1530 695" stroke="url(#g2)"/>
+    <path class="arrow" d="M-10 -11 L10 0 L-10 11 L-5 0 Z" fill="#ffffff" transform="translate(1570.0 545.0) rotate(90.0)"/>
+    <path class="base" d="M1530 695 A300 300 0 0 1 1270 845" stroke="url(#g3)"/><path class="run" d="M1530 695 A300 300 0 0 1 1270 845" stroke="url(#g3)"/>
+    <path class="arrow" d="M-10 -11 L10 0 L-10 11 L-5 0 Z" fill="#ffffff" transform="translate(1420.0 804.8) rotate(150.0)"/>
+    <path class="base" d="M1270 845 A300 300 0 0 1 1010 695" stroke="url(#g4)"/><path class="run" d="M1270 845 A300 300 0 0 1 1010 695" stroke="url(#g4)"/>
+    <path class="arrow" d="M-10 -11 L10 0 L-10 11 L-5 0 Z" fill="#ffffff" transform="translate(1120.0 804.8) rotate(210.0)"/>
+    <path class="base" d="M1010 695 A300 300 0 0 1 1010 395" stroke="url(#g5)"/><path class="run" d="M1010 695 A300 300 0 0 1 1010 395" stroke="url(#g5)"/>
+    <path class="arrow" d="M-10 -11 L10 0 L-10 11 L-5 0 Z" fill="#ffffff" transform="translate(970.0 545.0) rotate(270.0)"/>
+    <path class="spoke" d="M1270 245 L1270 545" stroke="#DCE4F0"/>
+    <path class="spoke" d="M1530 395 L1270 545" stroke="#5FD6A2"/>
+    <path class="spoke" d="M1530 695 L1270 545" stroke="#FF6B5A"/>
+    <path class="spoke" d="M1270 845 L1270 545" stroke="#F2C94C"/>
+    <path class="spoke" d="M1010 695 L1270 545" stroke="#B58BF0"/>
+    <path class="spoke" d="M1010 395 L1270 545" stroke="#56B4E9"/>
   </svg>
 
   <div class="hub">
@@ -148,12 +151,12 @@ h1 { position: absolute; left: 82px; top: 272px; margin: 0; font-size: 78px; lin
     <span>Цифровая модель<br>ресурсоснабжения</span>
   </div>
 
-  <button class="sec" data-s="1" style="left: 1290px; top: 236px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="13" r="1.500"/><path d="M12 7v4.500M10.700 13.800 6.500 16.800M13.300 13.800l4.200 3M7 18h10"/></svg></span><b>01</b><span class="tx">Инженерный каркас<br>города</span></button>
-  <button class="sec" data-s="2" style="left: 1530px; top: 400px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4-5M4 19h16M7.500 15h0M16.500 15h0"/></svg></span><b>02</b><span class="tx">Учет потребления<br>ресурсов</span></button>
-  <button class="sec" data-s="3" style="left: 1530px; top: 690px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3.500 2-4.500 0 2 1 3 2 3 0-4 1-7 2-9.500z"/></svg></span><b>03</b><span class="tx">Анализ территории<br>Теплоснабжение</span></button>
-  <button class="sec" data-s="4" style="left: 1290px; top: 850px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M3 9h7v6H3zM14 9h7v6h-7zM10 12h4M12 12V5M9.500 5h5"/></svg></span><b>04</b><span class="tx">Анализ территории<br>Газоснабжение</span></button>
-  <button class="sec l plan" data-s="5" style="right: 870px; top: 690px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M7 12l3-3 2.500 2 4-4"/></svg></span><b>05</b><span class="tx">АРМ инженера<br>КСИО</span></button>
-  <button class="sec l plan" data-s="6" style="right: 870px; top: 400px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M13 2 5 13.500h6L10 22l9-12h-6.500z"/></svg></span><b>06</b><span class="tx">CIM-модель<br>электроснабжения<br>Москвы</span></button>
+  <button class="sec l" data-s="1" style="--c: #DCE4F0; right: 650px; top: 245px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="13" r="1.500"/><path d="M12 7v4.500M10.700 13.800 6.500 16.800M13.300 13.800l4.200 3M7 18h10"/></svg></span><b>01</b><span class="tx">Инженерный каркас<br>города</span></button>
+  <button class="sec" data-s="2" style="--c: #5FD6A2; left: 1530px; top: 395px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4-5M4 19h16M7.500 15h0M16.500 15h0"/></svg></span><b>02</b><span class="tx">Учет потребления<br>ресурсов</span></button>
+  <button class="sec" data-s="3" style="--c: #FF6B5A; left: 1530px; top: 695px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3.500 2-4.500 0 2 1 3 2 3 0-4 1-7 2-9.500z"/></svg></span><b>03</b><span class="tx">Анализ территории<br>Теплоснабжение</span></button>
+  <button class="sec d" data-s="4" style="--c: #F2C94C; left: 1270px; top: 845px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M3 9h7v6H3zM14 9h7v6h-7zM10 12h4M12 12V5M9.500 5h5"/></svg></span><b>04</b><span class="tx">Анализ территории<br>Газоснабжение</span></button>
+  <button class="sec l" data-s="5" style="--c: #B58BF0; right: 910px; top: 695px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M7 12l3-3 2.500 2 4-4"/></svg></span><b>05</b><span class="tx">АРМ инженера<br>КСИО<br><em>План 2027</em></span></button>
+  <button class="sec l" data-s="6" style="--c: #56B4E9; right: 910px; top: 395px"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M13 2 5 13.500h6L10 22l9-12h-6.500z"/></svg></span><b>06</b><span class="tx">CIM-модель<br>электроснабжения<br>Москвы<br><em>План 2027</em></span></button>
 </div>
 <script>
 (function () {
@@ -161,14 +164,9 @@ h1 { position: absolute; left: 82px; top: 272px; margin: 0; font-size: 78px; lin
   function fit() { var k = Math.min(innerWidth / 1920, innerHeight / 1080); stage.style.transform = 'translate(-50%, -50%) scale(' + k + ')'; }
   addEventListener('resize', fit); fit();
   document.getElementById('full').onclick = function () { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); };
-  // наведение на раздел подсвечивает его, вкладку в шапке и его связи; остальные связи гаснут
-  var items = [].slice.call(document.querySelectorAll('[data-s]')), net = document.querySelector('.net');
-  var links = [].slice.call(document.querySelectorAll('.lk'));
-  function pick(s) {
-    items.forEach(function (e) { e.classList.toggle('on', e.dataset.s === s); });
-    net.classList.toggle('sel', !!s);
-    links.forEach(function (l) { l.classList.toggle('hit', !!s && l.dataset.n.split(' ').indexOf(s) >= 0); });
-  }
+  // наведение на раздел подсвечивает его и вкладку в шапке
+  var items = [].slice.call(document.querySelectorAll('[data-s]'));
+  function pick(s) { items.forEach(function (e) { e.classList.toggle('on', e.dataset.s === s); }); }
   items.forEach(function (e) { e.onmouseenter = e.onfocus = function () { pick(e.dataset.s); }; e.onmouseleave = e.onblur = function () { pick(''); }; });
 })();
 </script>
