@@ -34,6 +34,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* Слайд «Карта ↔ схема» */
 .sc-row { display: flex; justify-content: space-between; gap: 12px; }
+.sc-row[hidden] { display: none; }
 .sc-row > span:first-child { color: #A7B2C2; }
 .sc-row > span:last-child { text-align: right; }
 .sc-layer { flex: 1 1 0; height: 46px; padding: 0 12px; display: flex; align-items: center; gap: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); color: #A7B2C2; font-size: 17px; text-align: left; }
