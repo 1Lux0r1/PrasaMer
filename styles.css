@@ -219,15 +219,14 @@ button { font-family: inherit; cursor: pointer; }
 
 .ab-scene { position: absolute; left: 1086px; top: 200px; width: 768px; height: 632px; }
 .ab-wires { position: absolute; inset: 0; overflow: visible; }
-.ab-wire { fill: none; stroke: rgba(255,84,104,0.3); stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ab-draw 1s 1s ease-out forwards; }
-.ab-wire, .ab-flow { vector-effect: none; }
-.ab-wires path.ab-wire { stroke-dasharray: 600; stroke-dashoffset: 600; }
+.ab-wire { fill: none; stroke-width: 2; opacity: 0.4; stroke-dasharray: 600; stroke-dashoffset: 600; animation: ab-draw 1s 1s ease-out forwards; }
 @keyframes ab-draw { to { stroke-dashoffset: 0; } }
-.ab-flow { fill: none; stroke: url(#abg); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 3 30; opacity: 0; animation: ab-run 1.6s linear infinite, ab-fade .6s 1.8s forwards; }
+.ab-flow { fill: none; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 3 30; opacity: 0; animation: ab-run 1.6s linear infinite, ab-fade .6s 1.8s forwards; }
 @keyframes ab-run { to { stroke-dashoffset: -33; } }
 .ab-beam { opacity: 0; animation: ab-fade 1s 2.3s forwards; }
-.ab-chip { position: absolute; height: 46px; box-sizing: border-box; padding: 0 14px; border-radius: 12px; border: 1px dashed rgba(255,84,104,0.65); background: rgba(29,38,54,0.92); display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; color: #C5CEDB; white-space: nowrap; rotate: var(--r); animation: ab-drop .7s cubic-bezier(.2,1.3,.4,1) both, ab-float 5s ease-in-out infinite; animation-delay: calc(.3s + var(--d)), var(--f); }
-.ab-chip svg { flex: none; fill: none; stroke: #FF7A8A; stroke-width: 1.6; stroke-linejoin: round; }
+.ab-chip { position: absolute; height: 46px; box-sizing: border-box; border-radius: 12px; border: 1.5px solid var(--k); background: color-mix(in srgb, var(--k) 12%, #1b2434); box-shadow: 0 0 18px color-mix(in srgb, var(--k) 25%, transparent); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none; white-space: nowrap; cursor: pointer; z-index: 2; rotate: var(--r); transition: background .2s, box-shadow .2s; animation: ab-drop .7s cubic-bezier(.2,1.3,.4,1) both, ab-float 5s ease-in-out infinite; animation-delay: calc(.3s + var(--d)), var(--f); }
+.ab-chip:hover, .ab-chip:focus-visible { background: color-mix(in srgb, var(--k) 28%, #1b2434); box-shadow: 0 0 30px color-mix(in srgb, var(--k) 65%, transparent); }
+.ab-chip svg { flex: none; fill: none; stroke: var(--k); stroke-width: 1.8; stroke-linejoin: round; }
 @keyframes ab-drop { from { opacity: 0; scale: .5; } to { opacity: 1; scale: 1; } }
 @keyframes ab-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
 .ab-core { position: absolute; left: 314px; top: 230px; width: 140px; height: 140px; border-radius: 50%; border: 2px solid #56B4E9; background: radial-gradient(circle at 50% 32%, #23405c 0%, #121a26 78%); box-shadow: 0 0 60px rgba(86,180,233,0.65), 0 0 140px rgba(86,180,233,0.3), inset 0 1px 0 rgba(255,255,255,0.22); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: ab-ignite .9s 1.6s cubic-bezier(.2,1.4,.4,1) both; }
