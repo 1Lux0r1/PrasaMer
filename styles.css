@@ -189,6 +189,15 @@ button { font-family: inherit; cursor: pointer; }
 .sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
 .sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 
+/* слайд 3: отключение — линии без напряжения «мерцают» пунктиром, отключённый объект пульсирует красным */
+#sc-pDead { animation: sc-crawl 1.1s linear infinite, sc-dim 1.6s ease-in-out infinite; }
+@keyframes sc-crawl { to { stroke-dashoffset: -17; } }
+@keyframes sc-dim { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.sc-node.is-off .sc-mk, .sc-node.is-off .sc-box { border-color: #FF3D55 !important; animation: sc-alarm 1.1s ease-out infinite; }
+@keyframes sc-alarm { 0% { box-shadow: 0 0 0 0 rgba(255,61,85,0.9), 0 0 18px rgba(255,61,85,0.9); } 100% { box-shadow: 0 0 0 22px rgba(255,61,85,0), 0 0 18px rgba(255,61,85,0.9); } }
+.sc-node.is-dead .sc-mk, .sc-node.is-dead .sc-box { border-color: #EEF2F7 !important; animation: sc-dim 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { #sc-pDead, .sc-node.is-off .sc-mk, .sc-node.is-off .sc-box, .sc-node.is-dead .sc-mk, .sc-node.is-dead .sc-box { animation: none; } }
+
 /* плашка «План на 2027» — одна на каждом слайде, справа от заголовка */
 .plan-badge { position: absolute; right: 96px; top: 44px; height: 76px; box-sizing: border-box; padding: 0 34px 0 28px; border-radius: 20px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.10); box-shadow: 0 0 26px rgba(230,215,42,0.14), inset 0 1px 0 rgba(255,255,255,0.10); display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; color: #F2E76A; z-index: 5; }
 #scheme .plan-badge { right: 40px; top: 42px; padding: 0 26px 0 22px; font-size: 28px; }

@@ -202,6 +202,15 @@ button { font-family: inherit; cursor: pointer; }
 .sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
 .sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 
+/* слайд 3: отключение — линии без напряжения «мерцают» пунктиром, отключённый объект пульсирует красным */
+#sc-pDead { animation: sc-crawl 1.1s linear infinite, sc-dim 1.6s ease-in-out infinite; }
+@keyframes sc-crawl { to { stroke-dashoffset: -17; } }
+@keyframes sc-dim { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.sc-node.is-off .sc-mk, .sc-node.is-off .sc-box { border-color: #FF3D55 !important; animation: sc-alarm 1.1s ease-out infinite; }
+@keyframes sc-alarm { 0% { box-shadow: 0 0 0 0 rgba(255,61,85,0.9), 0 0 18px rgba(255,61,85,0.9); } 100% { box-shadow: 0 0 0 22px rgba(255,61,85,0), 0 0 18px rgba(255,61,85,0.9); } }
+.sc-node.is-dead .sc-mk, .sc-node.is-dead .sc-box { border-color: #EEF2F7 !important; animation: sc-dim 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { #sc-pDead, .sc-node.is-off .sc-mk, .sc-node.is-off .sc-box, .sc-node.is-dead .sc-mk, .sc-node.is-dead .sc-box { animation: none; } }
+
 /* плашка «План на 2027» — одна на каждом слайде, справа от заголовка */
 .plan-badge { position: absolute; right: 96px; top: 44px; height: 76px; box-sizing: border-box; padding: 0 34px 0 28px; border-radius: 20px; border: 1px solid rgba(230,215,42,0.55); background: rgba(230,215,42,0.10); box-shadow: 0 0 26px rgba(230,215,42,0.14), inset 0 1px 0 rgba(255,255,255,0.10); display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; color: #F2E76A; z-index: 5; }
 #scheme .plan-badge { right: 40px; top: 42px; padding: 0 26px 0 22px; font-size: 28px; }
@@ -552,11 +561,11 @@ button { font-family: inherit; cursor: pointer; }
 
     <div id="sc-net" style="position: absolute; left: 0; top: 0; width: 1600px; height: 944px">
       <svg viewBox="0 0 1600 944" width="1600" height="944" aria-hidden="true" style="position: absolute; left: 0; top: 0; display: block">
-        <path id="sc-p110" style="fill: none; stroke: #56B4E9; stroke-width: 1.8; stroke-linejoin: round"></path>
-        <path id="sc-p220" style="fill: none; stroke: #F2C94C; stroke-width: 1.8; stroke-linejoin: round"></path>
-        <path id="sc-p500" style="fill: none; stroke: #FF3D55; stroke-width: 2.4; stroke-linejoin: round"></path>
-        <path id="sc-pDead" style="fill: none; stroke: #6b7480; stroke-width: 1.8; stroke-dasharray: 6 6; stroke-linejoin: round"></path>
-        <path id="sc-pSel" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(255,255,255,0.9))"></path>
+        <path id="sc-pSel" style="fill: none; stroke: #ffffff; stroke-width: 11; stroke-linejoin: round; stroke-linecap: round; opacity: 0.22"></path>
+        <path id="sc-p110" style="fill: none; stroke: #63C4FF; stroke-width: 2.8; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(86,180,233,0.75))"></path>
+        <path id="sc-p220" style="fill: none; stroke: #FFD84A; stroke-width: 2.8; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(242,201,76,0.75))"></path>
+        <path id="sc-p500" style="fill: none; stroke: #FF4A62; stroke-width: 3.4; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(255,61,85,0.8))"></path>
+        <path id="sc-pDead" style="fill: none; stroke: #EEF2F7; stroke-width: 2.8; stroke-dasharray: 9 8; stroke-linejoin: round"></path>
       </svg>
       <div id="sc-nodes"></div>
     </div>
@@ -595,7 +604,7 @@ button { font-family: inherit; cursor: pointer; }
       <span style="display: flex; align-items: center; gap: 9px"><span aria-hidden="true" style="width: 26px; border-top: 3px solid #56B4E9"></span>110 кВ</span>
       <span style="display: flex; align-items: center; gap: 9px"><span aria-hidden="true" style="width: 11px; height: 11px; border-radius: 50%; background: #C77DD6"></span>Генерация</span>
       <span style="display: flex; align-items: center; gap: 9px"><span aria-hidden="true" style="width: 22px; height: 14px; box-sizing: border-box; border: 1.5px dashed #8b95a3"></span>Объект с шинами</span>
-      <span style="display: flex; align-items: center; gap: 9px"><span aria-hidden="true" style="width: 26px; border-top: 2px dashed #6b7480"></span>Без напряжения</span>
+      <span style="display: flex; align-items: center; gap: 9px"><span aria-hidden="true" style="width: 26px; border-top: 2px dashed #EEF2F7"></span>Без напряжения</span>
     </div>
   </main>
 
@@ -1037,7 +1046,7 @@ button { font-family: inherit; cursor: pointer; }
       const vn = nodes.map((n) => {
         const dd = dead(n.id), isSel = n.id === sel;
         return {
-          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h,
+          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h, off: n.id === off, dead: dd && n.id !== off,
           x: lerp(n.m[0], n.s[0]).toFixed(1), y: lerp(n.m[1], n.s[1]).toFixed(1),
           w: lerp(44, n.w).toFixed(1), h: lerp(44, n.h).toFixed(1),
           mkOp: (1 - t).toFixed(3), boxOp: t.toFixed(3),
@@ -1121,6 +1130,7 @@ button { font-family: inherit; cursor: pointer; }
       v.nodes.forEach((n) => {
         const e = els[n.id];
         e.el.style.left = n.x + 'px'; e.el.style.top = n.y + 'px';
+        e.el.classList.toggle('is-off', n.off); e.el.classList.toggle('is-dead', n.dead);
         e.el.style.width = n.w + 'px'; e.el.style.height = n.h + 'px';
         e.box.style.opacity = n.boxOp; e.box.style.borderColor = n.boxBorder; e.box.style.boxShadow = n.glow;
         e.box.firstChild.style.opacity = n.artOp;
