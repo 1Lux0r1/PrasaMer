@@ -63,7 +63,7 @@ description: Делает интерактивные презентации и �
 ## Что лежит в навыке
 
 - `assets/starter.html` — заготовка слайда.
-- `assets/moscow-base.svg` — тёмная карта Москвы с районами (viewBox 1600×940, центр города ≈ 835, 440).
+- `assets/moscow-base.svg` — тёмная карта Москвы с районами и ТиНАО (viewBox 1600×940, центр города ≈ 835, 440; ТиНАО выходит за рамку вниз-влево до y ≈ 1520, поэтому у `.geo` стоит `overflow: visible`). Границы ТиНАО — данные OpenStreetMap (ODbL).
 - `assets/fonts/` — Onest (лицензия OFL внутри).
 - `assets/examples/rezultaty.html` — стартовая страница: карта под 45°, маяки, вступление.
 - `assets/examples/balans-doma.html`, `house.py` — изометрический дом с трубами.
