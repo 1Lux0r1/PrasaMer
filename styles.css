@@ -195,6 +195,12 @@ button { font-family: inherit; cursor: pointer; }
 .sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
 .sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 
+/* слайд 3: чей это взгляд на сеть */
+.sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
+.sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.sc-who small { display: block; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c); }
+.sc-who b { display: block; margin-top: 2px; font-size: 21px; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; }
+
 /* слайд 3: отключение — линии мерцают и гаснут до тусклого пунктира, отключённый объект пульсирует красным */
 .sc-fade { opacity: 0; }
 .sc-fade.is-dying { animation: sc-die 1.5s ease-out both; }

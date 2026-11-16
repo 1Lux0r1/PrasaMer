@@ -208,6 +208,12 @@ button { font-family: inherit; cursor: pointer; }
 .sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
 .sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 
+/* слайд 3: чей это взгляд на сеть */
+.sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
+.sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.sc-who small { display: block; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c); }
+.sc-who b { display: block; margin-top: 2px; font-size: 21px; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; }
+
 /* слайд 3: отключение — линии мерцают и гаснут до тусклого пунктира, отключённый объект пульсирует красным */
 .sc-fade { opacity: 0; }
 .sc-fade.is-dying { animation: sc-die 1.5s ease-out both; }
@@ -559,18 +565,21 @@ button { font-family: inherit; cursor: pointer; }
       <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
       ПРЕДСТАВЛЕНИЕ
     </div>
-    <div style="min-height: 132px">
+    <div style="min-height: 214px">
       <div id="sc-title-map">
+        <div class="sc-who" style="--c: #8FB4F0"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>руководство города</b></span></div>
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #8FB4F0">ВИД 1 · ГДЕ НАХОДИТСЯ</div>
         <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Объекты <span style="color: #FF3D55">на карте</span></h1>
         <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Источники питания, подстанции и линии — на карте города.</p>
       </div>
       <div id="sc-title-scheme" hidden>
+        <div class="sc-who" style="--c: #F0C36A"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>электросетевая организация</b></span></div>
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #F0C36A">ВИД 2 · КАК СВЯЗАНО</div>
         <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">топологии</span></h1>
         <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Те же объекты и их связи — по классам напряжения.</p>
       </div>
       <div id="sc-title-object" hidden>
+        <div class="sc-who" style="--c: #9BDDB0"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>диспетчер</b></span></div>
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #9BDDB0">ВИД 3 · ЧТО ВНУТРИ</div>
         <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">объекта</span></h1>
         <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Оборудование объекта: распределительные устройства, трансформаторы, присоединения.</p>
