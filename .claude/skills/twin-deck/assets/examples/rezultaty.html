@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Результаты работы — цифровизация ресурсоснабжения Москвы</title>
+<!--FONTS-->
+<style>
+html, body { height: 100%; }
+body { margin: 0; overflow: hidden; background: #0d1118; color: #ffffff; font-family: 'Onest', system-ui, sans-serif; }
+button { font-family: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid #8FB4F0; outline-offset: 2px; }
+#stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; background: #1b2435; transform-origin: center center; }
+
+/* сцена: карта лежит плоскостью под 45°, вид с высоты птичьего полёта */
+@property --tilt { syntax: '<angle>'; inherits: true; initial-value: 45deg; }
+@property --zoom { syntax: '<number>'; inherits: true; initial-value: 1; }
+.scene { position: absolute; inset: 0; perspective: 1700px; perspective-origin: 1210px 520px; --tilt: 45deg; --zoom: 1; animation: fly 2.6s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes fly { from { --tilt: 0deg; --zoom: 0.62; opacity: 0; } 35% { opacity: 1; } to { --tilt: 45deg; --zoom: 1; opacity: 1; } }
+.plane { position: absolute; left: 510px; top: -90px; width: 1400px; height: 1400px; transform: rotateX(var(--tilt)) scale(var(--zoom)); transform-style: preserve-3d; }
+.ground { position: absolute; inset: 0; -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 46%, rgba(0,0,0,0.6) 60%, transparent 76%); mask-image: radial-gradient(circle at 50% 50%, #000 46%, rgba(0,0,0,0.6) 60%, transparent 76%); }
+.grid { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(143,180,240,0.07) 0 1px, transparent 1px 70px), repeating-linear-gradient(90deg, rgba(143,180,240,0.07) 0 1px, transparent 1px 70px); }
+.geo { position: absolute; left: 110px; top: 146px; width: 1360px; height: 799px; overflow: visible; opacity: 0.8; filter: brightness(1.6) saturate(0.85); }
+.sweep { position: absolute; left: 280px; top: 280px; width: 840px; height: 840px; border-radius: 50%; background: conic-gradient(from 0deg, rgba(95,214,162,0) 0deg, rgba(95,214,162,0) 300deg, rgba(95,214,162,0.20) 358deg, rgba(95,214,162,0) 360deg); animation: spin 9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.lights i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #BFD6FF; box-shadow: 0 0 8px 2px rgba(143,180,240,0.8); opacity: 0; animation: twinkle 4s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: 0.9; } }
+.shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, #1b2435 0, #1b2435 380px, rgba(27,36,53,0) 640px), linear-gradient(180deg, #1b2435 0, rgba(27,36,53,0.9) 130px, rgba(27,36,53,0) 220px); }
+
+.logos { position: absolute; left: 82px; top: 36px; height: 60px; display: flex; align-items: center; gap: 36px; }
+.logo { display: flex; align-items: center; gap: 12px; font-weight: 800; line-height: 1; }
+.logo i { flex: none; display: block; }
+.logo.cgu { font-size: 32px; letter-spacing: 0.04em; }
+.logo.cgu i { width: 34px; height: 40px; background: #FF2D46; clip-path: polygon(0 0, 100% 0, 100% 78%, 62% 78%, 62% 100%, 0 100%); }
+.logo.mos { font-size: 21px; line-height: 0.95; }
+.logo.mos i { width: 56px; height: 56px; border-radius: 50%; background: #C8102E; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.9); }
+
+.tabs { position: absolute; left: 476px; right: 46px; top: 44px; height: 82px; display: grid; grid-template-columns: repeat(6, 1fr); border-bottom: 1px solid rgba(255,255,255,0.14); }
+.tab { position: relative; padding: 0; border: 0; background: none; text-align: left; display: flex; gap: 12px; align-items: flex-start; }
+.tab { --c: #5FD6A2; }
+.tab[data-s="5"], .tab[data-s="6"] { --c: #F2C24C; }
+.tab svg { flex: none; margin-top: 8px; fill: none; stroke: var(--c); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tab small { display: block; font-size: 14px; font-weight: 700; color: var(--c); }
+.tab b { display: block; margin-top: 6px; font-size: 16px; font-weight: 700; color: #C5CEDB; white-space: nowrap; }
+.tab::after { content: ''; position: absolute; left: 118px; bottom: -4px; width: 7px; height: 7px; border-radius: 50%; background: var(--c); opacity: 0.75; }
+.tab:hover b, .tab.on b { color: #ffffff; }
+.tab.on::after { opacity: 1; box-shadow: 0 0 10px var(--c); }
+
+h1 { position: absolute; left: 82px; top: 272px; margin: 0; font-size: 78px; line-height: 1.02; font-weight: 800; letter-spacing: -0.02em; }
+.lead { position: absolute; left: 82px; top: 468px; width: 480px; margin: 0; font-size: 44px; line-height: 1.24; color: #C5CEDB; }
+.year { position: absolute; left: 82px; top: 658px; margin: 0; font-size: 30px; color: #C5CEDB; }
+.year b { color: #ffffff; font-weight: 800; }
+.bar { position: absolute; left: 82px; top: 734px; width: 92px; height: 9px; background: #FF2D46; transform: skewX(-32deg); }
+.legend { position: absolute; left: 82px; top: 884px; display: flex; gap: 30px; font-size: 16px; color: #A7B2C2; }
+.legend span { display: flex; align-items: center; gap: 10px; }
+.legend i { width: 20px; height: 3px; border-radius: 2px; }
+
+.pill { position: absolute; top: 984px; height: 62px; box-sizing: border-box; border-radius: 31px; border: 1px solid rgba(255,255,255,0.22); background: rgba(29,38,54,0.88); display: flex; align-items: center; justify-content: center; font-size: 21px; color: #C5CEDB; }
+.tools { position: absolute; right: 82px; top: 980px; height: 70px; display: flex; align-items: center; gap: 22px; font-size: 16px; color: #A7B2C2; }
+.tools button { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 12px; background: transparent; display: flex; align-items: center; justify-content: center; }
+.tools button:hover { background: rgba(255,255,255,0.1); }
+.tools svg { fill: none; stroke: #C5CEDB; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tools .nav { width: 140px; height: 70px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.22); background: rgba(29,38,54,0.88); display: flex; align-items: center; justify-content: space-around; }
+
+/* оглавление: маршрут 01 → 06 лежит на карте, разделы стоят над ней маяками */
+.net { position: absolute; left: 0; top: 0; width: 1400px; height: 1400px; overflow: visible; pointer-events: none; }
+.net path, .net circle { fill: none; stroke-linecap: round; }
+.net .base { stroke-width: 4; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .7s ease-out forwards; animation-delay: calc(1.5s + var(--i) * .28s); }
+.net .glow { stroke-width: 14; opacity: 0.22; filter: blur(8px); stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .7s ease-out forwards; animation-delay: calc(1.5s + var(--i) * .28s); }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.net .run { stroke-width: 7; stroke: #ffffff; stroke-dasharray: 2 46; opacity: 0; animation: run 1.5s linear infinite, show .6s 3.4s forwards; }
+@keyframes run { to { stroke-dashoffset: -48; } }
+@keyframes show { to { opacity: 0.95; } }
+.net .arrow { stroke: none; fill: #ffffff; opacity: 0; animation: show .5s forwards; animation-delay: calc(1.9s + var(--i) * .28s); }
+.net .spoke { stroke-width: 2; stroke-dasharray: 2 12; opacity: 0; animation: show .8s 3.2s forwards, data 1.4s linear infinite; }
+@keyframes data { to { stroke-dashoffset: -14; } }
+.net .orbit { stroke: rgba(255,84,104,0.8); stroke-width: 2; stroke-dasharray: 10 14; transform-origin: 700px 700px; animation: spin 14s linear infinite; }
+.net .pad { fill: rgba(255,45,70,0.10); stroke: rgba(255,84,104,0.5); stroke-width: 1.5; }
+.net .pulse { stroke-width: 2; transform-box: fill-box; transform-origin: center; opacity: 0; animation: pulse 2.6s ease-out infinite; animation-delay: calc(2.4s + var(--i) * .4s); }
+@keyframes pulse { 0% { transform: scale(0.3); opacity: 0.9; } 100% { transform: scale(2.4); opacity: 0; } }
+.net .foot { stroke: none; opacity: 0; animation: show .4s forwards; animation-delay: calc(1.5s + var(--i) * .28s); }
+
+/* маяк: точка на карте → световой столб → значок раздела, всегда лицом к зрителю */
+.post { position: absolute; width: 2px; height: 2px; margin: -1px 0 0 -1px; transform: rotateX(calc(-1 * var(--tilt))); transform-origin: 1px 1px; transform-style: preserve-3d; }
+.post .stem { position: absolute; left: -2px; bottom: 0; width: 4px; height: 112px; border-radius: 2px; background: linear-gradient(0deg, var(--c), color-mix(in srgb, var(--c) 0%, transparent)); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 70%, transparent); transform-origin: 50% 100%; animation: rise .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(1.6s + var(--i) * .28s); }
+@keyframes rise { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+.sec { position: absolute; left: 0; bottom: 104px; padding: 0; border: 0; background: none; display: flex; align-items: center; gap: 14px; text-align: left; font-size: 22px; line-height: 1.22; color: #ffffff; white-space: nowrap; transform: translateX(-40px); animation: pop .55s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(1.85s + var(--i) * .28s); }
+.sec.l { left: auto; right: 0; flex-direction: row-reverse; text-align: right; transform: translateX(40px); }
+@keyframes pop { from { opacity: 0; scale: 0.4; translate: 0 30px; } to { opacity: 1; scale: 1; translate: 0 0; } }
+.sec .ic { flex: none; width: 80px; height: 80px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--c); background: radial-gradient(circle at 50% 30%, #2f3f5a 0%, #151c2a 80%); box-shadow: 0 0 0 6px rgba(27,36,53,0.85), 0 0 26px color-mix(in srgb, var(--c) 55%, transparent), inset 0 1px 0 rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; transition: transform .2s, box-shadow .2s; animation: bob 4s ease-in-out infinite; animation-delay: calc(var(--i) * -.7s); }
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+.sec .ic svg { fill: none; stroke: var(--c); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.sec b { font-size: 34px; font-weight: 800; color: var(--c); text-shadow: 0 0 18px color-mix(in srgb, var(--c) 60%, transparent); }
+.sec .tx { padding: 6px 12px; margin: 0 -8px; border-radius: 12px; background: rgba(27,36,53,0.78); border: 1px solid rgba(255,255,255,0.08); }
+.sec em { display: inline-block; padding: 3px 12px; border-radius: 11px; border: 1px solid rgba(242,194,76,0.7); background: rgba(242,194,76,0.14); font-style: normal; font-size: 15px; font-weight: 700; letter-spacing: 0.03em; color: #F2C24C; }
+.sec em { margin-top: 6px; }
+.sec:hover .ic, .sec.on .ic { transform: scale(1.14); box-shadow: 0 0 0 6px rgba(27,36,53,0.85), 0 0 44px var(--c), inset 0 1px 0 rgba(255,255,255,0.18); }
+.hub { position: absolute; left: -130px; bottom: 26px; width: 260px; box-sizing: border-box; padding: 14px 10px 14px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.22); background: linear-gradient(180deg, rgba(47,63,90,0.92), rgba(21,28,42,0.92)); box-shadow: 0 0 60px rgba(255,45,70,0.35), 0 24px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18); display: flex; flex-direction: column; align-items: center; text-align: center; animation: pop .7s 1.2s cubic-bezier(.2,1.4,.4,1) both; }
+.hub i { width: 54px; height: 54px; border-radius: 50%; background: #C8102E; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.9), 0 0 24px rgba(255,45,70,0.7); }
+.hub b { margin-top: 8px; font-size: 27px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; }
+.hub span { margin-top: 4px; font-size: 13px; line-height: 1.25; color: #A7B2C2; }
+.beam { position: absolute; left: -90px; bottom: 0; width: 180px; height: 300px; background: linear-gradient(0deg, rgba(255,84,104,0.2), rgba(255,84,104,0)); clip-path: polygon(38% 100%, 62% 100%, 100% 0, 0 0); animation: show 1.2s 1.4s both; opacity: 0; }
+
+/* вступление текста */
+h1, .lead, .year, .bar, .legend { animation: up .9s cubic-bezier(.2,.7,.2,1) both; }
+h1 { animation-delay: .15s; } .lead { animation-delay: .4s; } .year { animation-delay: .6s; } .bar { animation-delay: .8s; } .legend { animation-delay: 3.4s; }
+@keyframes up { from { opacity: 0; translate: 0 26px; } to { opacity: 1; translate: 0 0; } }
+h1 { background: linear-gradient(100deg, #ffffff 0 40%, #9fd8ff 50%, #ffffff 60% 100%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: up .9s .15s cubic-bezier(.2,.7,.2,1) both, sheen 6s 3s ease-in-out infinite; }
+@keyframes sheen { 0%, 60% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="scene">
+    <div class="plane">
+      <div class="ground">
+        <div class="grid"></div>
+        <!--MAP-->
+        <div class="sweep"></div>
+        <div class="lights"><i style="left:800px;top:839px;animation-delay:-2.6s"></i><i style="left:621px;top:682px;animation-delay:-1.5s"></i><i style="left:628px;top:697px;animation-delay:-0.1s"></i><i style="left:879px;top:784px;animation-delay:-0.4s"></i><i style="left:791px;top:527px;animation-delay:-0.5s"></i><i style="left:601px;top:598px;animation-delay:-3.8s"></i><i style="left:518px;top:838px;animation-delay:-3.9s"></i><i style="left:741px;top:650px;animation-delay:-1.2s"></i><i style="left:784px;top:777px;animation-delay:-1.2s"></i><i style="left:814px;top:946px;animation-delay:-2.3s"></i><i style="left:533px;top:872px;animation-delay:-2.2s"></i><i style="left:770px;top:727px;animation-delay:-0.8s"></i><i style="left:478px;top:809px;animation-delay:-1.3s"></i><i style="left:480px;top:767px;animation-delay:-1.2s"></i><i style="left:616px;top:446px;animation-delay:-1.0s"></i><i style="left:475px;top:664px;animation-delay:-3.5s"></i><i style="left:640px;top:949px;animation-delay:-3.9s"></i><i style="left:610px;top:751px;animation-delay:-3.0s"></i><i style="left:583px;top:708px;animation-delay:-0.2s"></i><i style="left:722px;top:456px;animation-delay:-2.3s"></i><i style="left:591px;top:958px;animation-delay:-2.8s"></i><i style="left:497px;top:589px;animation-delay:-1.8s"></i><i style="left:958px;top:606px;animation-delay:-1.9s"></i><i style="left:927px;top:791px;animation-delay:-2.8s"></i><i style="left:941px;top:689px;animation-delay:-3.3s"></i><i style="left:579px;top:805px;animation-delay:-2.7s"></i><i style="left:656px;top:711px;animation-delay:-0.7s"></i><i style="left:796px;top:737px;animation-delay:-3.1s"></i><i style="left:702px;top:808px;animation-delay:-1.6s"></i><i style="left:945px;top:836px;animation-delay:-1.8s"></i><i style="left:865px;top:551px;animation-delay:-3.3s"></i><i style="left:650px;top:974px;animation-delay:-1.7s"></i><i style="left:834px;top:580px;animation-delay:-3.8s"></i><i style="left:752px;top:804px;animation-delay:-0.9s"></i><i style="left:556px;top:714px;animation-delay:-2.4s"></i><i style="left:854px;top:704px;animation-delay:-1.7s"></i><i style="left:533px;top:626px;animation-delay:-3.8s"></i><i style="left:452px;top:676px;animation-delay:-2.5s"></i><i style="left:933px;top:782px;animation-delay:-3.6s"></i><i style="left:887px;top:512px;animation-delay:-3.2s"></i><i style="left:549px;top:811px;animation-delay:-0.4s"></i><i style="left:921px;top:791px;animation-delay:-0.3s"></i><i style="left:772px;top:817px;animation-delay:-1.4s"></i><i style="left:769px;top:700px;animation-delay:-0.6s"></i><i style="left:637px;top:772px;animation-delay:-0.1s"></i><i style="left:488px;top:516px;animation-delay:-0.6s"></i></div>
+      </div>
+      <svg class="net" viewBox="0 0 1400 1400">
+        <defs>
+          <linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="700" y1="380" x2="977" y2="540"><stop offset="0" stop-color="#5FD6A2"/><stop offset="1" stop-color="#5FD6A2"/></linearGradient>
+          <linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="977" y1="540" x2="977" y2="860"><stop offset="0" stop-color="#5FD6A2"/><stop offset="1" stop-color="#5FD6A2"/></linearGradient>
+          <linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="977" y1="860" x2="700" y2="1020"><stop offset="0" stop-color="#5FD6A2"/><stop offset="1" stop-color="#5FD6A2"/></linearGradient>
+          <linearGradient id="g4" gradientUnits="userSpaceOnUse" x1="700" y1="1020" x2="423" y2="860"><stop offset="0" stop-color="#5FD6A2"/><stop offset="1" stop-color="#F2C24C"/></linearGradient>
+          <linearGradient id="g5" gradientUnits="userSpaceOnUse" x1="423" y1="860" x2="423" y2="540"><stop offset="0" stop-color="#F2C24C"/><stop offset="1" stop-color="#F2C24C"/></linearGradient>
+        </defs>
+        <circle class="pad" cx="700" cy="700" r="96"/><circle class="orbit" cx="700" cy="700" r="128"/>
+        <path class="spoke" d="M700 380 L700 700" stroke="#5FD6A2"/>
+        <path class="spoke" d="M977 540 L700 700" stroke="#5FD6A2"/>
+        <path class="spoke" d="M977 860 L700 700" stroke="#5FD6A2"/>
+        <path class="spoke" d="M700 1020 L700 700" stroke="#5FD6A2"/>
+        <path class="spoke" d="M423 860 L700 700" stroke="#F2C24C"/>
+        <path class="spoke" d="M423 540 L700 700" stroke="#F2C24C"/>
+        <path class="glow" style="--i:1" pathLength="1" d="M700.0 380.0 A320 320 0 0 1 977.1 540.0" stroke="url(#g1)"/><path class="base" style="--i:1" pathLength="1" d="M700.0 380.0 A320 320 0 0 1 977.1 540.0" stroke="url(#g1)"/><path class="run" d="M700.0 380.0 A320 320 0 0 1 977.1 540.0"/>
+        <path class="arrow" style="--i:1" d="M-12 -13 L13 0 L-12 13 L-6 0 Z" transform="translate(860.0 422.9) rotate(30.0)"/>
+        <path class="glow" style="--i:2" pathLength="1" d="M977.1 540.0 A320 320 0 0 1 977.1 860.0" stroke="url(#g2)"/><path class="base" style="--i:2" pathLength="1" d="M977.1 540.0 A320 320 0 0 1 977.1 860.0" stroke="url(#g2)"/><path class="run" d="M977.1 540.0 A320 320 0 0 1 977.1 860.0"/>
+        <path class="arrow" style="--i:2" d="M-12 -13 L13 0 L-12 13 L-6 0 Z" transform="translate(1020.0 700.0) rotate(90.0)"/>
+        <path class="glow" style="--i:3" pathLength="1" d="M977.1 860.0 A320 320 0 0 1 700.0 1020.0" stroke="url(#g3)"/><path class="base" style="--i:3" pathLength="1" d="M977.1 860.0 A320 320 0 0 1 700.0 1020.0" stroke="url(#g3)"/><path class="run" d="M977.1 860.0 A320 320 0 0 1 700.0 1020.0"/>
+        <path class="arrow" style="--i:3" d="M-12 -13 L13 0 L-12 13 L-6 0 Z" transform="translate(860.0 977.1) rotate(150.0)"/>
+        <path class="glow" style="--i:4" pathLength="1" d="M700.0 1020.0 A320 320 0 0 1 422.9 860.0" stroke="url(#g4)"/><path class="base" style="--i:4" pathLength="1" d="M700.0 1020.0 A320 320 0 0 1 422.9 860.0" stroke="url(#g4)"/><path class="run" d="M700.0 1020.0 A320 320 0 0 1 422.9 860.0"/>
+        <path class="arrow" style="--i:4" d="M-12 -13 L13 0 L-12 13 L-6 0 Z" transform="translate(540.0 977.1) rotate(210.0)"/>
+        <path class="glow" style="--i:5" pathLength="1" d="M422.9 860.0 A320 320 0 0 1 422.9 540.0" stroke="url(#g5)"/><path class="base" style="--i:5" pathLength="1" d="M422.9 860.0 A320 320 0 0 1 422.9 540.0" stroke="url(#g5)"/><path class="run" d="M422.9 860.0 A320 320 0 0 1 422.9 540.0"/>
+        <path class="arrow" style="--i:5" d="M-12 -13 L13 0 L-12 13 L-6 0 Z" transform="translate(380.0 700.0) rotate(270.0)"/>
+        <circle class="pulse" style="--i:1" cx="700" cy="380" r="22" stroke="#5FD6A2"/><circle class="foot" style="--i:1;fill:#5FD6A2" cx="700" cy="380" r="9"/>
+        <circle class="pulse" style="--i:2" cx="977" cy="540" r="22" stroke="#5FD6A2"/><circle class="foot" style="--i:2;fill:#5FD6A2" cx="977" cy="540" r="9"/>
+        <circle class="pulse" style="--i:3" cx="977" cy="860" r="22" stroke="#5FD6A2"/><circle class="foot" style="--i:3;fill:#5FD6A2" cx="977" cy="860" r="9"/>
+        <circle class="pulse" style="--i:4" cx="700" cy="1020" r="22" stroke="#5FD6A2"/><circle class="foot" style="--i:4;fill:#5FD6A2" cx="700" cy="1020" r="9"/>
+        <circle class="pulse" style="--i:5" cx="423" cy="860" r="22" stroke="#F2C24C"/><circle class="foot" style="--i:5;fill:#F2C24C" cx="423" cy="860" r="9"/>
+        <circle class="pulse" style="--i:6" cx="423" cy="540" r="22" stroke="#F2C24C"/><circle class="foot" style="--i:6;fill:#F2C24C" cx="423" cy="540" r="9"/>
+      </svg>
+      <div class="post" style="left:700px;top:700px"><div class="beam"></div><div class="hub"><i></i><b>МосИнженерия</b><span>Цифровая модель<br>ресурсоснабжения</span></div></div>
+      <div class="post" style="--c:#5FD6A2;--i:1;left:700px;top:380px"><div class="stem"></div><button class="sec l" data-s="1"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="13" r="1.500"/><path d="M12 7v4.500M10.700 13.800 6.500 16.800M13.300 13.800l4.200 3M7 18h10"/></svg></span><b>01</b><span class="tx">Инженерный каркас<br>города</span></button></div>
+      <div class="post" style="--c:#5FD6A2;--i:2;left:977px;top:540px"><div class="stem"></div><button class="sec" data-s="2"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4-5M4 19h16M7.500 15h0M16.500 15h0"/></svg></span><b>02</b><span class="tx">Учет потребления<br>ресурсов</span></button></div>
+      <div class="post" style="--c:#5FD6A2;--i:3;left:977px;top:860px"><div class="stem"></div><button class="sec" data-s="3"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3.500 2-4.500 0 2 1 3 2 3 0-4 1-7 2-9.500z"/></svg></span><b>03</b><span class="tx">Анализ территории<br>Теплоснабжение</span></button></div>
+      <div class="post" style="--c:#5FD6A2;--i:4;left:700px;top:1020px"><div class="stem"></div><button class="sec" data-s="4"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M3 9h7v6H3zM14 9h7v6h-7zM10 12h4M12 12V5M9.500 5h5"/></svg></span><b>04</b><span class="tx">Анализ территории<br>Газоснабжение</span></button></div>
+      <div class="post" style="--c:#F2C24C;--i:5;left:423px;top:860px"><div class="stem"></div><button class="sec l" data-s="5"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M13 2 5 13.500h6L10 22l9-12h-6.500z"/></svg></span><b>05</b><span class="tx">CIM-модель<br>электроснабжения<br>Москвы<br><em>План на 2027</em></span></button></div>
+      <div class="post" style="--c:#F2C24C;--i:6;left:423px;top:540px"><div class="stem"></div><button class="sec l" data-s="6"><span class="ic"><svg width="38" height="38" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M7 12l3-3 2.500 2 4-4"/></svg></span><b>06</b><span class="tx">АРМ инженера<br>КСИО<br><em>План на 2027</em></span></button></div>
+    </div>
+  </div>
+  <div class="shade"></div>
+
+  <div class="logos">
+    <div class="logo cgu"><i></i>ЦГУ</div>
+    <div class="logo mos"><i></i><span>Мос<br>Инженерия</span></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab" data-s="1"><svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v6.5M12 15.5V22M2 12h6.5M15.5 12H22"/></svg><span><small>01</small><b>Инженерный каркас</b></span></button>
+    <button class="tab" data-s="2"><svg width="26" height="26" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 13a4 4 0 0 1 8 0M12 13l2-3"/></svg><span><small>02</small><b>Учет ресурсов</b></span></button>
+    <button class="tab" data-s="3"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-4 1-7 2-9.500z"/></svg><span><small>03</small><b>Теплоснабжение</b></span></button>
+    <button class="tab" data-s="4"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 3s7 7 7 12a7 7 0 0 1-14 0c0-5 7-12 7-12z"/><path d="M12 13s2.500 2 2.500 4a2.500 2.500 0 0 1-5 0c0-2 2.500-4 2.500-4z"/></svg><span><small>04</small><b>Газоснабжение</b></span></button>
+    <button class="tab" data-s="5"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M13 2 5 13.500h6L10 22l9-12h-6.500z"/></svg><span><small>05</small><b>CIM-модель</b></span></button>
+    <button class="tab" data-s="6"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9.500 12h6M9.500 16h6"/></svg><span><small>06</small><b>АРМ КСИО</b></span></button>
+  </nav>
+
+  <h1>Результаты<br>работы</h1>
+  <p class="lead">Цифровизация сферы ресурсоснабжения города Москвы</p>
+  <p class="year">за <b>2026</b> г.</p>
+  <div class="bar"></div>
+  <div class="legend"><span><i style="background:#5FD6A2"></i>Разделы результатов</span><span><i style="background:#F2C24C"></i>Планы на 2027</span></div>
+
+  <div class="pill" style="left: 82px; width: 190px">Москва 2026</div>
+  <div class="pill" style="left: 290px; width: 62px; font-size: 26px">?</div>
+  <div class="tools">
+    <button aria-label="Все слайды"><svg width="24" height="24" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+    <button id="full" aria-label="На весь экран"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+    <span>01 / 20</span>
+    <div class="nav"><svg width="24" height="24" viewBox="0 0 24 24" style="opacity:.35"><path d="M15 5l-7 7 7 7"/></svg><svg width="24" height="24" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></div>
+  </div>
+</div>
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  function fit() { var k = Math.min(innerWidth / 1920, innerHeight / 1080); stage.style.transform = 'translate(-50%, -50%) scale(' + k + ')'; }
+  addEventListener('resize', fit); fit();
+  document.getElementById('full').onclick = function () { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); };
+  // наведение на раздел подсвечивает его и вкладку в шапке
+  var items = [].slice.call(document.querySelectorAll('[data-s]'));
+  function pick(s) { items.forEach(function (e) { e.classList.toggle('on', e.dataset.s === s); }); }
+  items.forEach(function (e) { e.onmouseenter = e.onfocus = function () { pick(e.dataset.s); }; e.onmouseleave = e.onblur = function () { pick(''); }; });
+})();
+</script>
+</body>
+</html>
