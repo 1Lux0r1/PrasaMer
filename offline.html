@@ -98,9 +98,10 @@ button { font-family: inherit; cursor: pointer; }
 @keyframes demo-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .task-card, .task-arrow { transition: none; } .demo { animation: none; } }
 .demo.is-alarm { border-color: rgba(255,45,70,0.7); }
-.demo-head { flex: none; height: 104px; padding: 0 28px 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d394d; }
-.demo-eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; color: #A7B2C2; }
-.demo-head h2 { margin: 6px 0 0; font-size: 34px; line-height: 1.1; font-weight: 800; }
+.demo-head { flex: none; height: 116px; padding: 0 28px 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d394d; }
+.demo-eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-top: 9px; height: 36px; padding: 0 16px; border-radius: 10px; border: 1px solid rgba(242,194,76,0.65); background: rgba(242,194,76,0.16); font-size: 21px; font-weight: 800; letter-spacing: 0.06em; color: #F2C24C; }
+.demo-eyebrow::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: #F2C24C; box-shadow: 0 0 10px rgba(242,194,76,0.9); }
+.demo-head h2 { margin: 0; font-size: 32px; line-height: 1.1; font-weight: 800; }
 .demo-body { flex: 1 1 0; display: flex; min-height: 0; }
 .demo-stage { flex: none; width: 1040px; display: flex; align-items: center; justify-content: center; background: #05070b; }
 .demo-stage svg { display: block; font-family: inherit; }
@@ -704,7 +705,7 @@ button { font-family: inherit; cursor: pointer; }
 
   <div class="demo" id="demo-outage" role="region" aria-labelledby="demo-outage-h" hidden>
     <header class="demo-head">
-      <div><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 01</div><h2 id="demo-outage-h">Последствия аварий и переключения</h2></div>
+      <div><h2 id="demo-outage-h">Последствия аварий и переключения</h2><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 01</div></div>
     </header>
     <div class="demo-body">
       <div class="demo-stage" id="outage-stage"></div>
@@ -724,7 +725,7 @@ button { font-family: inherit; cursor: pointer; }
 
   <div class="demo" id="demo-forecast" role="region" aria-labelledby="demo-forecast-h" hidden>
     <header class="demo-head">
-      <div><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 02</div><h2 id="demo-forecast-h">Прогноз потребления города</h2></div>
+      <div><h2 id="demo-forecast-h">Прогноз потребления города</h2><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 02</div></div>
     </header>
     <div class="demo-body">
       <div class="demo-stage" id="forecast-stage"></div>
@@ -747,7 +748,7 @@ button { font-family: inherit; cursor: pointer; }
 
   <div class="demo" id="demo-planning" role="region" aria-labelledby="demo-planning-h" hidden>
     <header class="demo-head">
-      <div><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 03</div><h2 id="demo-planning-h">Планирование застройки</h2></div>
+      <div><h2 id="demo-planning-h">Планирование застройки</h2><div class="demo-eyebrow">ПРИМЕР РАБОТЫ · 03</div></div>
     </header>
     <div class="demo-body">
       <div class="demo-stage" id="planning-stage"></div>
