@@ -245,7 +245,7 @@ button { font-family: inherit; cursor: pointer; }
 .ab-orbit { position: absolute; inset: -22px; border-radius: 50%; border: 2px dashed rgba(86,180,233,0.7); animation: ab-spin 12s linear infinite; }
 .ab-orbit2 { inset: -44px; border: 1px solid rgba(86,180,233,0.25); border-top-color: rgba(86,180,233,0.9); animation-duration: 5s; animation-direction: reverse; }
 @keyframes ab-spin { to { rotate: 360deg; } }
-.ab-ground { position: absolute; left: 74px; top: 196px; width: 620px; height: 620px; perspective: 1100px; perspective-origin: 50% 20%; pointer-events: none; animation: ab-rise 1.2s 2.2s cubic-bezier(.2,.7,.2,1) both; }
+.ab-ground { position: absolute; left: 74px; top: 196px; width: 620px; height: 620px; scale: 1.32; transform-origin: 50% 62%; perspective: 1100px; perspective-origin: 50% 20%; pointer-events: none; animation: ab-rise 1.2s 2.2s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes ab-rise { from { opacity: 0; translate: 0 60px; } to { opacity: 1; translate: 0 0; } }
 .ab-plane { position: absolute; inset: 0; transform: rotateX(62deg); -webkit-mask-image: radial-gradient(circle, #000 40%, transparent 70%); mask-image: radial-gradient(circle, #000 40%, transparent 70%); }
 .ab-plane img { position: absolute; left: -57px; top: 30px; width: 800px; height: 770px; filter: brightness(1.9) saturate(0.8); opacity: 0.85; }
