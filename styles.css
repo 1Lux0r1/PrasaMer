@@ -203,6 +203,12 @@ button { font-family: inherit; cursor: pointer; }
 .abbr-pop { position: absolute; right: calc(100% + 16px); top: 50%; translate: 0 -50%; margin: 0; z-index: 6; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; background: #1d2636; border: 1px solid #8FB4F0; display: grid; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 14px; row-gap: 5px; font-size: 13.5px; line-height: 1.25; }
 .abbr-pop[hidden] { display: none; }
 
+/* слайд 3: подписи территорий и внешние источники генерации */
+.sc-region { position: absolute; font-size: 13px; font-weight: 700; letter-spacing: 0.22em; color: rgba(143,160,184,0.38); white-space: nowrap; pointer-events: none; }
+.sc-ext { position: absolute; display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 9px; border-radius: 10px; border: 1px solid rgba(199,125,214,0.7); background: rgba(24,16,30,0.92); box-shadow: 0 0 16px rgba(199,125,214,0.25); font-size: 15px; line-height: 1.1; font-weight: 700; color: #ffffff; white-space: nowrap; pointer-events: none; }
+.sc-ext i { flex: none; width: 12px; height: 12px; border-radius: 50%; background: #C77DD6; box-shadow: 0 0 0 4px rgba(199,125,214,0.2), 0 0 10px rgba(199,125,214,0.9); }
+.sc-ext small { display: block; margin-bottom: 2px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #D9A6E3; }
+
 /* слайд 3: чей это взгляд на сеть */
 .sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
 .sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
