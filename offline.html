@@ -224,10 +224,12 @@ button { font-family: inherit; cursor: pointer; }
 .sc-ext small { display: block; margin-bottom: 2px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #D9A6E3; }
 
 /* слайд 3: чей это взгляд на сеть */
-.sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
+.sc-who-box { position: absolute; right: 24px; top: 20px; z-index: 3; pointer-events: none; }
+.sc-who { display: flex; align-items: center; gap: 14px; height: 56px; box-sizing: border-box; padding: 0 22px 0 16px; border-radius: 28px; border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); background: color-mix(in srgb, var(--c) 14%, #10151f); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 18%, transparent); }
+.sc-who[hidden] { display: none; }
 .sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.sc-who small { display: block; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c); }
-.sc-who b { display: block; margin-top: 2px; font-size: 21px; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; }
+.sc-who small { display: block; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c); }
+.sc-who b { display: block; margin-top: 1px; font-size: 20px; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; }
 
 /* слайд 3: отключение — линии мерцают и гаснут до тусклого пунктира, отключённый объект пульсирует красным */
 .sc-fade { opacity: 0; }
@@ -583,21 +585,18 @@ button { font-family: inherit; cursor: pointer; }
       <span aria-hidden="true" style="width: 6px; height: 20px; background: #FF2D46"></span>
       ПРЕДСТАВЛЕНИЕ
     </div>
-    <div style="min-height: 214px">
+    <div style="min-height: 132px">
       <div id="sc-title-map">
-        <div class="sc-who" style="--c: #8FB4F0"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>руководство города</b></span></div>
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #8FB4F0">ВИД 1 · ГДЕ НАХОДИТСЯ</div>
         <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Объекты <span style="color: #FF3D55">на карте</span></h1>
         <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Источники питания, подстанции и линии — на карте города.</p>
       </div>
       <div id="sc-title-scheme" hidden>
-        <div class="sc-who" style="--c: #F0C36A"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>электросетевая организация</b></span></div>
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #F0C36A">ВИД 2 · КАК СВЯЗАНО</div>
         <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">топологии</span></h1>
         <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Те же объекты и их связи — по классам напряжения.</p>
       </div>
       <div id="sc-title-object" hidden>
-        <div class="sc-who" style="--c: #9BDDB0"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>диспетчер</b></span></div>
         <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.04em; color: #9BDDB0">ВИД 3 · ЧТО ВНУТРИ</div>
         <h1 style="margin: 6px 0 0; font-size: 36px; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em">Схема <span style="color: #FF3D55">объекта</span></h1>
         <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.4; color: #C5CEDB">Оборудование объекта: распределительные устройства, трансформаторы, присоединения.</p>
@@ -659,6 +658,12 @@ button { font-family: inherit; cursor: pointer; }
       <div id="sc-d-title" style="position: absolute; left: 150px; top: 96px; padding: 6px 16px; border: 2px dashed #FF3D55; font-size: 17px; font-weight: 700"></div>
       <div id="sc-d-state" hidden style="position: absolute; left: 150px; top: 142px; padding: 5px 14px; border-radius: 8px; background: rgba(255,61,85,0.16); border: 1px solid #FF3D55; font-size: 14px; font-weight: 800; letter-spacing: 0.06em; color: #FF8A99"></div>
       <div id="sc-d-labels" class="sc-d-labels" style="position: absolute; left: 110px; top: 0"></div>
+    </div>
+
+    <div class="sc-who-box">
+      <div class="sc-who" id="sc-who-map" style="--c: #8FB4F0"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>руководство города</b></span></div>
+      <div class="sc-who" id="sc-who-scheme" style="--c: #F0C36A" hidden><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>электросетевая организация</b></span></div>
+      <div class="sc-who" id="sc-who-object" style="--c: #9BDDB0" hidden><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.600-6.500 10-6.500S22 12 22 12s-3.600 6.500-10 6.500S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span><small>Так видит</small><b>диспетчер</b></span></div>
     </div>
 
     <div role="group" aria-label="Вид" class="sc-switch">
@@ -1035,7 +1040,7 @@ button { font-family: inherit; cursor: pointer; }
     /* внешние источники генерации: линии 500 кВ уходят за край карты; названия условные — «например» */
     const exts = [ // id, название, точка на карте, точка на схеме, подпись на карте [x, y, выравнивание], подпись на схеме
       ['x1', 'Калининская АЭС', [-20, 200], [0, 150], [14, 216, 'l'], [8, 204, 'l']],
-      ['x2', 'Костромская ГРЭС', [1620, 60], [1600, 150], [1586, 78, 'r'], [1592, 204, 'r']],
+      ['x2', 'Костромская ГРЭС', [1620, 100], [1600, 150], [1586, 116, 'r'], [1592, 204, 'r']],
       ['x3', 'Курская АЭС', [1010, 964], [1600, 820], [1026, 900, 'l'], [1592, 712, 'r']],
       ['x4', 'Смоленская АЭС', [-20, 640], [0, 820], [14, 656, 'l'], [8, 712, 'l']]
     ].map((d) => (byId[d[0]] = { id: d[0], ext: true, title: d[1], m: d[2], s: d[3], lm: d[4], ls: d[5] }));
@@ -1303,6 +1308,7 @@ button { font-family: inherit; cursor: pointer; }
       ['map', 'scheme', 'object'].forEach((name) => {
         const on = state.view === name;
         $('#sc-title-' + name).hidden = !on;
+        $('#sc-who-' + name).hidden = !on;
         $('#sc-to-' + name).classList.toggle('is-on', on);
         $('#sc-to-' + name).setAttribute('aria-pressed', String(on));
       });

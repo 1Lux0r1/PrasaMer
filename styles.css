@@ -211,10 +211,12 @@ button { font-family: inherit; cursor: pointer; }
 .sc-ext small { display: block; margin-bottom: 2px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #D9A6E3; }
 
 /* слайд 3: чей это взгляд на сеть */
-.sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
+.sc-who-box { position: absolute; right: 24px; top: 20px; z-index: 3; pointer-events: none; }
+.sc-who { display: flex; align-items: center; gap: 14px; height: 56px; box-sizing: border-box; padding: 0 22px 0 16px; border-radius: 28px; border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); background: color-mix(in srgb, var(--c) 14%, #10151f); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 18%, transparent); }
+.sc-who[hidden] { display: none; }
 .sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.sc-who small { display: block; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c); }
-.sc-who b { display: block; margin-top: 2px; font-size: 21px; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; }
+.sc-who small { display: block; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c); }
+.sc-who b { display: block; margin-top: 1px; font-size: 20px; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; }
 
 /* слайд 3: отключение — линии мерцают и гаснут до тусклого пунктира, отключённый объект пульсирует красным */
 .sc-fade { opacity: 0; }
