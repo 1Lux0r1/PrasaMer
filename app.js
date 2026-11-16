@@ -293,11 +293,11 @@
       }
       const dead = (id) => !!off && !byId[id].ext && !alive[id];
       const d = { 500: '', 220: '', 110: '' };
-      let dDead = '', dSel = '';
+      let dDead = '', dSel = ''; const dFade = { 500: '', 220: '', 110: '' };
       lines.forEach((l) => {
         if (!st.show[l.cls]) return;
         const p = 'M' + l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1)).join('L');
-        if (dead(l.a) || dead(l.b)) dDead += p; else d[l.cls] += p;
+        if (dead(l.a) || dead(l.b)) { dDead += p; dFade[l.cls] += p; } else d[l.cls] += p;
         if (l.a === sel || l.b === sel) dSel += p;
       });
       const vn = nodes.map((n) => {
@@ -319,7 +319,7 @@
       const dl = sn ? (cache[sel] || (cache[sel] = detailLabels(sn))) : { labels: [], hi: CLR[220], lo: CLR[110] };
       const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
-        dLine: d, dDead: dDead, dSel: dSel, nodes: vn,
+        dLine: d, dDead: dDead, dFade: dFade, dSel: dSel, nodes: vn,
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
         origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '800px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
@@ -377,9 +377,16 @@
       layerEls[d[0]] = b;
     });
 
-    let lastSel = null;
+    let lastSel = null, lastOff = null;
     function render() {
       const v = core.compute(state);
+      // при отключении линии гаснут: цветная копия поверх пунктира мерцает и исчезает
+      const dying = state.off !== lastOff; lastOff = state.off;
+      [500, 220, 110].forEach((c) => {
+        const f = $('#sc-f' + c); f.setAttribute('d', v.dFade[c]);
+        if (dying) { f.classList.remove('is-dying'); void f.getBoundingClientRect(); if (state.off) f.classList.add('is-dying'); }
+      });
+      if (dying) { const dp = $('#sc-pDead'); dp.classList.remove('is-dying'); void dp.getBoundingClientRect(); if (state.off) dp.classList.add('is-dying'); }
       $('#sc-p500').setAttribute('d', v.dLine[500]); $('#sc-p220').setAttribute('d', v.dLine[220]); $('#sc-p110').setAttribute('d', v.dLine[110]);
       $('#sc-pDead').setAttribute('d', v.dDead); $('#sc-pSel').setAttribute('d', v.dSel);
       $('#sc-mapbg').style.opacity = v.mapOp; $('#sc-schbg').style.opacity = v.schOp;
