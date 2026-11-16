@@ -32,7 +32,9 @@ for (const name of Object.keys(map)) {
   const b = name === 'PowerScheme'
     ? { bg: '#161d2b', inner: fs.readFileSync(path.join(__dirname, 'scheme.html'), 'utf8') }
     : body(name);
-  sections += `\n<section class="slide" id="${id}" style="background: ${b.bg}">\n${b.inner}\n</section>\n`;
+  // плашка «План на 2027» стоит на каждом слайде; на слайде 4 она уже есть в разметке
+  const badge = id === 'tasks' ? '' : '\n<div class="plan-badge"><i></i>План на 2027</div>';
+  sections += `\n<section class="slide" id="${id}" style="background: ${b.bg}">\n${b.inner}${badge}\n</section>\n`;
 }
 
 fs.writeFileSync(out, `<!doctype html>
@@ -63,7 +65,8 @@ fs.writeFileSync(out, `<!doctype html>
   page = page.replace(/<link rel="stylesheet" href="styles\.css[^"]*">/, () => '<style>\n' + fontCss + '\n' + fs.readFileSync(path.join(dir, 'styles.css'), 'utf8') + '</style>');
   page = page.replace(/<script src="app\.js[^"]*"><\/script>/, () => '<script>\n' + fs.readFileSync(path.join(dir, 'app.js'), 'utf8') + '</script>');
   page = page.split('img/moscow-base.svg').join('data:image/svg+xml;base64,' + b64('img/moscow-base.svg'));
-  if (/fonts\.googleapis|fonts\.gstatic|href="styles\.css|src="app\.js|img\/moscow-base/.test(page)) throw new Error('offline build still has external references');
+  page = page.split('img/moscow-clear.svg').join('data:image/svg+xml;base64,' + b64('img/moscow-clear.svg'));
+  if (/fonts\.googleapis|fonts\.gstatic|href="styles\.css|src="app\.js|img\/moscow-(base|clear)/.test(page)) throw new Error('offline build still has external references');
   fs.writeFileSync(path.join(dir, 'offline.html'), page);
   // Отдельные самостоятельные слайды: build/standalone/*.html -> корень репозитория, шрифт встраивается
   const sa = path.join(__dirname, 'standalone');
