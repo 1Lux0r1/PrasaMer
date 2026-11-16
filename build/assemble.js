@@ -64,9 +64,8 @@ fs.writeFileSync(out, `<!doctype html>
   page = page.replace(/<link rel="preconnect"[^>]*>\n/g, '').replace(/<link href="https:\/\/fonts\.googleapis\.com[^>]*>\n/, '');
   page = page.replace(/<link rel="stylesheet" href="styles\.css[^"]*">/, () => '<style>\n' + fontCss + '\n' + fs.readFileSync(path.join(dir, 'styles.css'), 'utf8') + '</style>');
   page = page.replace(/<script src="app\.js[^"]*"><\/script>/, () => '<script>\n' + fs.readFileSync(path.join(dir, 'app.js'), 'utf8') + '</script>');
-  page = page.split('img/moscow-base.svg').join('data:image/svg+xml;base64,' + b64('img/moscow-base.svg'));
-  page = page.split('img/moscow-clear.svg').join('data:image/svg+xml;base64,' + b64('img/moscow-clear.svg'));
-  if (/fonts\.googleapis|fonts\.gstatic|href="styles\.css|src="app\.js|img\/moscow-(base|clear)/.test(page)) throw new Error('offline build still has external references');
+  fs.readdirSync(path.join(dir, 'img')).filter((f) => f.endsWith('.svg')).forEach((f) => { page = page.split('img/' + f).join('data:image/svg+xml;base64,' + b64('img/' + f)); });
+  if (/fonts\.googleapis|fonts\.gstatic|href="styles\.css|src="app\.js|"img\//.test(page)) throw new Error('offline build still has external references');
   fs.writeFileSync(path.join(dir, 'offline.html'), page);
   // Отдельные самостоятельные слайды: build/standalone/*.html -> корень репозитория, шрифт встраивается
   const sa = path.join(__dirname, 'standalone');
