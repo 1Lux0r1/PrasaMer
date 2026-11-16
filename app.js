@@ -229,49 +229,73 @@
       return { cls: d[0], a: a.id, b: b.id, m: m, s: s };
     });
 
-    /* Однолинейная схема объекта: геометрия одна для всех, цвета и подписи — от выбранного объекта */
-    const FEED = [250, 360, 580, 800, 1020, 1130];
-    const detail = (() => {
-      const a = { hiThin: '', hiFill: '', loThin: '', loFill: '', hiBus: 'M230 250H1150M230 292H1150', loBus: 'M170 640H1210M170 682H1210' };
-      const ln = (k, x1, y1, x2, y2) => { a[k + 'Thin'] += 'M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2; };
-      const sq = (k, x, y) => { a[k + 'Fill'] += 'M' + (x - 6) + ' ' + (y - 6) + 'h12v12h-12z'; };
-      const dt = (k, x, y) => { a[k + 'Fill'] += 'M' + (x - 4) + ' ' + y + 'a4 4 0 1 0 8 0a4 4 0 1 0 -8 0'; };
-      const ring = (k, x, y, r) => { a[k + 'Thin'] += 'M' + (x - r) + ' ' + y + 'a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0'; };
-      const arrow = (k, x, y, dir) => { a[k + 'Thin'] += 'M' + (x - 5) + ' ' + (y - dir * 9) + 'L' + x + ' ' + y + 'L' + (x + 5) + ' ' + (y - dir * 9); };
-      [330, 1050].forEach((x) => { ln('hi', x, 160, x, 250); arrow('hi', x, 160, -1); sq('hi', x, 205); dt('hi', x, 250); });
-      ln('hi', 690, 250, 690, 292); sq('hi', 690, 271); dt('hi', 690, 250); dt('hi', 690, 292);
-      [560, 820].forEach((x) => { ln('hi', x, 250, x, 222); ring('hi', x, 214, 8); dt('hi', x, 250); });
-      [470, 910].forEach((x) => {
-        dt('hi', x, 292); ln('hi', x, 292, x, 372); sq('hi', x, 332); ring('hi', x, 388, 16);
-        ring('lo', x, 410, 16); ln('lo', x, 426, x, 640); sq('lo', x, 590); dt('lo', x, 640);
+    /* Однолинейная схема объекта строится из тех же данных, что и значок на ортогональной схеме:
+       шины — n.buses, генераторы — n.gens, присоединения — линии сети, подходящие к объекту */
+    function objDetail(n, isDead) {
+      const X0 = 210, X1 = 1170, k = n.buses.length, MUTED = '#A7B2C2';
+      const ys = k === 1 ? [n.gens ? 500 : 470] : (k === 2 ? [320, 640] : [280, 470, 660]);
+      const groups = {}, labels = [];
+      const G = (c) => groups[c] || (groups[c] = { thin: '', fill: '', bus: '', dash: '' });
+      const add = (x, y, t, c, al, fs, fw) => labels.push({ x: x, y: y, t: t, c: c, tf: al === 'center' ? 'translateX(-50%)' : (al === 'right' ? 'translateX(-100%)' : 'none'), fs: fs || 13, fw: fw || 500 });
+      const ln = (c, x1, y1, x2, y2, key) => { G(c)[key || 'thin'] += 'M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2; };
+      const sq = (c, x, y) => { G(c).fill += 'M' + (x - 6) + ' ' + (y - 6) + 'h12v12h-12z'; };
+      const dt = (c, x, y) => { G(c).fill += 'M' + (x - 4.5) + ' ' + y + 'a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0'; };
+      const ring = (c, x, y, r) => { G(c).thin += 'M' + (x - r) + ' ' + y + 'a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0'; };
+      const arrow = (c, x, y, dir, key) => { G(c)[key || 'thin'] += 'M' + (x - 6) + ' ' + (y - dir * 10) + 'L' + x + ' ' + y + 'L' + (x + 6) + ' ' + (y - dir * 10); };
+      const TX = [540, 840];
+      n.buses.forEach((c, i) => {
+        const y = ys[i], col = CLR[c];
+        G(col).bus += 'M' + X0 + ' ' + y + 'H' + X1;
+        add(X0 - 18, y - 26, 'РУ ' + c + ' кВ', '#ffffff', 'right', 16, 700);
+        add(X0 - 18, y - 4, DEMO_V[c] + ' кВ', col, 'right', 13, 700);
+        if (i < k - 1) { // автотрансформаторы между соседними РУ
+          const lo = CLR[n.buses[i + 1]], y2 = ys[i + 1], mid = (y + y2) / 2;
+          TX.forEach((x) => {
+            dt(col, x, y); ln(col, x, y, x, mid - 26); sq(col, x, y + (mid - 26 - y) * 0.45); ring(col, x, mid - 10, 16);
+            ring(lo, x, mid + 10, 16); ln(lo, x, mid + 26, x, y2); sq(lo, x, y2 - (y2 - mid - 26) * 0.45); dt(lo, x, y2);
+            add(x + 26, mid - 8, 'АТ', MUTED, 'left', 14, 700);
+          });
+        }
+        // присоединения: линии сети этого класса; линия «чужого» класса садится на первую шину
+        const conn = lines.filter((l) => (l.a === n.id || l.b === n.id) && (l.cls === c || (i === 0 && n.buses.indexOf(l.cls) < 0)));
+        const gens = i === 0 ? n.gens : 0;
+        const side = (jx) => k === 1 ? (gens ? 1 : (jx % 2 ? 1 : -1)) : (i === 0 ? -1 : (i === k - 1 ? 1 : (jx % 2 ? 1 : -1)));
+        const up = [], down = [];
+        for (let g = 0; g < gens; g++) up.push({ gen: true });
+        conn.forEach((l, jx) => (side(jx) < 0 ? up : down).push({ line: l }));
+        // генераторы и линии на одной стороне шины чередуются
+        const mixed = []; const gs = up.filter((u) => u.gen), ls = up.filter((u) => u.line);
+        while (gs.length || ls.length) { if (gs.length) mixed.push(gs.shift()); if (ls.length) mixed.push(ls.shift()); }
+        [[mixed, -1], [down, 1]].forEach((pair) => {
+          const arr = pair[0], dir = pair[1], inner = k > 2 && i === 1;
+          arr.forEach((it, jx) => {
+            let x = Math.round(300 + (jx + 0.5) * 780 / arr.length);
+            TX.forEach((t) => { if (Math.abs(x - t) < 34 && k > 1) x += 50; });
+            const L = inner ? 64 : 118, ye = y + dir * L;
+            if (it.gen) {
+              const gc = CLR.gen;
+              dt(col, x, y); ln(col, x, y, x, ye + 18); sq(col, x, y - L * 0.42); ring(gc, x, ye, 18);
+              add(x, ye - 7, 'Г', gc, 'center', 15, 700); add(x, ye - 44, 'Генератор', MUTED, 'center', 13);
+            } else {
+              const oid = it.line.a === n.id ? it.line.b : it.line.a, o = byId[oid], lc = CLR[it.line.cls];
+              const off = isDead(oid), key = off ? 'dash' : 'thin', cc = off ? GRAY : lc;
+              dt(col, x, y); ln(cc, x, y, x, ye, key); sq(cc, x, y + dir * L * 0.42); arrow(cc, x, ye, dir, key);
+              add(x, dir < 0 ? ye - 36 : ye + 10, o.ext ? 'Внешняя сеть' : o.title, off ? MUTED : '#ffffff', 'center', 13, 600);
+              add(x, dir < 0 ? ye - 20 : ye + 26, off ? 'без напряжения' : 'ЛЭП ' + it.line.cls + ' кВ', off ? MUTED : lc, 'center', 12, 600);
+            }
+          });
+        });
       });
-      ln('lo', 690, 640, 690, 682); sq('lo', 690, 661); dt('lo', 690, 640); dt('lo', 690, 682);
-      FEED.forEach((x, i) => { const by = i % 2 ? 682 : 640; dt('lo', x, by); ln('lo', x, by, x, 800); sq('lo', x, 735); arrow('lo', x, 800, 1); });
-      return a;
-    })();
-
-    function detailLabels(n) {
-      const hiC = n.cls, loC = n.cls === 500 ? 220 : (n.cls === 220 ? 110 : 10);
-      const hi = CLR[hiC], lo = CLR[loC], G = '#59d98e', C = '#56c7d6', MUTED = '#A7B2C2';
-      const out = [];
-      const add = (x, y, t, c, al, fs, fw) => out.push({ x: x, y: y, t: t, c: c, al: al || 'left', tf: al === 'center' ? 'translateX(-50%)' : (al === 'right' ? 'translateX(-100%)' : 'none'), fs: fs || 13, fw: fw || 500 });
-      add(690, 128, 'РУ ' + hiC + ' кВ', '#ffffff', 'center', 17, 700);
-      add(690, 536, 'РУ ' + loC + ' кВ', '#ffffff', 'center', 17, 700);
-      add(214, 232, '1 с.ш.', MUTED, 'right'); add(214, 248, DEMO_V[hiC] + ' кВ', hi, 'right', 13, 700);
-      add(214, 276, '2 с.ш.', MUTED, 'right'); add(214, 292, DEMO_V[hiC] + ' кВ', hi, 'right', 13, 700);
-      add(154, 622, '1 с.ш.', MUTED, 'right'); add(154, 638, DEMO_V[loC] + ' кВ', lo, 'right', 13, 700);
-      add(154, 666, '2 с.ш.', MUTED, 'right'); add(154, 682, DEMO_V[loC] + ' кВ', lo, 'right', 13, 700);
-      [[330, ['34,19', '3,92', '91']], [1050, ['25,92', '41,01', '107']]].forEach((p) => {
-        add(p[0] + 14, 160, p[1][0], G); add(p[0] + 14, 176, p[1][1], C); add(p[0] + 14, 192, p[1][2], hi);
+      let svg = '';
+      Object.keys(groups).forEach((c) => {
+        const g = groups[c];
+        svg += '<g style="color:' + c + '">' +
+          (g.bus ? '<path class="sc-d-bus" d="' + g.bus + '"></path>' : '') +
+          (g.thin ? '<path class="sc-d-thin" d="' + g.thin + '"></path>' : '') +
+          (g.dash ? '<path class="sc-d-thin sc-d-dash" d="' + g.dash + '"></path>' : '') +
+          (g.fill ? '<path class="sc-d-fill" d="' + g.fill + '"></path>' : '') + '</g>';
       });
-      [[470, ['33,13', '3,39', '147']], [910, ['25,62', '41,01', '167']]].forEach((p) => {
-        add(p[0] + 28, 390, 'АТ', MUTED, 'left', 14, 700);
-        add(p[0] + 14, 470, p[1][0], G); add(p[0] + 14, 486, p[1][1], C); add(p[0] + 14, 502, p[1][2], lo);
-      });
-      [['28,13', '26,90'], ['28,76', '26,44'], ['28,27', '1,01'], ['32,51', '0,33'], ['4,19', '13,12'], ['11,40', '3,20']].forEach((v, i) => {
-        add(FEED[i] + 12, 756, v[0], G); add(FEED[i] + 12, 772, v[1], C);
-      });
-      return { labels: out, hi: hi, lo: lo };
+      return { svg: svg, labels: labels };
     }
 
     const cache = {};
@@ -316,7 +340,8 @@
       });
       const sn = sel ? byId[sel] : null; // объект может быть не выбран
       const deadCount = off ? nodes.filter((n) => n.id !== off && dead(n.id)).length : 0;
-      const dl = sn ? (cache[sel] || (cache[sel] = detailLabels(sn))) : { labels: [], hi: CLR[220], lo: CLR[110] };
+      const dKey = (sel || '') + '|' + (off || '');
+      const dl = sn ? (cache[dKey] || (cache[dKey] = objDetail(sn, dead))) : { svg: '', labels: [] };
       const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
         dLine: d, dDead: dDead, dFade: dFade, dSel: dSel, nodes: vn,
@@ -324,7 +349,7 @@
         origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '800px 472px',
         netTf: 'scale(' + (1 + 5 * z).toFixed(3) + ')', netOp: Math.max(0, 1 - z * 1.2).toFixed(3),
         detTf: 'scale(' + (0.12 + 0.88 * z).toFixed(3) + ')', detOp: Math.max(0, Math.min(1, (z - 0.1) / 0.6)).toFixed(3),
-        detail: detail, detLabels: dl.labels, hi: dl.hi, lo: dl.lo,
+        detKey: dKey, detSvg: dl.svg, detLabels: dl.labels, selOut: selOff || selDead, outText: selOff ? 'ОТКЛЮЧЁН' : 'БЕЗ ПИТАНИЯ',
         hasSel: !!sn,
         selTitle: sn ? sn.title : 'Объект не выбран',
         selType: !sn ? '—' : (sn.type === 'tec' ? 'Электростанция' : 'Подстанция'),
@@ -408,17 +433,16 @@
       net.style.pointerEvents = state.z > 0.01 ? 'none' : '';
       det.style.transformOrigin = v.origin; det.style.transform = v.detTf; det.style.opacity = v.detOp;
       det.style.visibility = state.z > 0.01 ? 'visible' : 'hidden';
-      if (state.sel && lastSel !== state.sel) {
-        lastSel = state.sel;
-        ['hiThin', 'hiFill', 'hiBus', 'loThin', 'loFill', 'loBus'].forEach((k) => {
-          const p = $('#sc-d-' + k), c = k.slice(0, 2) === 'hi' ? v.hi : v.lo;
-          p.setAttribute('d', v.detail[k]);
-          if (k.slice(2) === 'Fill') p.style.fill = c; else p.style.stroke = c;
-        });
+      if (state.sel && lastSel !== v.detKey) {
+        lastSel = v.detKey;
+        $('#sc-d-art').innerHTML = v.detSvg;
         $('#sc-d-title').textContent = v.selTitle;
         $('#sc-d-labels').innerHTML = v.detLabels.map((l) =>
           '<span style="left:' + l.x + 'px;top:' + l.y + 'px;color:' + l.c + ';transform:' + l.tf + ';font-size:' + l.fs + 'px;font-weight:' + l.fw + '">' + l.t + '</span>').join('');
       }
+      // отключение на схеме объекта: оборудование и шины гаснут
+      det.classList.toggle('is-out', v.hasSel && v.selOut);
+      $('#sc-d-state').textContent = v.outText; $('#sc-d-state').hidden = !(v.hasSel && v.selOut);
 
       ['map', 'scheme', 'object'].forEach((name) => {
         const on = state.view === name;
