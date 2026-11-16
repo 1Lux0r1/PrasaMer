@@ -195,6 +195,14 @@ button { font-family: inherit; cursor: pointer; }
 .sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
 .sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 
+/* слайд 2: расшифровка сокращений прячется за кнопкой «?» */
+.abbr-btn { height: 48px; padding: 0 20px 0 8px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.22); background: rgba(29,38,54,0.88); display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 600; color: #C5CEDB; }
+.abbr-btn span { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #8FB4F0; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800; color: #8FB4F0; }
+.abbr-btn:hover, .abbr-btn[aria-expanded="true"] { background: rgba(143,180,240,0.16); border-color: #8FB4F0; color: #ffffff; }
+.abbr-btn[aria-expanded="true"] span { background: #8FB4F0; color: #161d2b; }
+.abbr-pop { position: absolute; right: 0; top: 60px; margin: 0; z-index: 6; box-sizing: border-box; padding: 18px 22px; border-radius: 16px; background: #1d2636; border: 1px solid #8FB4F0; box-shadow: 0 18px 40px rgba(0,0,0,0.5); display: grid; grid-template-columns: auto; row-gap: 9px; font-size: 17px; line-height: 1.25; }
+.abbr-pop[hidden] { display: none; }
+
 /* слайд 3: чей это взгляд на сеть */
 .sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
 .sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
