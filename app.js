@@ -303,7 +303,7 @@
       const vn = nodes.map((n) => {
         const dd = dead(n.id), isSel = n.id === sel;
         return {
-          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h,
+          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h, off: n.id === off, dead: dd && n.id !== off,
           x: lerp(n.m[0], n.s[0]).toFixed(1), y: lerp(n.m[1], n.s[1]).toFixed(1),
           w: lerp(44, n.w).toFixed(1), h: lerp(44, n.h).toFixed(1),
           mkOp: (1 - t).toFixed(3), boxOp: t.toFixed(3),
@@ -387,6 +387,7 @@
       v.nodes.forEach((n) => {
         const e = els[n.id];
         e.el.style.left = n.x + 'px'; e.el.style.top = n.y + 'px';
+        e.el.classList.toggle('is-off', n.off); e.el.classList.toggle('is-dead', n.dead);
         e.el.style.width = n.w + 'px'; e.el.style.height = n.h + 'px';
         e.box.style.opacity = n.boxOp; e.box.style.borderColor = n.boxBorder; e.box.style.boxShadow = n.glow;
         e.box.firstChild.style.opacity = n.artOp;
