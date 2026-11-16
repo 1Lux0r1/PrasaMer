@@ -32,9 +32,12 @@ for (const name of Object.keys(map)) {
   const b = name === 'PowerScheme'
     ? { bg: '#161d2b', inner: fs.readFileSync(path.join(__dirname, 'scheme.html'), 'utf8') }
     : body(name);
-  // плашка «План на 2027» стоит на каждом слайде; на слайде 4 она уже есть в разметке
-  const badge = id === 'tasks' ? '' : '\n<div class="plan-badge"><i></i>План на 2027</div>';
-  sections += `\n<section class="slide" id="${id}" style="background: ${b.bg}">\n${b.inner}${badge}\n</section>\n`;
+  // общая шапка большой презентации (раздел 05 активен), под ней — навигация по слайдам раздела и плашка «План на 2027»;
+  // содержимое слайда лежит в .deck-body и уменьшено, чтобы уместиться под шапкой
+  const HEAD = '<header class="deck-head"><div class="dh-logos"><div class="dh-cgu"><i></i>ЦГУ</div><div class="dh-mos"><img src="img/logo-mosinzh-dark.svg" alt="Платформа МосИнженерия"></div></div><div class="dh-tabs"><div class="dh-tab"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.500"/><path d="M12 2v6.500M12 15.500V22M2 12h6.500M15.500 12H22"/></svg><span><small>01</small><b>Инженерный каркас</b></span></div><div class="dh-tab"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 13a4 4 0 0 1 8 0M12 13l2-3"/></svg><span><small>02</small><b>Учет ресурсов</b></span></div><div class="dh-tab"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 4 6 6 6 11a6 6 0 0 1-12 0c0-2 1-3.500 2-4.500 0 2 1 3 2 3 0-4 1-7 2-9.500z"/></svg><span><small>03</small><b>Теплоснабжение</b></span></div><div class="dh-tab"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s7 7 7 12a7 7 0 0 1-14 0c0-5 7-12 7-12z"/><path d="M12 13s2.500 2 2.500 4a2.500 2.500 0 0 1-5 0c0-2 2.500-4 2.500-4z"/></svg><span><small>04</small><b>Газоснабжение</b></span></div><div class="dh-tab is-plan is-on"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 5 13.500h6L10 22l9-12h-6.500z"/></svg><span><small>05</small><b>CIM-модель</b></span></div><div class="dh-tab is-plan"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9.500 12h6M9.500 16h6"/></svg><span><small>06</small><b>АРМ КСИО</b></span></div></div></header>';
+  const inner = b.inner.replace(/\s*<div data-nav="\d" style="[^"]*"><\/div>/, '');
+  const n = Object.keys(map).indexOf(name) + 1;
+  sections += `\n<section class="slide" id="${id}" style="background: ${b.bg}">\n<div class="deck-body">\n${inner}\n</div>\n${HEAD}\n<div class="deck-sub" data-nav="${n}"></div>\n<div class="plan-badge"><i></i>План на 2027</div>\n</section>\n`;
 }
 
 fs.writeFileSync(out, `<!doctype html>
