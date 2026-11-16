@@ -209,7 +209,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ── Слайд 1: существующее положение → предложение → эффект ── */
 .ab-row { position: absolute; left: 172px; width: 912px; height: 196px; box-sizing: border-box; padding: 24px 10px 0 20px; border-radius: 20px; background: rgba(29,38,54,0.86); border: 1px solid rgba(255,255,255,0.12); border-left: 4px solid var(--c); backdrop-filter: blur(10px); animation: ab-in .8s cubic-bezier(.2,.7,.2,1) both; }
-.ab-r1 { animation-delay: .2s; } .ab-r2 { animation-delay: 1.1s; box-shadow: 0 0 44px rgba(255,45,70,0.18); } .ab-r3 { animation-delay: 2s; }
+.ab-r1 { animation-delay: .2s; } .ab-r2 { animation-delay: 1.1s; box-shadow: 0 0 44px rgba(86,180,233,0.18); } .ab-r3 { animation-delay: 2s; }
 @keyframes ab-in { from { opacity: 0; translate: -40px 0; } to { opacity: 1; translate: 0 0; } }
 .ab-head { display: flex; align-items: center; gap: 16px; }
 .ab-step { position: absolute; left: 96px; width: 64px; height: 64px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--c); background: radial-gradient(circle at 50% 30%, #2f3f5a 0%, #151c2a 80%); box-shadow: 0 0 0 6px rgba(22,29,43,0.9), 0 0 26px color-mix(in srgb, var(--c) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; z-index: 3; animation: ab-ignite .7s cubic-bezier(.2,1.4,.4,1) both; }
@@ -232,23 +232,23 @@ button { font-family: inherit; cursor: pointer; }
 
 .ab-scene { position: absolute; left: 1086px; top: 200px; width: 768px; height: 632px; }
 .ab-wires { position: absolute; inset: 0; overflow: visible; }
-.ab-wire { fill: none; stroke: rgba(167,178,194,0.28); stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ab-draw 1s 1s ease-out forwards; }
+.ab-wire { fill: none; stroke: rgba(255,84,104,0.3); stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ab-draw 1s 1s ease-out forwards; }
 .ab-wire, .ab-flow { vector-effect: none; }
 .ab-wires path.ab-wire { stroke-dasharray: 600; stroke-dashoffset: 600; }
 @keyframes ab-draw { to { stroke-dashoffset: 0; } }
 .ab-flow { fill: none; stroke: url(#abg); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 3 30; opacity: 0; animation: ab-run 1.6s linear infinite, ab-fade .6s 1.8s forwards; }
 @keyframes ab-run { to { stroke-dashoffset: -33; } }
 .ab-beam { opacity: 0; animation: ab-fade 1s 2.3s forwards; }
-.ab-chip { position: absolute; height: 46px; box-sizing: border-box; padding: 0 14px; border-radius: 12px; border: 1px dashed rgba(167,178,194,0.6); background: rgba(29,38,54,0.92); display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; color: #C5CEDB; white-space: nowrap; rotate: var(--r); animation: ab-drop .7s cubic-bezier(.2,1.3,.4,1) both, ab-float 5s ease-in-out infinite; animation-delay: calc(.3s + var(--d)), var(--f); }
-.ab-chip svg { flex: none; fill: none; stroke: #A7B2C2; stroke-width: 1.6; stroke-linejoin: round; }
+.ab-chip { position: absolute; height: 46px; box-sizing: border-box; padding: 0 14px; border-radius: 12px; border: 1px dashed rgba(255,84,104,0.65); background: rgba(29,38,54,0.92); display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; color: #C5CEDB; white-space: nowrap; rotate: var(--r); animation: ab-drop .7s cubic-bezier(.2,1.3,.4,1) both, ab-float 5s ease-in-out infinite; animation-delay: calc(.3s + var(--d)), var(--f); }
+.ab-chip svg { flex: none; fill: none; stroke: #FF7A8A; stroke-width: 1.6; stroke-linejoin: round; }
 @keyframes ab-drop { from { opacity: 0; scale: .5; } to { opacity: 1; scale: 1; } }
 @keyframes ab-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
-.ab-core { position: absolute; left: 314px; top: 230px; width: 140px; height: 140px; border-radius: 50%; border: 2px solid #FF5468; background: radial-gradient(circle at 50% 32%, #4a2636 0%, #1a1420 78%); box-shadow: 0 0 60px rgba(255,45,70,0.65), 0 0 140px rgba(255,45,70,0.3), inset 0 1px 0 rgba(255,255,255,0.22); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: ab-ignite .9s 1.6s cubic-bezier(.2,1.4,.4,1) both; }
+.ab-core { position: absolute; left: 314px; top: 230px; width: 140px; height: 140px; border-radius: 50%; border: 2px solid #56B4E9; background: radial-gradient(circle at 50% 32%, #23405c 0%, #121a26 78%); box-shadow: 0 0 60px rgba(86,180,233,0.65), 0 0 140px rgba(86,180,233,0.3), inset 0 1px 0 rgba(255,255,255,0.22); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: ab-ignite .9s 1.6s cubic-bezier(.2,1.4,.4,1) both; }
 @keyframes ab-ignite { from { opacity: 0; scale: .3; } to { opacity: 1; scale: 1; } }
 .ab-core b { font-size: 38px; line-height: 1; font-weight: 800; letter-spacing: 0.02em; }
-.ab-core small { margin-top: 6px; font-size: 12px; line-height: 1.2; color: #F3C6CD; }
-.ab-orbit { position: absolute; inset: -22px; border-radius: 50%; border: 2px dashed rgba(255,84,104,0.7); animation: ab-spin 12s linear infinite; }
-.ab-orbit2 { inset: -44px; border: 1px solid rgba(255,84,104,0.25); border-top-color: rgba(255,84,104,0.9); animation-duration: 5s; animation-direction: reverse; }
+.ab-core small { margin-top: 6px; font-size: 12px; line-height: 1.2; color: #CFE6F7; }
+.ab-orbit { position: absolute; inset: -22px; border-radius: 50%; border: 2px dashed rgba(86,180,233,0.7); animation: ab-spin 12s linear infinite; }
+.ab-orbit2 { inset: -44px; border: 1px solid rgba(86,180,233,0.25); border-top-color: rgba(86,180,233,0.9); animation-duration: 5s; animation-direction: reverse; }
 @keyframes ab-spin { to { rotate: 360deg; } }
 .ab-ground { position: absolute; left: 74px; top: 196px; width: 620px; height: 620px; perspective: 1100px; perspective-origin: 50% 20%; pointer-events: none; animation: ab-rise 1.2s 2.2s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes ab-rise { from { opacity: 0; translate: 0 60px; } to { opacity: 1; translate: 0 0; } }
@@ -278,19 +278,19 @@ button { font-family: inherit; cursor: pointer; }
     <h1 style="margin: 0; font-size: 44px; line-height: 1.14; font-weight: 800; letter-spacing: -0.01em">Единая система оперативного мониторинга<br><span style="color: #FF3D55">электросетевого комплекса города Москвы</span></h1>
   </header>
 
-  <div class="ab-step ab-s1" aria-hidden="true" style="top: 274px; --c: #A7B2C2"><svg width="34" height="34" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="7" r="2.6"/><circle cx="7" cy="18" r="2.6"/><circle cx="17.500" cy="17.500" r="2.6"/><path d="M9.500 7.200l1.800.3M13.800 7.800l1.200.1M6.300 9.500l.2 1.700M6.700 13.800l.1 1.300" stroke-dasharray="1.500 2.500"/><path d="M14.500 12l-3 0M13.500 10.500l-2 3" stroke="#FF5468"/></svg></div>
-  <div class="ab-step ab-s2" aria-hidden="true" style="top: 484px; --c: #FF5468"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M12 3l9 4.500-9 4.500-9-4.500z"/><path d="M3 12l9 4.500 9-4.500"/><path d="M3 16.500l9 4.500 9-4.500"/></svg></div>
+  <div class="ab-step ab-s1" aria-hidden="true" style="top: 274px; --c: #FF5468"><svg width="34" height="34" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.6"/><circle cx="18" cy="7" r="2.6"/><circle cx="7" cy="18" r="2.6"/><circle cx="17.500" cy="17.500" r="2.6"/><path d="M9.500 7.200l1.800.3M13.800 7.800l1.200.1M6.300 9.500l.2 1.700M6.700 13.800l.1 1.300" stroke-dasharray="1.500 2.500"/><path d="M14.500 12l-3 0M13.500 10.500l-2 3" stroke="#ffffff"/></svg></div>
+  <div class="ab-step ab-s2" aria-hidden="true" style="top: 484px; --c: #56B4E9"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M12 3l9 4.500-9 4.500-9-4.500z"/><path d="M3 12l9 4.500 9-4.500"/><path d="M3 16.500l9 4.500 9-4.500"/></svg></div>
   <div class="ab-step ab-s3" aria-hidden="true" style="top: 694px; --c: #5FD6A2"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10l5-3v14M10 21V4l6 3v14M16 21v-9l3 2v7"/><path d="M12.200 10h1.600M12.200 13.500h1.600M12.200 17h1.600"/></svg></div>
-  <div class="ab-link ab-l1" aria-hidden="true" style="top: 344px; --a: #A7B2C2; --b: #FF5468"></div>
-  <div class="ab-link ab-l2" aria-hidden="true" style="top: 554px; --a: #FF5468; --b: #5FD6A2"></div>
-  <section class="ab-row ab-r1" style="top: 208px; --c: #A7B2C2">
+  <div class="ab-link ab-l1" aria-hidden="true" style="top: 344px; --a: #FF5468; --b: #56B4E9"></div>
+  <div class="ab-link ab-l2" aria-hidden="true" style="top: 554px; --a: #56B4E9; --b: #5FD6A2"></div>
+  <section class="ab-row ab-r1" style="top: 208px; --c: #FF5468">
     <div class="ab-head"><h2>Существующее положение</h2></div>
-    <ul><li><i style="background: #A7B2C2"></i><span><b>Сложная сеть</b> — сложнозамкнутая система со множеством взаимосвязей и закольцовок</span></li><li><i style="background: #A7B2C2"></i><span><b>Данные разрознены</b> — сведения о сети ведут разные электросетевые организации</span></li><li><i style="background: #A7B2C2"></i><span><b>Нет общей картины</b> — сеть по всем классам напряжения не собрана в одном месте</span></li></ul>
+    <ul><li><i style="background: #FF5468"></i><span><b>Сложная сеть</b> — сложнозамкнутая система со множеством взаимосвязей и закольцовок</span></li><li><i style="background: #FF5468"></i><span><b>Данные разрознены</b> — сведения о сети ведут разные электросетевые организации</span></li><li><i style="background: #FF5468"></i><span><b>Нет общей картины</b> — сеть по всем классам напряжения не собрана в одном месте</span></li></ul>
   </section>
 
-  <section class="ab-row ab-r2" style="top: 418px; --c: #FF5468">
+  <section class="ab-row ab-r2" style="top: 418px; --c: #56B4E9">
     <div class="ab-head"><h2>Что мы предлагаем</h2></div>
-    <ul><li><i style="background: #FF5468"></i><span><b>Вся сеть в одной модели</b> — все классы напряжения, все электросетевые организации</span></li><li><i style="background: #FF5468"></i><span><b>Единый формат</b> — CIMXML по серии ГОСТ Р 58651</span></li><li><i style="background: #FF5468"></i><span><b>Карта и схема</b> — объекты на карте и их топологическая связанность на схеме</span></li></ul>
+    <ul><li><i style="background: #56B4E9"></i><span><b>Вся сеть в одной модели</b> — все классы напряжения, все электросетевые организации</span></li><li><i style="background: #56B4E9"></i><span><b>Единый формат</b> — CIMXML по серии ГОСТ Р 58651</span></li><li><i style="background: #56B4E9"></i><span><b>Карта и схема</b> — объекты на карте и их топологическая связанность на схеме</span></li></ul>
   </section>
 
   <section class="ab-row ab-r3" style="top: 628px; --c: #5FD6A2">
@@ -299,7 +299,7 @@ button { font-family: inherit; cursor: pointer; }
   </section>
 
   <div class="ab-scene" aria-hidden="true">
-    <svg class="ab-wires" viewBox="0 0 768 632"><defs><linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A7B2C2"/><stop offset="1" stop-color="#FF5468"/></linearGradient><linearGradient id="abb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF5468" stop-opacity="0.55"/><stop offset="1" stop-color="#5FD6A2" stop-opacity="0"/></linearGradient></defs>
+    <svg class="ab-wires" viewBox="0 0 768 632"><defs><linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF5468"/><stop offset="1" stop-color="#56B4E9"/></linearGradient><linearGradient id="abb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56B4E9" stop-opacity="0.55"/><stop offset="1" stop-color="#5FD6A2" stop-opacity="0"/></linearGradient></defs>
       <path class="ab-wire" d="M89 72 C89 162 384 150 384 242"/><path class="ab-flow" style="animation-delay: 0.00s" d="M89 72 C89 162 384 150 384 242"/><path class="ab-wire" d="M262 130 C262 220 384 150 384 242"/><path class="ab-flow" style="animation-delay: -0.35s" d="M262 130 C262 220 384 150 384 242"/><path class="ab-wire" d="M394 60 C394 150 384 150 384 242"/><path class="ab-flow" style="animation-delay: -0.70s" d="M394 60 C394 150 384 150 384 242"/><path class="ab-wire" d="M545 134 C545 224 384 150 384 242"/><path class="ab-flow" style="animation-delay: -1.05s" d="M545 134 C545 224 384 150 384 242"/><path class="ab-wire" d="M631 68 C631 158 384 150 384 242"/><path class="ab-flow" style="animation-delay: -1.40s" d="M631 68 C631 158 384 150 384 242"/>
       <path class="ab-beam" d="M356 352 L412 352 L560 560 L208 560 Z" fill="url(#abb)"/>
     </svg>
