@@ -129,11 +129,11 @@
       return '<a href="#' + href + '" aria-label="' + label + '" class="deck-arrow' + (strong ? ' is-strong' : '') + '">' +
         '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="' + d + '"></path></svg></a>';
     };
-    h += '</div><div class="deck-side"><button type="button" class="deck-full" data-fullscreen aria-label="Во весь экран">' +
+    h += '</div></nav><div class="deck-side"><button type="button" class="deck-full" data-fullscreen aria-label="Во весь экран">' +
       '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 8V3h5M14 3h5v5M19 14v5h-5M8 19H3v-5"></path></svg></button>' +
       '<div class="deck-count">0' + (cur + 1) + ' / 0' + SLIDES.length + '</div><div class="deck-group">' +
       arrow(SLIDES[(cur + SLIDES.length - 1) % SLIDES.length].id, 'Предыдущий слайд', 'M11 4L6 9l5 5', false) +
-      arrow(SLIDES[(cur + 1) % SLIDES.length].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div></nav>';
+      arrow(SLIDES[(cur + 1) % SLIDES.length].id, 'Следующий слайд', 'M7 4l5 5-5 5', true) + '</div></div>';
     return h;
   }
 

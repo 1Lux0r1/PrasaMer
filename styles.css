@@ -11,8 +11,13 @@ button { font-family: inherit; cursor: pointer; }
 .slide.is-active { display: block; }
 
 /* Навигация по слайдам: внизу слева, счётчик и стрелки — внизу справа */
-.deck-nav { display: flex; align-items: center; gap: 18px; }
-.deck-side { display: flex; align-items: center; gap: 18px; }
+.deck-nav { position: absolute; left: 424px; top: 122px; height: 54px; display: flex; align-items: center; z-index: 5; }
+/* счётчик, стрелки и полный экран — в правом нижнем углу */
+.deck-side { position: fixed; display: flex; align-items: center; gap: 14px; }
+.slide .deck-side { position: absolute; left: auto; right: 36px; top: 1038px; height: 40px; z-index: 5; }
+.deck-side .deck-group { padding: 3px; }
+.deck-side .deck-arrow { width: 44px; height: 34px; }
+.deck-side .deck-full { width: 36px; height: 36px; }
 .deck-count { font-size: 16px; font-weight: 600; letter-spacing: 0.04em; color: #C5CEDB; }
 .deck-group { display: flex; gap: 2px; padding: 4px; border-radius: 28px; background: rgba(22,29,43,0.82); border: 1px solid rgba(255,255,255,0.22); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(14px); }
 .deck-tab { height: 44px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; gap: 9px; border-radius: 22px; color: #C5CEDB; font-size: 17px; font-weight: 500; white-space: nowrap; }
@@ -215,7 +220,7 @@ button { font-family: inherit; cursor: pointer; }
 #sc-detail.is-out #sc-d-title { border-color: #6b7480 !important; color: #A7B2C2; }
 
 /* общая шапка: логотипы и разделы большой презентации; активен раздел 05 */
-.deck-body { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 50% 0; transform: translateY(154px) scale(0.93); }
+.deck-body { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 50% 0; transform: translateY(155px) scale(0.905); }
 .deck-head { position: absolute; left: 0; top: 0; width: 1920px; height: 116px; background: inherit; z-index: 4; }
 .dh-logos { position: absolute; left: 36px; top: 26px; height: 64px; display: flex; align-items: center; gap: 38px; }
 .dh-cgu { display: flex; align-items: center; gap: 10px; font-size: 32px; font-weight: 800; letter-spacing: 0.04em; line-height: 1; }
@@ -232,7 +237,7 @@ button { font-family: inherit; cursor: pointer; }
 .dh-tab.is-on b { color: #ffffff; }
 .dh-tab.is-on::before { content: ''; position: absolute; left: -10px; right: 10px; bottom: -2px; height: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 12px var(--c); }
 .dh-tab.is-on::after { width: 10px; height: 10px; bottom: -6px; opacity: 1; box-shadow: 0 0 12px var(--c); }
-.deck-sub { position: absolute; left: 424px; top: 122px; height: 54px; display: flex; align-items: center; z-index: 5; }
+.deck-sub { display: contents; }
 
 /* плашка «План на 2027» — одна на каждом слайде, справа от заголовка */
 .plan-badge { position: absolute; right: 46px; top: 122px; height: 54px; box-sizing: border-box; padding: 0 26px 0 22px; border-radius: 16px; border: 1px solid rgba(242,194,76,0.6); background: rgba(242,194,76,0.10); box-shadow: 0 0 22px rgba(242,194,76,0.14), inset 0 1px 0 rgba(255,255,255,0.10); display: flex; align-items: center; gap: 14px; font-size: 23px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; color: #F2C24C; z-index: 5; }
