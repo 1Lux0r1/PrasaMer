@@ -847,6 +847,9 @@
       b.addEventListener('blur', () => show(locked));
       b.addEventListener('click', () => { locked = locked === src ? null : src; b.setAttribute('aria-pressed', String(locked === src)); show(locked || src); });
     });
+    // сокращения: клик по «?» открывает расшифровку и оставляет её открытой, второй клик — прячет
+    const ab = root.querySelector('#abbr-btn'), pop = root.querySelector('#abbr-pop');
+    ab.addEventListener('click', () => { pop.hidden = !pop.hidden; ab.setAttribute('aria-expanded', String(!pop.hidden)); });
     // плашка организации на слайде 1 ведёт сюда и сразу выбирает её данные
     document.querySelectorAll('[data-pick]').forEach((a) => a.addEventListener('click', () => {
       locked = a.dataset.pick;

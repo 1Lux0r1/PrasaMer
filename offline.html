@@ -208,6 +208,14 @@ button { font-family: inherit; cursor: pointer; }
 .sc-open-btn:disabled:hover { background: rgba(255,255,255,0.14); }
 .sc-off-btn:disabled:hover { background: rgba(255,45,70,0.22); }
 
+/* слайд 2: расшифровка сокращений прячется за кнопкой «?» */
+.abbr-btn { height: 48px; padding: 0 20px 0 8px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.22); background: rgba(29,38,54,0.88); display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 600; color: #C5CEDB; }
+.abbr-btn span { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #8FB4F0; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800; color: #8FB4F0; }
+.abbr-btn:hover, .abbr-btn[aria-expanded="true"] { background: rgba(143,180,240,0.16); border-color: #8FB4F0; color: #ffffff; }
+.abbr-btn[aria-expanded="true"] span { background: #8FB4F0; color: #161d2b; }
+.abbr-pop { position: absolute; right: 0; top: 60px; margin: 0; z-index: 6; box-sizing: border-box; padding: 18px 22px; border-radius: 16px; background: #1d2636; border: 1px solid #8FB4F0; box-shadow: 0 18px 40px rgba(0,0,0,0.5); display: grid; grid-template-columns: auto; row-gap: 9px; font-size: 17px; line-height: 1.25; }
+.abbr-pop[hidden] { display: none; }
+
 /* слайд 3: чей это взгляд на сеть */
 .sc-who { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 10px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 16%, transparent); }
 .sc-who svg { flex: none; fill: none; stroke: var(--c); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
@@ -394,7 +402,10 @@ button { font-family: inherit; cursor: pointer; }
       </div>
       <h1 style="margin: 0; font-size: 48px; line-height: 1.12; font-weight: 800; letter-spacing: -0.01em">Единая цифровая модель: <span style="color: #FF3D55">Данные</span></h1>
     </div>
-    <dl aria-label="Сокращения" style="margin: 0; width: 838px; box-sizing: border-box; padding: 12px 16px; border-radius: 14px; background: rgba(29,38,54,0.7); border: 1px solid rgba(255,255,255,0.10); display: grid; grid-template-columns: auto auto; column-gap: 14px; row-gap: 5px; justify-content: space-between; font-size: 14px; line-height: 1.25"><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">РП</dt><dd style="margin: 0; color: #C5CEDB">— распределительный пункт</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">СП</dt><dd style="margin: 0; color: #C5CEDB">— соединительный пункт</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">ЦП</dt><dd style="margin: 0; color: #C5CEDB">— центр питания</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">ТП</dt><dd style="margin: 0; color: #C5CEDB">— трансформаторная подстанция</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">РТП</dt><dd style="margin: 0; color: #C5CEDB">— распределительная трансформаторная подстанция</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">ТПП</dt><dd style="margin: 0; color: #C5CEDB">— трансформаторная подстанция потребителя</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 34px; font-weight: 800; color: #ffffff">РСО</dt><dd style="margin: 0; color: #C5CEDB">— ресурсоснабжающая организация</dd></div></dl>
+    <div style="position: relative">
+      <button type="button" id="abbr-btn" class="abbr-btn" aria-expanded="false" aria-controls="abbr-pop"><span aria-hidden="true">?</span>Сокращения</button>
+      <dl id="abbr-pop" class="abbr-pop" aria-label="Сокращения" hidden><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">РП</dt><dd style="margin: 0; color: #C5CEDB">— распределительный пункт</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">СП</dt><dd style="margin: 0; color: #C5CEDB">— соединительный пункт</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">ЦП</dt><dd style="margin: 0; color: #C5CEDB">— центр питания</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">ТП</dt><dd style="margin: 0; color: #C5CEDB">— трансформаторная подстанция</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">РТП</dt><dd style="margin: 0; color: #C5CEDB">— распределительная трансформаторная подстанция</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">ТПП</dt><dd style="margin: 0; color: #C5CEDB">— трансформаторная подстанция потребителя</dd></div><div style="display: flex; gap: 8px; align-items: baseline; white-space: nowrap"><dt style="flex: none; min-width: 44px; font-weight: 800; color: #ffffff">РСО</dt><dd style="margin: 0; color: #C5CEDB">— ресурсоснабжающая организация</dd></div></dl>
+    </div>
   </header>
 
   <div style="position: absolute; left: 96px; top: 172px; width: 1728px; height: 800px">
@@ -1647,6 +1658,9 @@ button { font-family: inherit; cursor: pointer; }
       b.addEventListener('blur', () => show(locked));
       b.addEventListener('click', () => { locked = locked === src ? null : src; b.setAttribute('aria-pressed', String(locked === src)); show(locked || src); });
     });
+    // сокращения: клик по «?» открывает расшифровку и оставляет её открытой, второй клик — прячет
+    const ab = root.querySelector('#abbr-btn'), pop = root.querySelector('#abbr-pop');
+    ab.addEventListener('click', () => { pop.hidden = !pop.hidden; ab.setAttribute('aria-expanded', String(!pop.hidden)); });
     // плашка организации на слайде 1 ведёт сюда и сразу выбирает её данные
     document.querySelectorAll('[data-pick]').forEach((a) => a.addEventListener('click', () => {
       locked = a.dataset.pick;
