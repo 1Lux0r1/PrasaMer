@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3e5b9229">
+<link rel="stylesheet" href="styles.css?v=2fac4fdd">
 </head>
 <body>
 <div id="stage">
@@ -45,12 +45,16 @@
     <ul><li><i style="background: #5FD6A2"></i><span><b>Оперативный мониторинг</b> — состояние и аварийные ситуации на объектах электроснабжения</span></li><li><i style="background: #5FD6A2"></i><span><b>Перспективные нагрузки</b> — расчёт нагрузок новых объектов и проверка резервов сети</span></li><li><i style="background: #5FD6A2"></i><span><b>Единая картина</b> — город видит электросетевой комплекс целиком</span></li></ul>
   </section>
 
-  <div class="ab-scene" aria-hidden="true">
-    <svg class="ab-wires" viewBox="0 0 768 632"><defs><linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF5468"/><stop offset="1" stop-color="#56B4E9"/></linearGradient><linearGradient id="abb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56B4E9" stop-opacity="0.55"/><stop offset="1" stop-color="#5FD6A2" stop-opacity="0"/></linearGradient></defs>
-      <path class="ab-wire" d="M89 72 C89 162 384 150 384 242"/><path class="ab-flow" style="animation-delay: 0.00s" d="M89 72 C89 162 384 150 384 242"/><path class="ab-wire" d="M262 130 C262 220 384 150 384 242"/><path class="ab-flow" style="animation-delay: -0.35s" d="M262 130 C262 220 384 150 384 242"/><path class="ab-wire" d="M394 60 C394 150 384 150 384 242"/><path class="ab-flow" style="animation-delay: -0.70s" d="M394 60 C394 150 384 150 384 242"/><path class="ab-wire" d="M545 134 C545 224 384 150 384 242"/><path class="ab-flow" style="animation-delay: -1.05s" d="M545 134 C545 224 384 150 384 242"/><path class="ab-wire" d="M631 68 C631 158 384 150 384 242"/><path class="ab-flow" style="animation-delay: -1.40s" d="M631 68 C631 158 384 150 384 242"/>
+  <div class="ab-scene">
+    <svg class="ab-wires" viewBox="0 0 768 632"><defs><linearGradient id="abb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56B4E9" stop-opacity="0.55"/><stop offset="1" stop-color="#5FD6A2" stop-opacity="0"/></linearGradient></defs>
+      <path class="ab-wire" style="stroke: #8FB4F0" d="M86 60 C86 150 384 150 384 242"/><path class="ab-flow" style="stroke: #8FB4F0; animation-delay: 0.00s" d="M86 60 C86 150 384 150 384 242"/><path class="ab-wire" style="stroke: #7CCFD0" d="M207 136 C207 226 384 150 384 242"/><path class="ab-flow" style="stroke: #7CCFD0; animation-delay: -0.35s" d="M207 136 C207 226 384 150 384 242"/><path class="ab-wire" style="stroke: #F0B37E" d="M335 56 C335 146 384 150 384 242"/><path class="ab-flow" style="stroke: #F0B37E; animation-delay: -0.70s" d="M335 56 C335 146 384 150 384 242"/><path class="ab-wire" style="stroke: #9BDDB0" d="M505 138 C505 228 384 150 384 242"/><path class="ab-flow" style="stroke: #9BDDB0; animation-delay: -1.05s" d="M505 138 C505 228 384 150 384 242"/><path class="ab-wire" style="stroke: #E39AAE" d="M612 62 C612 152 384 150 384 242"/><path class="ab-flow" style="stroke: #E39AAE; animation-delay: -1.40s" d="M612 62 C612 152 384 150 384 242"/>
       <path class="ab-beam" d="M356 352 L412 352 L560 560 L208 560 Z" fill="url(#abb)"/>
     </svg>
-    <div class="ab-chip" style="left: 14px; top: 26px; width: 150px; --r: -7deg; --d: 0.00s; --f: 0.0s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M4 4h12v12H4z"/></svg>АО «СО ЕЭС»</div><div class="ab-chip" style="left: 178px; top: 84px; width: 168px; --r: 5deg; --d: 0.12s; --f: -0.9s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 3l8 14H2z"/></svg>ПАО «Россети»</div><div class="ab-chip" style="left: 330px; top: 14px; width: 128px; --r: -4deg; --d: 0.24s; --f: -1.8s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16z"/></svg>АО «ОЭК»</div><div class="ab-chip" style="left: 470px; top: 88px; width: 150px; --r: 6deg; --d: 0.36s; --f: -2.7s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 2l8 8-8 8-8-8z"/></svg>Прочие РСО</div><div class="ab-chip" style="left: 536px; top: 22px; width: 190px; --r: -5deg; --d: 0.48s; --f: -3.6s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M6 3h8l4 7-4 7H6l-4-7z"/></svg>ПАО «Мосэнергосбыт»</div>
+    <a class="ab-chip" href="#data" data-pick="so" title="Показать данные: АО «СО ЕЭС»" style="left: 0px; top: 14px; width: 172px; --k: #8FB4F0; --r: -3deg; --d: 0.00s; --f: 0.0s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M4 4h12v12H4z"/></svg>АО «СО ЕЭС»</a>
+    <a class="ab-chip" href="#data" data-pick="rosseti" title="Показать данные: ПАО «Россети»" style="left: 112px; top: 90px; width: 190px; --k: #7CCFD0; --r: 2deg; --d: 0.12s; --f: -0.9s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 3l8 14H2z"/></svg>ПАО «Россети»</a>
+    <a class="ab-chip" href="#data" data-pick="oek" title="Показать данные: АО «ОЭК»" style="left: 264px; top: 10px; width: 142px; --k: #F0B37E; --r: -2deg; --d: 0.24s; --f: -1.8s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16z"/></svg>АО «ОЭК»</a>
+    <a class="ab-chip" href="#data" data-pick="other" title="Показать данные: Прочие РСО" style="left: 424px; top: 92px; width: 162px; --k: #9BDDB0; --r: 3deg; --d: 0.36s; --f: -2.7s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M10 2l8 8-8 8-8-8z"/></svg>Прочие РСО</a>
+    <a class="ab-chip" href="#data" data-pick="sbyt" title="Показать данные: ПАО «Мосэнергосбыт»" style="left: 488px; top: 16px; width: 248px; --k: #E39AAE; --r: -2deg; --d: 0.48s; --f: -3.6s"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M6 3h8l4 7-4 7H6l-4-7z"/></svg>ПАО «Мосэнергосбыт»</a>
     <div class="ab-ground"><div class="ab-plane">
       <img src="img/moscow-clear.svg" alt="">
       
@@ -476,6 +480,6 @@
 
 </section>
 </div>
-<script src="app.js?v=c6154695"></script>
+<script src="app.js?v=23d341ae"></script>
 </body>
 </html>

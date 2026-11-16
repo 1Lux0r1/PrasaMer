@@ -815,6 +815,12 @@
       b.addEventListener('blur', () => show(locked));
       b.addEventListener('click', () => { locked = locked === src ? null : src; b.setAttribute('aria-pressed', String(locked === src)); show(locked || src); });
     });
+    // плашка организации на слайде 1 ведёт сюда и сразу выбирает её данные
+    document.querySelectorAll('[data-pick]').forEach((a) => a.addEventListener('click', () => {
+      locked = a.dataset.pick;
+      root.querySelectorAll('[data-src]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.src === locked)));
+      show(locked);
+    }));
   }
 
   /* ---------- Запуск ---------- */
