@@ -215,7 +215,7 @@
       const n = { id: d[0], type: d[1], cls: d[2], m: geo(d[3][0], d[3][1]), s: d[4], w: d[5], h: d[6], buses: d[7], gens: d[8], side: d[9] };
       n.gen = n.type === 'tec' || n.type === 'ges';
       n.info = INFO[n.id] || null;
-      n.title = n.type === 'tec' ? 'ТЭЦ' : (n.type === 'ges' ? 'ГЭС' : 'ПС ' + n.cls + ' кВ' + (n.type === 'eq' ? ' · экв.' : ''));
+      n.title = n.type === 'tec' ? 'ТЭЦ' : (n.type === 'ges' ? 'ГЭС' : 'ПС ' + n.cls + ' кВ');
       n.art = busArt(n);
       nodes.push(n); byId[n.id] = n;
     });
@@ -226,7 +226,7 @@
     const exts = [ // id, название, точка на карте, точка на схеме, подпись на карте [x, y, выравнивание], подпись на схеме
       ['x1', 'Калининская АЭС', [610, -20], [590, 0], [676, 14, 'l'], [606, 10, 'l']],
       ['x2', 'Костромская ГРЭС', [1254, -20], [1600, 150], [1160, 18, 'r'], [1592, 204, 'r']],
-      ['x3', 'Курская АЭС', [900, 964], [960, 944], [946, 900, 'l'], [976, 896, 'l']],
+      ['x3', 'Курская АЭС', [900, 964], [960, 944], [1170, 890, 'l'], [1170, 890, 'l']],
       ['x4', 'Смоленская АЭС', [-20, 803], [0, 820], [14, 716, 'l'], [8, 712, 'l']]
     ].map((d) => (byId[d[0]] = { id: d[0], ext: true, title: d[1], m: d[2], s: d[3], lm: d[4], ls: d[5] }));
 
@@ -337,6 +337,29 @@
       return { svg: svg, labels: labels };
     }
 
+    /* Условная модель потоков мощности: энергия идёт от внешних источников по кратчайшему пути
+       (линии 500 кВ «дешевле» 220, те — дешевле 110). Нагрузка объекта = сколько объектов питается через него. */
+    const trees = {};
+    function flowTree(off) {
+      const dist = {}, parent = {}, plink = {}, done = {}, sub = {};
+      exts.forEach((x) => { dist[x.id] = 0; });
+      for (;;) {
+        let u = null;
+        Object.keys(dist).forEach((k) => { if (!done[k] && (u === null || dist[k] < dist[u])) u = k; });
+        if (u === null) break;
+        done[u] = true;
+        lines.forEach((l) => {
+          if (l.a !== u && l.b !== u) return;
+          const o = l.a === u ? l.b : l.a;
+          if (o === off || byId[o].ext) return;
+          const w = dist[u] + (l.cls === 500 ? 1 : (l.cls === 220 ? 2 : 3));
+          if (dist[o] === undefined || w < dist[o]) { dist[o] = w; parent[o] = u; plink[o] = l; }
+        });
+      }
+      Object.keys(parent).forEach((k) => { let c = k; while (c && !byId[c].ext) { sub[c] = (sub[c] || 0) + 1; c = parent[c]; } });
+      return { parent: parent, plink: plink, sub: sub };
+    }
+
     const cache = {};
     function compute(st) {
       const t = st.t, z = st.z, off = st.off, sel = st.sel;
@@ -363,10 +386,33 @@
         if (dead(l.a) || dead(l.b)) { dDead += p; dFade[l.cls] += p; } else d[l.cls] += p;
         if (l.a === sel || l.b === sel) dSel += p;
       });
+      // движение мощности: при выборе объекта — как идёт сейчас; при отключении — новые пути и рост нагрузки
+      const T0 = trees[''] || (trees[''] = flowTree(null)), T1 = off ? (trees[off] || (trees[off] = flowTree(off))) : T0;
+      let dFlow = ''; const up = {};
+      const flowEdge = (child, T) => {
+        const l = T.plink[child]; if (!l || !st.show[l.cls]) return;
+        const pts = l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1));
+        if (l.a === child) pts.reverse(); // точки линии идут от a к b, поток — от «родителя» к объекту
+        dFlow += 'M' + pts.join('L');
+      };
+      if (off) {
+        const seen = {};
+        nodes.forEach((n) => {
+          if (n.id === off || !T1.parent[n.id] || T1.parent[n.id] === T0.parent[n.id]) return;
+          let c = n.id; while (T1.parent[c] && !seen[c]) { seen[c] = true; flowEdge(c, T1); c = T1.parent[c]; }
+        });
+        nodes.forEach((n) => {
+          if (n.id !== off && T1.sub[n.id] > T0.sub[n.id]) up[n.id] = Math.max(5, Math.min(90, Math.round((T1.sub[n.id] - T0.sub[n.id]) / T0.sub[n.id] * 50)));
+        });
+      } else if (sel) {
+        let c = sel; while (T0.parent[c]) { flowEdge(c, T0); c = T0.parent[c]; }
+        nodes.forEach((n) => { if (T0.parent[n.id] === sel) flowEdge(n.id, T0); });
+      }
+      const upCount = Object.keys(up).length;
       const vn = nodes.map((n) => {
         const dd = dead(n.id), isSel = n.id === sel;
         return {
-          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h, off: n.id === off, dead: dd && n.id !== off,
+          id: n.id, title: n.title, art: n.art, vb: '0 0 ' + n.w + ' ' + n.h, off: n.id === off, dead: dd && n.id !== off, up: up[n.id] || 0,
           x: lerp(n.m[0], n.s[0]).toFixed(1), y: lerp(n.m[1], n.s[1]).toFixed(1),
           w: lerp(44, n.w).toFixed(1), h: lerp(44, n.h).toFixed(1),
           mkOp: (1 - t).toFixed(3), boxOp: t.toFixed(3),
@@ -384,7 +430,7 @@
       const dl = sn ? (cache[dKey] || (cache[dKey] = objDetail(sn, dead))) : { svg: '', labels: [] };
       const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
-        dLine: d, dDead: dDead, dFade: dFade, dSel: dSel, nodes: vn,
+        dLine: d, dDead: dDead, dFade: dFade, dSel: dSel, dFlow: dFlow, flowRe: !!off, nodes: vn,
         exts: exts.map((x) => ({ id: x.id, x: lerp(x.lm[0], x.ls[0]).toFixed(1), y: lerp(x.lm[1], x.ls[1]).toFixed(1), tf: x.lm[2] === 'r' || x.ls[2] === 'r' ? 'translateX(' + (-((x.lm[2] === 'r' ? 1 - t : 0) + (x.ls[2] === 'r' ? t : 0)) * 100).toFixed(1) + '%)' : 'none' })),
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
         origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '800px 472px',
@@ -400,7 +446,7 @@
         selState: !sn ? '—' : (selOff ? 'Отключён' : (selDead ? 'Без питания' : 'Под напряжением')),
         selStateColor: !sn ? '#A7B2C2' : ((selOff || selDead) ? '#FF8A99' : '#5FD6A2'),
         selOff: selOff, hasOff: !!off,
-        offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.')) : ''
+        offNote: off ? ('Отключён объект: ' + byId[off].title + '. ' + (deadCount ? 'Объектов без питания: ' + deadCount + '.' : 'Остальные объекты сохраняют питание по другим связям.') + (upCount ? ' Нагрузка выросла на объектах: ' + upCount + '.' : '')) : ''
       };
     }
     return { CLR: CLR, nodes: nodes, exts: exts, compute: compute };
@@ -425,11 +471,11 @@
         if (n.art.dots[c]) svg += '<path d="' + n.art.dots[c] + '" class="sc-dots' + (c === 'gen' ? ' sc-gen' : '') + '" style="stroke:' + core.CLR[c] + '"></path>';
       });
       b.innerHTML = '<span class="sc-box" aria-hidden="true">' + svg + '</svg></span>' +
-        '<span class="sc-mk" aria-hidden="true"><i></i></span><span class="sc-label">' + n.title + '</span>';
+        '<span class="sc-mk" aria-hidden="true"><i></i></span><span class="sc-label">' + n.title + '</span><span class="sc-load" aria-hidden="true"></span>';
       b.addEventListener('click', (e) => { e.stopPropagation(); state.sel = state.sel === n.id ? null : n.id; render(); }); // повторный клик снимает выделение
       b.addEventListener('dblclick', () => { state.sel = n.id; go('object'); });
       box.appendChild(b);
-      els[n.id] = { el: b, box: b.children[0], mk: b.children[1], gen: b.children[1].firstChild, label: b.children[2] };
+      els[n.id] = { el: b, box: b.children[0], mk: b.children[1], gen: b.children[1].firstChild, label: b.children[2], load: b.children[3] };
     });
 
     core.exts.forEach((x) => {
@@ -462,6 +508,7 @@
       if (dying) { const dp = $('#sc-pDead'); dp.classList.remove('is-dying'); void dp.getBoundingClientRect(); if (state.off) dp.classList.add('is-dying'); }
       $('#sc-p500').setAttribute('d', v.dLine[500]); $('#sc-p220').setAttribute('d', v.dLine[220]); $('#sc-p110').setAttribute('d', v.dLine[110]);
       $('#sc-pDead').setAttribute('d', v.dDead); $('#sc-pSel').setAttribute('d', v.dSel);
+      $('#sc-flow').setAttribute('d', v.dFlow); $('#sc-flow').classList.toggle('is-re', v.flowRe);
       $('#sc-mapbg').style.opacity = v.mapOp; $('#sc-schbg').style.opacity = v.schOp;
 
       v.nodes.forEach((n) => {
@@ -473,6 +520,7 @@
         e.box.firstChild.style.opacity = n.artOp;
         e.mk.style.opacity = n.mkOp; e.mk.style.borderColor = n.col; e.mk.style.borderRadius = n.mkRadius; e.mk.style.boxShadow = n.glow;
         e.gen.style.opacity = n.genOp;
+        e.el.classList.toggle('is-up', !!n.up); e.load.textContent = n.up ? '+' + n.up + ' %' : '';
         e.label.style.left = n.lx + 'px'; e.label.style.top = n.ly + 'px'; e.label.style.transform = n.ltf; e.label.style.color = n.lc; e.label.style.fontWeight = n.lw;
       });
 
