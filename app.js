@@ -360,38 +360,6 @@
       return { parent: parent, plink: plink, sub: sub };
     }
 
-    /* Кольцо 500 кВ: мощность входит в точках присоединения внешних источников и расходится по кольцу
-       в обе стороны; на каждом участке — от ближнего к источнику объекта к дальнему. */
-    const rings = {};
-    function ringFlow(off) {
-      const key = off || '';
-      if (rings[key]) return rings[key];
-      const dist = {}, q = [], dir = {};
-      lines.forEach((l, i) => {
-        if (l.cls !== 500) return;
-        const ea = byId[l.a].ext, eb = byId[l.b].ext;
-        if (!ea && !eb) return;
-        const n = ea ? l.b : l.a;
-        if (n === off) return;
-        dir[i] = n; if (dist[n] === undefined) { dist[n] = 0; q.push(n); }
-      });
-      while (q.length) {
-        const u = q.shift();
-        lines.forEach((l) => {
-          if (l.cls !== 500 || (l.a !== u && l.b !== u)) return;
-          const o = l.a === u ? l.b : l.a;
-          if (o === off || byId[o].ext || dist[o] !== undefined) return;
-          dist[o] = dist[u] + 1; q.push(o);
-        });
-      }
-      lines.forEach((l, i) => {
-        if (l.cls !== 500 || byId[l.a].ext || byId[l.b].ext || l.a === off || l.b === off) return;
-        if (dist[l.a] === undefined || dist[l.b] === undefined) return;
-        dir[i] = dist[l.a] <= dist[l.b] ? l.b : l.a;
-      });
-      return (rings[key] = dir);
-    }
-
     const cache = {};
     function compute(st) {
       const t = st.t, z = st.z, off = st.off, sel = st.sel;
@@ -420,31 +388,25 @@
       });
       // движение мощности: при выборе объекта — как идёт сейчас; при отключении — новые пути и рост нагрузки
       const T0 = trees[''] || (trees[''] = flowTree(null)), T1 = off ? (trees[off] || (trees[off] = flowTree(off))) : T0;
-      let dFlow = '', dFlow2 = ''; const up = {};
-      const seg = (l, to) => { // участок линии, по которому мощность идёт к объекту `to`
-        if (!st.show[l.cls]) return '';
+      let dFlow = ''; const up = {};
+      const flowEdge = (child, T) => {
+        const l = T.plink[child]; if (!l || !st.show[l.cls]) return;
         const pts = l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1));
-        if (l.a === to) pts.reverse(); // точки линии идут от a к b
-        return 'M' + pts.join('L');
+        if (l.a === child) pts.reverse(); // точки линии идут от a к b, поток — от «родителя» к объекту
+        dFlow += 'M' + pts.join('L');
       };
-      const lower = (child, T) => { const l = T.plink[child]; return l && l.cls !== 500 ? seg(l, child) : ''; }; // сеть 220/110 кВ — по дереву питания
-      const R0 = ringFlow(null), R1 = off ? ringFlow(off) : R0;
       if (off) {
-        // кольцо 500 кВ: где направление не изменилось — белым, где поток развернулся — оранжевым
-        Object.keys(R1).forEach((k) => { const s = seg(lines[k], R1[k]); if (R0[k] === R1[k]) dFlow += s; else dFlow2 += s; });
         const seen = {};
         nodes.forEach((n) => {
           if (n.id === off || !T1.parent[n.id] || T1.parent[n.id] === T0.parent[n.id]) return;
-          let c = n.id; while (T1.parent[c] && !seen[c]) { seen[c] = true; dFlow2 += lower(c, T1); c = T1.parent[c]; }
+          let c = n.id; while (T1.parent[c] && !seen[c]) { seen[c] = true; flowEdge(c, T1); c = T1.parent[c]; }
         });
         nodes.forEach((n) => {
           if (n.id !== off && T1.sub[n.id] > T0.sub[n.id]) up[n.id] = Math.max(5, Math.min(90, Math.round((T1.sub[n.id] - T0.sub[n.id]) / T0.sub[n.id] * 50)));
         });
       } else if (sel) {
-        // от внешних источников мощность расходится по всему кольцу 500 кВ, от кольца — к выбранному объекту и дальше
-        Object.keys(R0).forEach((k) => { dFlow += seg(lines[k], R0[k]); });
-        let c = sel; while (T0.parent[c]) { dFlow += lower(c, T0); c = T0.parent[c]; }
-        nodes.forEach((n) => { if (T0.parent[n.id] === sel) dFlow += lower(n.id, T0); });
+        let c = sel; while (T0.parent[c]) { flowEdge(c, T0); c = T0.parent[c]; }
+        nodes.forEach((n) => { if (T0.parent[n.id] === sel) flowEdge(n.id, T0); });
       }
       const upCount = Object.keys(up).length;
       const vn = nodes.map((n) => {
@@ -468,7 +430,7 @@
       const dl = sn ? (cache[dKey] || (cache[dKey] = objDetail(sn, dead))) : { svg: '', labels: [] };
       const selOff = !!sn && off === sel, selDead = !!sn && dead(sel);
       return {
-        dLine: d, dDead: dDead, dFade: dFade, dSel: dSel, dFlow: dFlow, dFlow2: dFlow2, nodes: vn,
+        dLine: d, dDead: dDead, dFade: dFade, dSel: dSel, dFlow: dFlow, flowRe: !!off, nodes: vn,
         exts: exts.map((x) => ({ id: x.id, x: lerp(x.lm[0], x.ls[0]).toFixed(1), y: lerp(x.lm[1], x.ls[1]).toFixed(1), tf: x.lm[2] === 'r' || x.ls[2] === 'r' ? 'translateX(' + (-((x.lm[2] === 'r' ? 1 - t : 0) + (x.ls[2] === 'r' ? t : 0)) * 100).toFixed(1) + '%)' : 'none' })),
         mapOp: (1 - t).toFixed(3), schOp: t.toFixed(3),
         origin: sn ? sn.s[0] + 'px ' + sn.s[1] + 'px' : '800px 472px',
@@ -546,7 +508,7 @@
       if (dying) { const dp = $('#sc-pDead'); dp.classList.remove('is-dying'); void dp.getBoundingClientRect(); if (state.off) dp.classList.add('is-dying'); }
       $('#sc-p500').setAttribute('d', v.dLine[500]); $('#sc-p220').setAttribute('d', v.dLine[220]); $('#sc-p110').setAttribute('d', v.dLine[110]);
       $('#sc-pDead').setAttribute('d', v.dDead); $('#sc-pSel').setAttribute('d', v.dSel);
-      $('#sc-flow').setAttribute('d', v.dFlow); $('#sc-flow2').setAttribute('d', v.dFlow2);
+      $('#sc-flow').setAttribute('d', v.dFlow); $('#sc-flow').classList.toggle('is-re', v.flowRe);
       $('#sc-mapbg').style.opacity = v.mapOp; $('#sc-schbg').style.opacity = v.schOp;
 
       v.nodes.forEach((n) => {
