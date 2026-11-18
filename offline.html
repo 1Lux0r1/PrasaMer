@@ -1064,14 +1064,17 @@ button { font-family: inherit; cursor: pointer; }
       const A = a.m, C = b.m;
       const dx = C[0] - A[0], dy = C[1] - A[1], len = Math.hypot(dx, dy) || 1;
       let m;
-      if (d[7]) { // участок кольца на карте слегка выгнут наружу от центра города
+      const px = -dy / len, py = dx / len;
+      if (d[0] === 500) { // трасса ЛЭП 500 кВ на карте — ломаная с изгибами, как у реальной линии, а не прямая
+        let seed = (d[1] + d[2]).split('').reduce((q, ch) => (q * 31 + ch.charCodeAt(0)) % 9973, 7);
+        const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648 - 0.5; };
         const at = (k) => {
-          const p = mix(A, C, k), ox = p[0] - MC[0], oy = p[1] - MC[1], ol = Math.hypot(ox, oy) || 1, bow = Math.sin(Math.PI * k) * len * 0.06;
-          return [p[0] + ox / ol * bow, p[1] + oy / ol * bow];
+          const p = mix(A, C, k + rnd() * 0.08), ox = p[0] - MC[0], oy = p[1] - MC[1], ol = Math.hypot(ox, oy) || 1;
+          const bow = d[7] ? Math.sin(Math.PI * k) * len * 0.07 : 0, side = rnd() * len * 0.15;
+          return [p[0] + ox / ol * bow + px * side, p[1] + oy / ol * bow + py * side];
         };
         m = [A, at(0.2), at(0.4), at(0.6), at(0.8), C];
       } else {
-        const px = -dy / len, py = dx / len;
         m = six([A, [A[0] + dx * 0.35 + px * 8, A[1] + dy * 0.35 + py * 8], [A[0] + dx * 0.7 - px * 6, A[1] + dy * 0.7 - py * 6], C]);
       }
       return { cls: d[0], a: a.id, b: b.id, m: m, s: s };
