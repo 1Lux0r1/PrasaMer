@@ -269,7 +269,7 @@ button { font-family: inherit; cursor: pointer; }
 @keyframes ab-in2 { from { opacity: 0; translate: 50px 0; } to { opacity: 1; translate: 0 0; } }
 .ab-sl-ic { scale: 0.84; margin: 0 -7px; flex: none; width: 92px; height: 92px; border-radius: 50%; border: 2px solid var(--c); background: radial-gradient(circle at 50% 30%, #2f3f5a 0%, #151c2a 80%); box-shadow: 0 0 30px color-mix(in srgb, var(--c) 55%, transparent), inset 0 1px 0 rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; }
 .ab-sl-ic svg { fill: none; stroke: var(--c); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.ab-slogan h2 { margin: 0; font-size: 38px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; white-space: nowrap; }
+.ab-slogan h2 { margin: 0; font-size: 35px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; white-space: nowrap; }
 .ab-slogan p { margin: 9px 0 0; font-size: 21px; line-height: 1.28; color: #C5CEDB; }
 
 /* плашка «План на 2027» — одна на каждом слайде, справа от заголовка */
