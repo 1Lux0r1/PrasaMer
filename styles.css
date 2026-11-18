@@ -204,6 +204,17 @@ button { font-family: inherit; cursor: pointer; }
 .abbr-pop { position: absolute; right: calc(100% + 16px); top: 50%; translate: 0 -50%; margin: 0; z-index: 6; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; background: #1d2636; border: 1px solid #8FB4F0; display: grid; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 14px; row-gap: 5px; font-size: 13.5px; line-height: 1.25; }
 .abbr-pop[hidden] { display: none; }
 
+/* слайд 3: движение мощности по ЛЭП и рост нагрузки на объектах после отключения */
+#sc-flow { fill: none; stroke: #ffffff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 24; filter: drop-shadow(0 0 4px #ffffff); animation: sc-flow 0.9s linear infinite; }
+#sc-flow.is-re { stroke: #FFB02E; stroke-width: 6; stroke-dasharray: 1 20; filter: drop-shadow(0 0 6px #FFB02E); animation: sc-flow2 0.55s linear infinite; }
+@keyframes sc-flow { to { stroke-dashoffset: -25; } }
+@keyframes sc-flow2 { to { stroke-dashoffset: -21; } }
+.sc-load { position: absolute; left: 50%; top: 100%; margin-top: 3px; translate: -50% 0; padding: 2px 8px; border-radius: 9px; background: #FFB02E; box-shadow: 0 0 14px rgba(255,176,46,0.8); font-size: 14px; font-weight: 800; color: #1b1405; white-space: nowrap; pointer-events: none; }
+.sc-load:empty { display: none; }
+.sc-node.is-up .sc-mk, .sc-node.is-up .sc-box { border-color: #FFB02E !important; animation: sc-up 1s ease-in-out infinite alternate; }
+@keyframes sc-up { from { box-shadow: 0 0 0 2px rgba(255,176,46,0.35), 0 0 10px rgba(255,176,46,0.6); } to { box-shadow: 0 0 0 7px rgba(255,176,46,0.3), 0 0 24px rgba(255,176,46,1); } }
+@media (prefers-reduced-motion: reduce) { #sc-flow, .sc-node.is-up .sc-mk, .sc-node.is-up .sc-box { animation: none; } }
+
 /* слайд 3: эквивалент внешней сети (ПС 750 кВ) — пунктирный контур */
 .sc-node.is-eq .sc-mk { border-style: dashed; width: 30px; height: 30px; margin: -15px 0 0 -15px; }
 .sc-node.is-eq .sc-box { border-color: #5B9BFF; }
