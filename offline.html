@@ -1172,27 +1172,52 @@ button { font-family: inherit; cursor: pointer; }
       return { svg: svg, labels: labels };
     }
 
-    /* Условная модель потоков мощности: энергия идёт от внешних источников по кратчайшему пути
-       (линии 500 кВ «дешевле» 220, те — дешевле 110). Нагрузка объекта = сколько объектов питается через него. */
-    const trees = {};
-    function flowTree(off) {
-      const dist = {}, parent = {}, plink = {}, done = {}, sub = {};
-      exts.forEach((x) => { dist[x.id] = 0; });
-      for (;;) {
-        let u = null;
-        Object.keys(dist).forEach((k) => { if (!done[k] && (u === null || dist[k] < dist[u])) u = k; });
-        if (u === null) break;
-        done[u] = true;
-        lines.forEach((l) => {
-          if (l.a !== u && l.b !== u) return;
-          const o = l.a === u ? l.b : l.a;
-          if (o === off || byId[o].ext) return;
-          const w = dist[u] + (l.cls === 500 ? 1 : (l.cls === 220 ? 2 : 3));
-          if (dist[o] === undefined || w < dist[o]) { dist[o] = w; parent[o] = u; plink[o] = l; }
-        });
+    /* Упрощённый расчёт потокораспределения (модель постоянного тока):
+       у каждого объекта есть нагрузка или генерация, недостающую мощность поровну дают внешние источники,
+       линии высокого класса «проводят» лучше. Решается система узловых уравнений — получаем перетоки по линиям.
+       При отключении объекта расчёт повторяется без него: мощность перераспределяется по всем параллельным путям. */
+    const LOAD = { ps: { 500: 140, 220: 110, 110: 70 }, tec: { 220: -260, 110: -130 }, ges: { 110: -40 }, eq: { 750: 0 } };
+    const B = { 500: 10, 220: 4, 110: 1.5 };
+    const flows = {};
+    function loadFlow(off) {
+      const key = off || '';
+      if (flows[key]) return flows[key];
+      // рабочие линии и узлы, связанные с внешними источниками
+      const act = lines.filter((l) => l.a !== off && l.b !== off);
+      const seen = {}, q = [];
+      exts.forEach((x) => { seen[x.id] = true; q.push(x.id); });
+      while (q.length) { const u = q.shift(); act.forEach((l) => { if (l.a !== u && l.b !== u) return; const o = l.a === u ? l.b : l.a; if (!seen[o]) { seen[o] = true; q.push(o); } }); }
+      const ids = Object.keys(seen), idx = {}; ids.forEach((id, i) => { idx[id] = i; });
+      const live = act.filter((l) => seen[l.a] && seen[l.b]);
+      // внешний источник работает, если его линия приходит в работающий объект
+      const extOn = exts.filter((x) => live.some((l) => l.a === x.id || l.b === x.id));
+      const P = ids.map((id) => (byId[id].ext ? 0 : -(LOAD[byId[id].type][byId[id].cls] || 0)));
+      const need = -P.reduce((s, v) => s + v, 0);
+      extOn.forEach((x) => { P[idx[x.id]] = need / extOn.length; });
+      // узловые уравнения: Y·θ = P, опорный узел — первый внешний источник
+      const n = ids.length, Y = ids.map(() => new Array(n).fill(0));
+      live.forEach((l) => { const i = idx[l.a], k = idx[l.b], bb = B[l.cls]; Y[i][i] += bb; Y[k][k] += bb; Y[i][k] -= bb; Y[k][i] -= bb; });
+      const ref = idx[(extOn[0] || exts[0]).id], th = new Array(n).fill(0);
+      const M = [], map = [];
+      for (let i = 0; i < n; i++) { if (i === ref) continue; map.push(i); M.push(Y[i].filter((v, k) => k !== ref).concat([P[i]])); }
+      const m = M.length;
+      for (let c = 0; c < m; c++) {
+        let p = c; for (let r = c + 1; r < m; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+        if (Math.abs(M[p][c]) < 1e-9) continue;
+        const t = M[c]; M[c] = M[p]; M[p] = t;
+        for (let r = 0; r < m; r++) { if (r === c) continue; const f = M[r][c] / M[c][c]; if (f) for (let k = c; k <= m; k++) M[r][k] -= f * M[c][k]; }
       }
-      Object.keys(parent).forEach((k) => { let c = k; while (c && !byId[c].ext) { sub[c] = (sub[c] || 0) + 1; c = parent[c]; } });
-      return { parent: parent, plink: plink, sub: sub };
+      for (let c = 0; c < m; c++) th[map[c]] = Math.abs(M[c][c]) < 1e-9 ? 0 : M[c][m] / M[c][c];
+      // переток по линии (плюс — от a к b) и сквозная мощность объекта (сколько через него проходит)
+      const f = lines.map((l) => (seen[l.a] && seen[l.b] && l.a !== off && l.b !== off ? B[l.cls] * (th[idx[l.a]] - th[idx[l.b]]) : 0));
+      const thru = {};
+      nodes.forEach((nd) => {
+        if (!seen[nd.id] || nd.id === off) { thru[nd.id] = 0; return; }
+        let s = Math.abs(P[idx[nd.id]]);
+        lines.forEach((l, i) => { if (l.a === nd.id || l.b === nd.id) s += Math.abs(f[i]); });
+        thru[nd.id] = s / 2;
+      });
+      return (flows[key] = { f: f, thru: thru });
     }
 
     const cache = {};
@@ -1221,34 +1246,38 @@ button { font-family: inherit; cursor: pointer; }
         if (dead(l.a) || dead(l.b)) { dDead += p; dFade[l.cls] += p; } else d[l.cls] += p;
         if (l.a === sel || l.b === sel) dSel += p;
       });
-      // движение мощности: при выборе объекта — как идёт сейчас; при отключении — новые пути и рост нагрузки
-      const T0 = trees[''] || (trees[''] = flowTree(null)), T1 = off ? (trees[off] || (trees[off] = flowTree(off))) : T0;
+      // движение мощности по расчёту: при выборе объекта — как идёт сейчас; при отключении — куда перешла нагрузка
+      const F0 = loadFlow(null), F1 = off ? loadFlow(off) : F0;
       let dFlow = ''; const up = {};
-      const flowEdge = (child, T) => {
-        const l = T.plink[child]; if (!l || !st.show[l.cls]) return;
-        const pts = l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1));
-        if (l.a === child) pts.reverse(); // точки линии идут от a к b, поток — от «родителя» к объекту
-        dFlow += 'M' + pts.join('L');
+      const seg = (i, f) => { // участок линии по направлению перетока f (плюс — от a к b)
+        const l = lines[i]; if (!st.show[l.cls]) return '';
+        const pts = l.m.map((q, k) => lerp(q[0], l.s[k][0]).toFixed(1) + ' ' + lerp(q[1], l.s[k][1]).toFixed(1));
+        if (f < 0) pts.reverse();
+        return 'M' + pts.join('L');
       };
       if (off && sel) {
-        const seen = {};
-        nodes.forEach((n) => {
-          if (n.id === off || !T1.parent[n.id] || T1.parent[n.id] === T0.parent[n.id]) return;
-          let c = n.id; while (T1.parent[c] && !seen[c]) { seen[c] = true; flowEdge(c, T1); c = T1.parent[c]; }
+        // линии, которые взяли на себя дополнительную мощность (или поток по ним развернулся)
+        lines.forEach((l, i) => {
+          const a0 = Math.abs(F0.f[i]), a1 = Math.abs(F1.f[i]);
+          if (a1 > 3 && (a1 - a0 > Math.max(6, a0 * 0.12) || (a0 > 3 && F0.f[i] * F1.f[i] < 0))) dFlow += seg(i, F1.f[i]);
         });
+        // объекты, через которые теперь проходит больше мощности
         nodes.forEach((n) => {
-          if (n.id !== off && T1.sub[n.id] > T0.sub[n.id]) up[n.id] = Math.max(5, Math.min(90, Math.round((T1.sub[n.id] - T0.sub[n.id]) / T0.sub[n.id] * 50)));
+          const t0 = F0.thru[n.id], t1 = F1.thru[n.id];
+          if (n.id !== off && t0 > 1 && t1 - t0 > Math.max(8, t0 * 0.08)) up[n.id] = Math.min(250, Math.round((t1 - t0) / t0 * 100));
         });
       } else if (sel && !off) {
-        // к объекту — путь от внешнего источника генерации; из объекта — по всем остальным его линиям
-        let c = sel; while (T0.parent[c]) { flowEdge(c, T0); c = T0.parent[c]; }
-        const inbound = T0.plink[sel];
-        lines.forEach((l) => {
-          if (l === inbound || (l.a !== sel && l.b !== sel) || !st.show[l.cls]) return;
-          const pts = l.m.map((q, i) => lerp(q[0], l.s[i][0]).toFixed(1) + ' ' + lerp(q[1], l.s[i][1]).toFixed(1));
-          if (l.b === sel) pts.reverse(); // поток — от выбранного объекта наружу
-          dFlow += 'M' + pts.join('L');
-        });
+        // к объекту — цепочка от внешнего источника по самым загруженным линиям; у самого объекта — все его линии по направлению перетока
+        const used = {};
+        let c = sel;
+        for (let step = 0; step < 12 && !byId[c].ext; step++) {
+          let best = -1, bv = 0.5;
+          lines.forEach((l, i) => { const inflow = l.b === c ? F0.f[i] : (l.a === c ? -F0.f[i] : 0); if (inflow > bv) { bv = inflow; best = i; } });
+          if (best < 0) break;
+          used[best] = true; dFlow += seg(best, F0.f[best]);
+          c = lines[best].a === c ? lines[best].b : lines[best].a;
+        }
+        lines.forEach((l, i) => { if (!used[i] && (l.a === sel || l.b === sel) && Math.abs(F0.f[i]) > 0.5) dFlow += seg(i, F0.f[i]); });
       }
       const upCount = Object.keys(up).length;
       const vn = nodes.map((n) => {
