@@ -217,6 +217,10 @@ button { font-family: inherit; cursor: pointer; }
 .abbr-pop { position: absolute; right: calc(100% + 16px); top: 50%; translate: 0 -50%; margin: 0; z-index: 6; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; background: #1d2636; border: 1px solid #8FB4F0; display: grid; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 14px; row-gap: 5px; font-size: 13.5px; line-height: 1.25; }
 .abbr-pop[hidden] { display: none; }
 
+/* слайд 3: эквивалент внешней сети (ПС 750 кВ) — пунктирный контур */
+.sc-node.is-eq .sc-mk { border-style: dashed; width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+.sc-node.is-eq .sc-box { border-color: #5B9BFF; }
+
 /* слайд 3: подписи территорий и внешние источники генерации */
 .sc-region { position: absolute; font-size: 15px; font-weight: 700; letter-spacing: 0.22em; color: rgba(190,208,236,0.8); white-space: nowrap; pointer-events: none; }
 .sc-ext { position: absolute; display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 9px; border-radius: 10px; border: 1px solid rgba(199,125,214,0.7); background: rgba(24,16,30,0.92); box-shadow: 0 0 16px rgba(199,125,214,0.25); font-size: 15px; line-height: 1.1; font-weight: 700; color: #ffffff; white-space: nowrap; pointer-events: none; }
@@ -955,7 +959,7 @@ button { font-family: inherit; cursor: pointer; }
 
   /* Модель сети и расчёт представления (без DOM). Данные условные. */
   function powerCore() {
-    const CLR = { 500: '#FF3D55', 220: '#F2C94C', 110: '#56B4E9', 10: '#59C27A', gen: '#C77DD6' };
+    const CLR = { 750: '#5B9BFF', 500: '#FF3D55', 220: '#F2C94C', 110: '#56B4E9', 10: '#59C27A', gen: '#C77DD6' };
     const DEMO_V = { 500: '512,3', 220: '224,6', 110: '115,0', 10: '10,4' };
     const GRAY = '#6b7480';
 
@@ -1009,6 +1013,8 @@ button { font-family: inherit; cursor: pointer; }
       ['p6', 'ps', 500, [37.83, 55.66], [1370, 820], 170, 80, [500, 220], 0, 'r'],  // Чагино, Москва
       ['p7', 'ps', 500, [37.75, 55.47], [960, 820], 170, 80, [500, 220], 0, 'r'],   // Пахра, Домодедово
       ['p8', 'ps', 500, [37.43, 55.675], [230, 820], 170, 80, [500, 220], 0, 'l'],  // Очаково, Москва
+      // ПС 750 кВ Белый Раст — эквивалент внешней сети: через неё кольцо замыкается на севере (Западная — Бескудниково)
+      ['e1', 'eq', 750, [37.43, 55.98], [590, 150], 150, 56, [500], 0, 'l'],
       ['s1', 'ps', 220, [37.50, 55.92], [640, 270], 130, 64, [220, 110], 0, 't'],   // север
       ['s2', 'ps', 220, [37.87, 55.79], [1160, 400], 130, 64, [220, 110], 0, 't'],  // восток
       ['s3', 'ps', 220, [37.70, 55.56], [960, 700], 130, 64, [220, 110], 0, 'b'],   // юг
@@ -1025,9 +1031,9 @@ button { font-family: inherit; cursor: pointer; }
       ['d5', 'ps', 110, [37.50, 55.765], [620, 500], 110, 46, [110], 0, 'l']
     ].forEach((d) => {
       const n = { id: d[0], type: d[1], cls: d[2], m: geo(d[3][0], d[3][1]), s: d[4], w: d[5], h: d[6], buses: d[7], gens: d[8], side: d[9] };
-      n.gen = n.type !== 'ps';
+      n.gen = n.type === 'tec' || n.type === 'ges';
       n.info = INFO[n.id] || null;
-      n.title = n.type === 'tec' ? 'ТЭЦ' : (n.type === 'ges' ? 'ГЭС' : 'ПС ' + n.cls + ' кВ');
+      n.title = n.type === 'tec' ? 'ТЭЦ' : (n.type === 'ges' ? 'ГЭС' : 'ПС ' + n.cls + ' кВ' + (n.type === 'eq' ? ' · экв.' : ''));
       n.art = busArt(n);
       nodes.push(n); byId[n.id] = n;
     });
@@ -1036,16 +1042,16 @@ button { font-family: inherit; cursor: pointer; }
        Калининская АЭС (Удомля) — север-северо-запад, Костромская ГРЭС (Волгореченск) — северо-восток,
        Курская АЭС (Курчатов) — юг-юго-запад, Смоленская АЭС (Десногорск) — запад-юго-запад */
     const exts = [ // id, название, точка на карте, точка на схеме, подпись на карте [x, y, выравнивание], подпись на схеме
-      ['x1', 'Калининская АЭС', [620, -20], [800, 0], [404, 92, 'l'], [816, 10, 'l']],
+      ['x1', 'Калининская АЭС', [610, -20], [590, 0], [676, 14, 'l'], [606, 10, 'l']],
       ['x2', 'Костромская ГРЭС', [1254, -20], [1600, 150], [1160, 18, 'r'], [1592, 204, 'r']],
       ['x3', 'Курская АЭС', [900, 964], [960, 944], [946, 900, 'l'], [976, 896, 'l']],
       ['x4', 'Смоленская АЭС', [-20, 803], [0, 820], [14, 716, 'l'], [8, 712, 'l']]
     ].map((d) => (byId[d[0]] = { id: d[0], ext: true, title: d[1], m: d[2], s: d[3], lm: d[4], ls: d[5] }));
 
     const lines = [ // класс, от, до, трасса на схеме (V: верт-гор-верт, H: гор-верт-гор), средняя координата, смещения на концах, кольцо 500 кВ
-      [500, 'p1', 'p2', 'H', 500, 0, 0, 1], [500, 'p2', 'p3', 'H', 1100, 0, 0, 1], [500, 'p3', 'p4', 'V', 275, 0, 0, 1], [500, 'p4', 'p5', 'V', 505, 0, 0, 1],
+      [500, 'p1', 'e1', 'H', 400, 0, 0, 1], [500, 'e1', 'p2', 'H', 690, 0, 0, 1], [500, 'p2', 'p3', 'H', 1100, 0, 0, 1], [500, 'p3', 'p4', 'V', 275, 0, 0, 1], [500, 'p4', 'p5', 'V', 505, 0, 0, 1],
       [500, 'p5', 'p6', 'V', 715, 0, 0, 1], [500, 'p6', 'p7', 'H', 1150, 0, 0, 1], [500, 'p7', 'p8', 'H', 600, 0, 0, 1], [500, 'p8', 'p1', 'V', 475, 0, 0, 1],
-      [500, 'p2', 'x1', 'V', 50, 0, 0], [500, 'p3', 'x2', 'H', 1500, 0, 0], [500, 'p7', 'x3', 'V', 890, 0, 0], [500, 'p8', 'x4', 'H', 100, 0, 0],
+      [500, 'e1', 'x1', 'V', 60, 0, 0], [500, 'p3', 'x2', 'H', 1500, 0, 0], [500, 'p7', 'x3', 'V', 890, 0, 0], [500, 'p8', 'x4', 'H', 100, 0, 0],
       [220, 's5', 's1', 'V', 270, 0, 0], [220, 's1', 't1', 'H', 790, 0, 6], [220, 't1', 's2', 'H', 1160, 6, 0], [220, 's2', 't2', 'V', 520, 0, 0],
       [220, 't2', 's3', 'V', 700, 0, 0], [220, 's3', 's4', 'H', 740, 0, 0], [220, 's4', 's5', 'H', 440, 0, 0],
       [220, 'p1', 's5', 'H', 330, 20, 0], [220, 'p2', 's1', 'V', 215, -30, 20], [220, 'p3', 't1', 'H', 1100, 30, 0], [220, 'p4', 's2', 'H', 1260, 0, 0],
@@ -1156,7 +1162,7 @@ button { font-family: inherit; cursor: pointer; }
       const alive = {};
       if (off) {
         const q = [];
-        nodes.forEach((n) => { if (n.id !== off && (n.gen || n.cls === 500)) { alive[n.id] = true; q.push(n.id); } });
+        nodes.forEach((n) => { if (n.id !== off && (n.gen || n.cls >= 500)) { alive[n.id] = true; q.push(n.id); } });
         while (q.length) {
           const id = q.pop();
           lines.forEach((l) => {
@@ -1182,7 +1188,7 @@ button { font-family: inherit; cursor: pointer; }
           x: lerp(n.m[0], n.s[0]).toFixed(1), y: lerp(n.m[1], n.s[1]).toFixed(1),
           w: lerp(44, n.w).toFixed(1), h: lerp(44, n.h).toFixed(1),
           mkOp: (1 - t).toFixed(3), boxOp: t.toFixed(3),
-          col: dd ? GRAY : CLR[n.cls], mkRadius: n.gen ? '50%' : '6px', genOp: n.gen ? 1 : 0,
+          col: dd ? GRAY : CLR[n.cls], mkRadius: n.gen || n.type === 'eq' ? '50%' : '6px', genOp: n.gen ? 1 : 0,
           boxBorder: isSel ? '#ffffff' : '#8b95a3', artOp: dd ? 0.3 : 1,
           glow: isSel ? '0 0 0 3px rgba(255,255,255,0.22), 0 0 16px rgba(255,255,255,0.55)' : 'none',
           lx: lerp(n.side === 'l' ? 4 : (n.side === 'r' ? 40 : 4), 0).toFixed(1), ly: lerp(n.side === 't' ? -11 : (n.side === 'b' ? 37 : 12), -22).toFixed(1),
@@ -1205,7 +1211,7 @@ button { font-family: inherit; cursor: pointer; }
         detKey: dKey, detSvg: dl.svg, detLabels: dl.labels, selOut: selOff || selDead, outText: selOff ? 'ОТКЛЮЧЁН' : 'БЕЗ ПИТАНИЯ',
         hasSel: !!sn,
         selTitle: sn ? sn.title : 'Объект не выбран',
-        selType: !sn ? '—' : (sn.type === 'tec' ? 'Теплоэлектроцентраль' : (sn.type === 'ges' ? 'Гидроэлектростанция' : 'Подстанция')),
+        selType: !sn ? '—' : (sn.type === 'eq' ? 'Эквивалент внешней сети' : sn.type === 'tec' ? 'Теплоэлектроцентраль' : (sn.type === 'ges' ? 'Гидроэлектростанция' : 'Подстанция')),
         selCls: sn ? sn.cls + ' кВ' : '—',
         selCap: sn && sn.info ? sn.info.cap : '', selAddr: sn && sn.info ? sn.info.addr : '',
         selConn: sn ? String(lines.filter((l) => l.a === sel || l.b === sel).length) : '—',
@@ -1229,7 +1235,7 @@ button { font-family: inherit; cursor: pointer; }
     core.nodes.forEach((n) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'sc-node';
+      b.className = 'sc-node' + (n.type === 'eq' ? ' is-eq' : '');
       b.setAttribute('aria-label', n.title);
       let svg = '<svg viewBox="0 0 ' + n.w + ' ' + n.h + '" preserveAspectRatio="none" aria-hidden="true"><path d="' + n.art.ticks + '" class="sc-ticks"></path>';
       CLS.forEach((c) => {

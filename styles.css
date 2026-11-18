@@ -204,6 +204,10 @@ button { font-family: inherit; cursor: pointer; }
 .abbr-pop { position: absolute; right: calc(100% + 16px); top: 50%; translate: 0 -50%; margin: 0; z-index: 6; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; background: #1d2636; border: 1px solid #8FB4F0; display: grid; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: 14px; row-gap: 5px; font-size: 13.5px; line-height: 1.25; }
 .abbr-pop[hidden] { display: none; }
 
+/* слайд 3: эквивалент внешней сети (ПС 750 кВ) — пунктирный контур */
+.sc-node.is-eq .sc-mk { border-style: dashed; width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+.sc-node.is-eq .sc-box { border-color: #5B9BFF; }
+
 /* слайд 3: подписи территорий и внешние источники генерации */
 .sc-region { position: absolute; font-size: 15px; font-weight: 700; letter-spacing: 0.22em; color: rgba(190,208,236,0.8); white-space: nowrap; pointer-events: none; }
 .sc-ext { position: absolute; display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 9px; border-radius: 10px; border: 1px solid rgba(199,125,214,0.7); background: rgba(24,16,30,0.92); box-shadow: 0 0 16px rgba(199,125,214,0.25); font-size: 15px; line-height: 1.1; font-weight: 700; color: #ffffff; white-space: nowrap; pointer-events: none; }
