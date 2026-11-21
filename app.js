@@ -995,10 +995,30 @@
     }));
   }
 
+  /* Слайд «Данные»: при открытии крупные числа «досчитываются» от нуля до своего значения */
+  function countUp() {
+    var root = document.getElementById('data');
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!root._nums) {
+      root._nums = [].slice.call(root.querySelectorAll('*')).filter(function (e) {
+        return !e.children.length && /^\d[\d ]*$/.test(e.textContent.trim()) && parseFloat(getComputedStyle(e).fontSize) >= 24;
+      }).map(function (e) { return { e: e, v: +e.textContent.replace(/ /g, '') }; });
+    }
+    var fmt = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); };
+    var t0 = performance.now(), D = 1300;
+    cancelAnimationFrame(root._raf);
+    (function step(ts) {
+      var k = Math.min(1, (ts - t0) / D), e = 1 - Math.pow(1 - k, 3);
+      root._nums.forEach(function (n) { n.e.textContent = fmt(Math.round(n.v * e)); });
+      if (k < 1) root._raf = requestAnimationFrame(step);
+    })(t0);
+  }
+
   /* ---------- Запуск ---------- */
   function start() {
     document.querySelectorAll('[data-map]').forEach(function (el) {
-      el.innerHTML = mapHTML(el.dataset.map, +el.dataset.cx, +el.dataset.cy, +el.dataset.scale);
+      // фон слайдов — та же карта Москвы с ТиНАО, что и на слайдах 1 и 3 (вместо прежней схематичной сети)
+      el.innerHTML = '<img class="deck-bgmap" src="img/moscow-clear.svg" alt="">';
     });
     document.querySelectorAll('[data-nav]').forEach(function (el) { el.innerHTML = navHTML(+el.dataset.nav - 1); });
     document.querySelectorAll('[data-fullscreen]').forEach(function (b) {
@@ -1022,6 +1042,7 @@
       SLIDES.forEach(function (s, i) { if (s.id === id) idx = i; });
       current = idx;
       SLIDES.forEach(function (s, i) { document.getElementById(s.id).classList.toggle('is-active', i === idx); });
+      if (SLIDES[idx].id === 'data') countUp();
       document.title = SLIDES[idx].name + ' — Схема электроснабжения';
     };
     window.addEventListener('resize', fit);
