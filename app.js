@@ -775,15 +775,15 @@
         s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M92 312L140 560L200 716L420 680L620 625L660 614', tag: [420, 742] }
       };
       const items = [
-        { name: 'Жилой микрорайон', mw: 9, zone: 'n', r: [592, 142, 190, 122], on: true, tap: 'M660 121V142' },
-        { name: 'Школа и детский сад', mw: 1.5, zone: 'n', r: [456, 236, 124, 86], on: false, tap: 'M504 165V236' },
-        { name: 'Больница', mw: 4, zone: 'c', r: [700, 424, 156, 116], on: false, tap: 'M700 470', first: true },
-        { name: 'Транспортный узел', mw: 6, zone: 'c', r: [262, 430, 136, 78], on: false, tap: 'M330 396V430' },
-        { name: 'Технопарк', mw: 12, zone: 's', r: [660, 584, 240, 132], on: false, tap: 'M660 614' }
+        { name: 'Жилой микрорайон', mw: 9, zone: 'n', r: [592, 142, 190, 122], on: true, tap: 'M660 121V142', b: [[14, 14, 22, 94], [50, 14, 22, 94], [86, 14, 22, 94], [124, 14, 52, 20], [124, 51, 52, 20], [124, 88, 52, 20]] },
+        { name: 'Школа и детский сад', mw: 1.5, zone: 'n', r: [456, 236, 124, 86], on: false, tap: 'M504 165V236', b: [[12, 12, 60, 16], [12, 54, 60, 16], [34, 12, 16, 58], [82, 14, 30, 26, 'green'], [84, 50, 28, 22]] },
+        { name: 'Больница', mw: 4, zone: 'c', r: [700, 424, 156, 116], on: false, tap: 'M700 470', first: true, b: [[16, 46, 96, 24], [52, 14, 24, 88], [120, 78, 24, 24], [132, 26, 11, 0, 'pad']] },
+        { name: 'Транспортный узел', mw: 6, zone: 'c', r: [262, 430, 136, 78], on: false, tap: 'M330 396V430', b: [[12, 12, 112, 22], [12, 42, 112, 8], [12, 56, 112, 8], [52, 8, 32, 62]] },
+        { name: 'Технопарк', mw: 12, zone: 's', r: [660, 584, 240, 132], on: false, tap: 'M660 614', b: [[16, 16, 96, 42], [126, 16, 98, 42], [16, 74, 142, 42], [172, 74, 52, 42]] }
       ];
       const SX = 24, SY = 226; // левый верхний угол значка ПС 110 кВ
       const KEYS = ['src', 'n', 'c', 's', 'tp'];
-      let card = null;
+      let card = null, justOn = null; // justOn — объект, который только что включили: его стройка анимируется
       const fmt = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
       const money = (v) => !v ? '—' : (v >= 1000 ? String(Math.round(v / 10) / 100).replace('.', ',') + ' млрд ₽' : Math.round(v) + ' млн ₽');
       const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11) ? a : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? b : c);
@@ -815,7 +815,7 @@
         b.type = 'button';
         b.className = 'demo-toggle';
         b.innerHTML = '<span class="demo-check" aria-hidden="true"></span><span class="demo-toggle-name">' + it.name + '</span><b>' + fmt(it.mw) + ' МВт</b>';
-        b.addEventListener('click', () => { it.on = !it.on; render(); });
+        b.addEventListener('click', () => { it.on = !it.on; justOn = it.on ? it : null; render(); });
         tg.appendChild(b);
         it.el = b;
       });
@@ -892,16 +892,29 @@
 
         items.forEach((it) => {
           const x = it.r[0], y = it.r[1], w = it.r[2], h = it.r[3], cx = x + w / 2;
-          const c = it.on ? '#5FD6A2' : '#5B677A';
           if (it.on && it.tap.length > 9) o += '<path d="' + it.tap + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3"></path>';
-          o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:' + (it.on ? 'rgba(95,214,162,0.24)' : 'rgba(6,11,19,0.55)') + ';stroke:' + c + ';stroke-width:' + (it.on ? 2.5 : 2) + ';' + (it.on ? 'filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))' : 'stroke-dasharray:7 6') + '"></rect>';
-          o += '<rect x="' + (cx - Math.min(w - 12, 164) / 2) + '" y="' + (y + 8) + '" width="' + Math.min(w - 12, 164) + '" height="' + (w < 140 ? 62 : 44) + '" rx="8" style="fill:rgba(6,11,19,0.78)"></rect>';
-          const words = it.name.split(' '), two = w < 140 && words.length > 1;
-          const l1 = two ? words.slice(0, Math.ceil(words.length / 2)).join(' ') : it.name, l2 = two ? words.slice(Math.ceil(words.length / 2)).join(' ') : '';
-          o += '<text x="' + cx + '" y="' + (y + 24) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l1 + '</text>';
-          if (l2) o += '<text x="' + cx + '" y="' + (y + 42) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l2 + '</text>';
-          o += '<text x="' + cx + '" y="' + (y + (l2 ? 62 : 44)) + '" style="fill:' + (it.on ? '#5FD6A2' : '#A7B2C2') + ';font-size:14px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран') + '</text>';
+          if (it.on) {
+            // участок расчищен под застройку, на нём появляются новые здания (вид сверху, как на снимке)
+            const fresh = it === justOn, an = (cls, i) => fresh ? ' class="' + cls + '" style="animation-delay:' + (0.3 + i * 0.13).toFixed(2) + 's"' : '';
+            o += '<g' + (fresh ? ' class="pl-site"' : '') + '><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:#27313f;stroke:#5FD6A2;stroke-width:2.5;filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))"></rect>' +
+              '<rect x="' + (x + 5) + '" y="' + (y + 5) + '" width="' + (w - 10) + '" height="' + (h - 10) + '" rx="6" style="fill:none;stroke:rgba(255,255,255,0.14);stroke-dasharray:3 5"></rect></g>';
+            it.b.forEach((q, i) => {
+              const bx = x + q[0], by = y + q[1];
+              if (q[4] === 'pad') { o += '<g' + an('pl-build', i) + '><circle cx="' + bx + '" cy="' + by + '" r="' + q[2] + '" style="fill:#3b4757;stroke:#F2C24C;stroke-width:1.6"></circle><text x="' + bx + '" y="' + (by + 4) + '" style="fill:#F2C24C;font-size:11px;font-weight:800;text-anchor:middle">H</text></g>'; return; }
+              if (q[4] === 'green') { o += '<rect' + an('pl-build', i) + ' x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="5" style="fill:#2f5a3f;stroke:#4d8a63;stroke-width:1"></rect>'; return; }
+              o += '<g' + an('pl-build', i) + '><rect x="' + (bx + 4) + '" y="' + (by + 5) + '" width="' + q[2] + '" height="' + q[3] + '" rx="2" style="fill:rgba(0,0,0,0.5)"></rect>' +
+                '<rect x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="2" style="fill:#d3dde9;stroke:#ffffff;stroke-width:1"></rect>' +
+                '<rect x="' + (bx + 3) + '" y="' + (by + 3) + '" width="' + (q[2] - 6) + '" height="' + (q[3] - 6) + '" rx="1" style="fill:none;stroke:rgba(70,90,115,0.55);stroke-width:1"></rect></g>';
+            });
+          } else {
+            o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:rgba(6,11,19,0.35);stroke:#aab5c4;stroke-width:2;stroke-dasharray:7 6"></rect>';
+          }
+          // подпись — плашкой под участком, чтобы не закрывать здания
+          const txt = it.name + ' · ' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран'), tw = Math.round(txt.length * 7.5 + 26);
+          o += '<rect x="' + (cx - tw / 2) + '" y="' + (y + h + 5) + '" width="' + tw + '" height="26" rx="13" style="fill:rgba(8,13,22,0.92);stroke:' + (it.on ? '#5FD6A2' : '#5B677A') + ';stroke-width:1.2"></rect>' +
+            '<text x="' + cx + '" y="' + (y + h + 23) + '" style="fill:' + (it.on ? '#ffffff' : '#C5CEDB') + ';font-size:13.5px;font-weight:700;text-anchor:middle">' + txt + '</text>';
         });
+        justOn = null;
 
         const srcSel = card === 'src', sc = srcSel ? '#ffffff' : (srcOver ? AMBER : '#aeb8c6');
         o += '<rect x="' + SX + '" y="' + SY + '" width="170" height="88" rx="6" style="fill:rgba(5,8,13,0.9);stroke:' + sc + ';stroke-width:' + ((srcOver || srcSel) ? 2.5 : 1.6) + ';stroke-dasharray:5 4' + (srcSel ? ';filter:drop-shadow(0 0 10px rgba(255,255,255,0.7))' : (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '')) + '"></rect>' +
