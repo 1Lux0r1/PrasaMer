@@ -680,65 +680,92 @@
     const wire = (d, color, dead, dashed) =>
       '<path d="' + d + '" style="fill:none;stroke:' + (dead ? GRAY : color) + ';stroke-width:2.5;' + ((dead || dashed) ? 'stroke-dasharray:7 7;' : 'filter:drop-shadow(0 0 5px ' + color + ');') + '"></path>';
 
-    /* 01. Авария и переключение: тот же квартал с воздуха; три зоны питания, при аварии зона гаснет */
+    /* 01. Авария и переключение — однолинейная схема участка сети 220/110/10 кВ.
+       Две ПС 220 кВ с автотрансформаторами питают сеть 110 кВ. ПС 110 кВ № 1 — тупиковая, по двум ВЛ от ПС 220 кВ № 1.
+       ПС 110 кВ № 2 стоит на транзите между двумя ПС 220 кВ; транзит в нормальном режиме разомкнут на её шинах (точка нормального разрыва).
+       ПС 110 кВ № 3 питается от ПС 220 кВ № 2. На каждой ПС 110 кВ два трансформатора и две секции 10 кВ с секционным выключателем (АВР). */
     (function () {
-      const feeds = [
-        { x: 170, n: [42, 3, 0], area: 'M12 150H332L346 764H12Z', lx: [30, 320] },
-        { x: 510, n: [58, 5, 2], area: 'M340 150H676L690 764H354Z', lx: [360, 668] },
-        { x: 860, n: [37, 4, 1], area: 'M684 150H1028V764H698Z', lx: [704, 1012] }
+      const G10 = '#59C27A', RED = '#FF2D46', AMB = '#F5A04A';
+      const SRC = [{ x: 260 }, { x: 800 }];
+      const SUB = [{ x: 170, n: [42, 3, 0] }, { x: 520, n: [58, 5, 2] }, { x: 870, n: [37, 4, 1] }];
+      const LINES = [ // источник, приёмник, трасса, точка выключателя у источника и у приёмника
+        { s: 0, t: 0, d: 'M140 164V378', a: [140, 190], b: [140, 356] },
+        { s: 0, t: 0, d: 'M200 164V378', a: [200, 190], b: [200, 356] },
+        { s: 0, t: 1, d: 'M360 164V262H470V378', a: [360, 190], b: [470, 356] },
+        { s: 1, t: 1, d: 'M700 164V262H570V378', a: [700, 190], b: [570, 356], tie: true },
+        { s: 1, t: 2, d: 'M830 164V378', a: [830, 190], b: [830, 356] },
+        { s: 1, t: 2, d: 'M910 164V378', a: [910, 190], b: [910, 356] }
       ];
-      // «огни» домов: гаснут вместе с зоной
-      let seed = 11;
-      const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
-      feeds.forEach((f) => {
-        f.lights = [];
-        for (let k = 0; k < 54; k++) {
-          const x = f.lx[0] + rnd() * (f.lx[1] - f.lx[0]), y = 168 + rnd() * 360;
-          if (Math.abs(x - f.x) < 100 && Math.abs(y - 300) < 52) continue; // не под значком подстанции
-          f.lights.push([x.toFixed(0), y.toFixed(0), (1.6 + rnd() * 1.6).toFixed(1), (rnd() * 3).toFixed(1)]);
-        }
-      });
       let step = 0;
       const texts = [
-        ['Шаг 1 из 3 · Нормальный режим', 'Сеть работает штатно: все подстанции и потребители под напряжением.', 'Отключить ПС 220 кВ'],
-        ['Шаг 2 из 3 · Авария', 'Питающая подстанция отключена. Решение сразу показывает, кто остался без электроснабжения.', 'Переключить на резерв'],
-        ['Шаг 3 из 3 · Переключение', 'Часть потребителей переведена на соседний источник по резервной связи. Оставшаяся подстанция — первый приоритет восстановления.', 'Начать заново']
+        ['Шаг 1 из 3 · Нормальный режим', 'Транзит 110 кВ между двумя ПС 220 кВ разомкнут на ПС 110 кВ № 2 — это точка нормального разрыва. Все потребители под напряжением.', 'Отключить ПС 220 кВ № 1'],
+        ['Шаг 2 из 3 · Авария', 'Погашение ПС 220 кВ № 1: выключатели отходящих ВЛ 110 кВ отключены защитой. Обесточены ПС 110 кВ № 1 и № 2. Решение сразу показывает, кто остался без электроснабжения.', 'Замкнуть транзит от ПС 220 кВ № 2'],
+        ['Шаг 3 из 3 · Оперативное переключение', 'На ПС 110 кВ № 2 отключена ВЛ в сторону погашенной подстанции и включён выключатель в точке нормального разрыва — питание подано по транзиту от ПС 220 кВ № 2. ПС 110 кВ № 1 тупиковая, резерва нет: она — первый приоритет восстановления.', 'Начать заново']
       ];
-      const plate = (x, y, w, h, bus, label, dead) =>
-        '<rect x="' + (x - w / 2) + '" y="' + (y - h / 2) + '" width="' + w + '" height="' + h + '" rx="6" style="fill:rgba(5,8,13,0.92);stroke:' + (dead ? '#FF5468' : '#aeb8c6') + ';stroke-width:' + (dead ? 2.2 : 1.6) + ';stroke-dasharray:5 4' + (dead ? ';filter:drop-shadow(0 0 8px rgba(255,61,85,0.8))' : '') + '"></rect>' +
-        '<text x="' + x + '" y="' + (y - 6) + '" style="fill:' + (dead ? '#FF8A99' : '#ffffff') + ';font-size:16px;font-weight:700;text-anchor:middle">' + label + '</text>' +
-        '<path d="M' + (x - w / 2 + 16) + ' ' + (y + 12) + 'H' + (x + w / 2 - 16) + '" style="stroke:' + (dead ? GRAY : bus) + ';stroke-width:5;stroke-linecap:round"></path>';
-      const line = (d, color, dead, dashed) =>
-        '<path d="' + d + '" style="fill:none;stroke:' + (dead ? '#7b8594' : color) + ';stroke-width:3.4;stroke-linejoin:round;' + ((dead || dashed) ? 'stroke-dasharray:8 7;' : 'filter:drop-shadow(0 0 6px ' + color + ');') + '"></path>' +
-        (dead || dashed ? '' : '<path class="pl-flow" d="' + d + '"></path>');
+      const br = (p, st, c) => { // выключатель: включён / отключён / отключён защитой / включён без напряжения
+        const s = st === 'on' ? 'fill:' + c + ';stroke:' + c : (st === 'dead' ? 'fill:' + GRAY + ';stroke:' + GRAY : (st === 'trip' ? 'fill:#05070b;stroke:' + RED + ';filter:drop-shadow(0 0 5px ' + RED + ')' : 'fill:#05070b;stroke:#C5CEDB'));
+        return '<rect x="' + (p[0] - 7) + '" y="' + (p[1] - 7) + '" width="14" height="14" style="' + s + ';stroke-width:2"></rect>';
+      };
+      const seg = (d, c, live, w) => '<path d="' + d + '" style="fill:none;stroke:' + (live ? c : GRAY) + ';stroke-width:' + (w || 3) + ';stroke-linejoin:round;stroke-linecap:round;' + (live ? 'filter:drop-shadow(0 0 5px ' + c + ')' : 'stroke-dasharray:7 6') + '"></path>';
+      const tr = (x, y, c1, c2, live) => // двухобмоточный трансформатор / автотрансформатор — две окружности
+        '<circle cx="' + x + '" cy="' + y + '" r="10" style="fill:#05070b;stroke:' + (live ? c1 : GRAY) + ';stroke-width:2.2"></circle><circle cx="' + x + '" cy="' + (y + 13) + '" r="10" style="fill:none;stroke:' + (live ? c2 : GRAY) + ';stroke-width:2.2"></circle>';
+      const pill = (x, y, t, c, anchor) => { const w = t.length * 7.4 + 24, x0 = anchor === 'l' ? x : x - w / 2; return '<rect x="' + x0 + '" y="' + (y - 17) + '" width="' + w + '" height="24" rx="12" style="fill:#0b111c;stroke:' + c + ';stroke-width:1.2"></rect><text x="' + (x0 + w / 2) + '" y="' + y + '" style="fill:' + c + ';font-size:13px;font-weight:700;text-anchor:middle">' + t + '</text>'; };
       function render() {
-        const s1dead = step > 0, dead = [step > 0, step === 1, false], tie = step === 2;
-        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="Квартал с воздуха: две питающие подстанции, три подстанции 110 кВ и их зоны питания">';
-        o += '<rect width="1040" height="776" style="fill:#0b0f17"></rect><image href="img/quarter.jpg" x="0" y="0" width="1040" height="776" preserveAspectRatio="xMidYMid slice"></image><rect width="1040" height="776" style="fill:#050d17;opacity:0.42"></rect>';
-        feeds.forEach((f, i) => {
-          const dd = dead[i], viaTie = tie && i === 1;
-          if (dd) o += '<path class="ou-dark" d="' + f.area + '" style="fill:#02050a"></path>';
-          else o += f.lights.map((l) => '<circle class="ou-light" cx="' + l[0] + '" cy="' + l[1] + '" r="' + l[2] + '" style="animation-delay:-' + l[3] + 's;fill:' + (viaTie ? '#FFC773' : '#FFE9A8') + '"></circle>').join('');
-          o += '<path d="' + f.area + '" style="fill:' + (dd ? 'rgba(255,45,70,0.07)' : 'none') + ';stroke:' + (dd ? '#FF2D46' : (viaTie ? '#F5A04A' : 'rgba(95,214,162,0.75)')) + ';stroke-width:2;stroke-linejoin:round;' + (dd ? 'stroke-dasharray:9 7' : '') + '"></path>';
+        const srcLive = [step === 0, true];
+        const subLive = [step === 0, step !== 1, true], viaTie = [false, step === 2, false];
+        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="Однолинейная схема участка сети 220/110/10 кВ: две подстанции 220 кВ, три подстанции 110 кВ, линии 110 кВ и потребители">';
+        o += '<rect width="1040" height="776" style="fill:#05070b"></rect>';
+        o += '<text x="28" y="34" style="fill:' + MUTED + ';font-size:14px;font-weight:700;letter-spacing:0.06em">ОДНОЛИНЕЙНАЯ СХЕМА · 220 / 110 / 10 кВ</text>';
+        // условные обозначения
+        o += '<g style="font-size:13px;fill:#C5CEDB">' + br([500, 30], 'on', B) + '<text x="514" y="35">включён</text>' + br([594, 30], 'off', B) + '<text x="608" y="35">отключён</text>' + br([696, 30], 'trip', B) + '<text x="710" y="35">отключён защитой</text>' + tr(868, 20, Y, B, true) + '<text x="886" y="35">трансформатор</text></g>';
+        // ВЛ 110 кВ
+        LINES.forEach((l) => {
+          const fromLive = srcLive[l.s];
+          let closedB = true, live;
+          if (l.tie) { closedB = step === 2; live = true; }                     // транзит: под напряжением со стороны ПС 220 кВ № 2 до точки разрыва
+          else if (l.s === 0 && l.t === 1) { closedB = step !== 2; live = fromLive; } // на шаге 3 ВЛ в сторону погашенной ПС отключена и на приёмном конце
+          else live = fromLive;
+          o += seg(l.d, l.tie && step === 2 ? AMB : B, live);
+          if (live) o += '<path class="pl-flow" d="' + l.d + '"></path>';
+          o += br(l.a, srcLive[l.s] ? 'on' : 'trip', B);
+          o += br(l.b, !closedB ? 'off' : (subLive[l.t] ? 'on' : 'dead'), l.tie && step === 2 ? AMB : B);
         });
-        o += line('M230 104V200H170V272', B, dead[0]) + line('M270 104V200H510V272', B, step > 0) + line('M860 104V272', B, false);
-        o += line('M585 300H785', '#F5A04A', false, !tie);
-        o += '<rect x="620" y="262" width="130" height="24" rx="12" style="fill:rgba(8,13,22,0.92);stroke:' + (tie ? '#F5A04A' : '#5B677A') + '"></rect><text x="685" y="279" style="fill:' + (tie ? '#FFC773' : MUTED) + ';font-size:13.5px;font-weight:700;text-anchor:middle">' + (tie ? 'резерв включён' : 'резервная связь') + '</text>';
-        o += plate(250, 78, 190, 56, Y, 'ПС 220 кВ', s1dead) + plate(860, 78, 190, 56, Y, 'ПС 220 кВ', false);
-        feeds.forEach((f, i) => {
-          const dd = dead[i], viaTie = tie && i === 1;
-          o += plate(f.x, 300, 150, 56, B, 'ПС 110 кВ', dd);
-          o += '<rect x="' + (f.x - 112) + '" y="556" width="224" height="150" rx="12" style="fill:' + (dd ? 'rgba(46,10,18,0.92)' : 'rgba(13,19,30,0.9)') + ';stroke:' + (dd ? '#FF2D46' : (viaTie ? '#F5A04A' : '#3a4760')) + ';stroke-width:1.6"></rect>';
-          ['Жилые дома', 'Соцобъекты', 'Промышленность'].forEach((name, k) => {
-            const y = 596 + k * 40;
-            o += '<text x="' + (f.x - 92) + '" y="' + y + '" style="fill:#C5CEDB;font-size:17px">' + name + '</text>' +
-              '<text x="' + (f.x + 92) + '" y="' + y + '" style="fill:' + (dd ? '#FF8A99' : '#ffffff') + ';font-size:19px;font-weight:700;text-anchor:end">' + f.n[k] + '</text>';
+        o += '<text x="415" y="254" style="fill:' + MUTED + ';font-size:12.5px;text-anchor:middle">ВЛ 110 кВ</text><text x="635" y="254" style="fill:' + MUTED + ';font-size:12.5px;text-anchor:middle">ВЛ 110 кВ · транзит</text>';
+        o += pill(590, 332, step === 2 ? 'транзит замкнут' : 'нормальный разрыв', step === 2 ? AMB : '#C5CEDB', 'l');
+        // ПС 220 кВ: шины 220 кВ, два автотрансформатора, шины 110 кВ
+        SRC.forEach((s, i) => {
+          const lv = srcLive[i], x = s.x;
+          o += '<rect x="' + (x - 150) + '" y="58" width="300" height="124" style="fill:none;stroke:' + (lv ? '#8b95a3' : RED) + ';stroke-width:1.5;stroke-dasharray:5 4' + (lv ? '' : ';filter:drop-shadow(0 0 8px rgba(255,45,70,0.7))') + '"></rect>';
+          o += '<text x="' + (x - 150) + '" y="50" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:16px;font-weight:700">ПС 220 кВ № ' + (i + 1) + '</text>';
+          if (!lv) o += pill(x + 96, 50, 'ПОГАШЕНА', RED);
+          [-70, 70].forEach((dx) => { o += seg('M' + (x + dx) + ' 62V88', Y, lv, 2.4) + '<path d="M' + (x + dx - 5) + ' 70L' + (x + dx) + ' 78L' + (x + dx + 5) + ' 70" style="fill:none;stroke:' + (lv ? Y : GRAY) + ';stroke-width:2"></path>'; });
+          o += seg('M' + (x - 120) + ' 88H' + (x + 120), Y, lv, 5);
+          [-40, 40].forEach((dx) => { o += seg('M' + (x + dx) + ' 88V104', Y, lv, 2.2) + seg('M' + (x + dx) + ' 139V164', B, lv, 2.2) + tr(x + dx, 112, Y, B, lv); });
+          o += '<text x="' + (x + 62) + '" y="126" style="fill:' + MUTED + ';font-size:12.5px">АТ 220/110 кВ</text><text x="' + (x - 134) + '" y="82" style="fill:' + MUTED + ';font-size:12px">220 кВ</text><text x="' + (x - 134) + '" y="158" style="fill:' + MUTED + ';font-size:12px">110 кВ</text>';
+          o += seg('M' + (x - 130) + ' 164H' + (x + 130), B, lv, 5);
+        });
+        // ПС 110 кВ: две секции 110 кВ, два трансформатора, две секции 10 кВ с секционным выключателем, потребители
+        SUB.forEach((s, i) => {
+          const lv = subLive[i], x = s.x, acc = viaTie[i] ? AMB : null, frame = !lv ? RED : (acc || '#8b95a3');
+          o += '<rect x="' + (x - 108) + '" y="346" width="216" height="158" style="fill:none;stroke:' + frame + ';stroke-width:' + (lv && !acc ? 1.5 : 2) + ';stroke-dasharray:5 4"></rect>';
+          o += '<text x="' + (x - 108) + '" y="338" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:16px;font-weight:700">ПС 110 кВ № ' + (i + 1) + '</text>';
+          [-1, 1].forEach((k) => {
+            o += seg('M' + (x + k * 10) + ' 378H' + (x + k * 94), B, lv, 5) + seg('M' + (x + k * 10) + ' 472H' + (x + k * 94), G10, lv, 5);
+            o += seg('M' + (x + k * 56) + ' 378V394', B, lv, 2.2) + seg('M' + (x + k * 56) + ' 429V472', G10, lv, 2.2) + tr(x + k * 56, 402, B, G10, lv);
+            o += seg('M' + (x + k * 56) + ' 472V540', G10, lv, 2.4);
+            if (lv) o += '<path class="pl-flow" d="M' + (x + k * 56) + ' 472V540"></path>';
           });
-          const st = dd ? 'без питания' : (viaTie ? 'питание по резерву' : 'под напряжением'), sw = st.length * 8 + 28;
-          o += '<rect x="' + (f.x - sw / 2) + '" y="716" width="' + sw + '" height="26" rx="13" style="fill:rgba(8,13,22,0.92)"></rect><text x="' + f.x + '" y="734" style="fill:' + (dd ? '#FF8A99' : (viaTie ? '#FFC773' : '#5FD6A2')) + ';font-size:14.5px;font-weight:700;text-anchor:middle">' + st + '</text>';
+          o += br([x, 378], lv ? 'on' : 'dead', B) + br([x, 472], 'off', G10);   // секционный 110 кВ включён; секционный 10 кВ отключён, включается АВР
+          o += '<text x="' + x + '" y="496" style="fill:' + MUTED + ';font-size:11.5px;text-anchor:middle">СВ 10 кВ · АВР</text>';
+          o += '<rect x="' + (x - 112) + '" y="540" width="224" height="146" rx="12" style="fill:' + (lv ? '#141c2a' : 'rgba(255,45,70,0.12)') + ';stroke:' + (lv ? (acc || '#2d394d') : RED) + ';stroke-width:1.6"></rect>';
+          ['Жилые дома', 'Соцобъекты', 'Промышленность'].forEach((name, k) => {
+            const y = 580 + k * 38;
+            o += '<text x="' + (x - 92) + '" y="' + y + '" style="fill:#C5CEDB;font-size:17px">' + name + '</text><text x="' + (x + 92) + '" y="' + y + '" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:19px;font-weight:700;text-anchor:end">' + s.n[k] + '</text>';
+          });
+          o += pill(x, 718, lv ? (acc ? 'питание по транзиту' : 'под напряжением') : 'без питания', lv ? (acc || '#5FD6A2') : '#FF8A99');
         });
         $('#outage-stage').innerHTML = o + '</svg>';
-        const sum = [0, 1, 2].map((k) => feeds.reduce((a, f, i) => a + (dead[i] ? f.n[k] : 0), 0));
+        const sum = [0, 1, 2].map((k) => SUB.reduce((a, s, i) => a + (subLive[i] ? 0 : s.n[k]), 0));
         $('#outage-n1').textContent = sum[0]; $('#outage-n2').textContent = sum[1]; $('#outage-n3').textContent = sum[2];
         $('#outage-step').textContent = texts[step][0]; $('#outage-text').textContent = texts[step][1]; $('#outage-btn').textContent = texts[step][2];
         $('#demo-outage').classList.toggle('is-alarm', sum[0] > 0);
@@ -836,15 +863,25 @@
       /* район — аэроснимок квартала; трассы ЛЭП идут по его улицам и проездам, перспективные объекты стоят на реальных участках */
       const zones = {
         n: { name: 'север', cap: 10, base: 6, km: 2.4, d: 'M194 268L300 232L520 160L700 110L840 72', tag: [372, 196] },
-        c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M110 312L126 384L330 396L520 446L700 470', tag: [228, 372] },
-        s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M92 312L140 560L200 716L420 680L620 625L660 614', tag: [420, 742] }
+        c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M110 312L126 384L330 396L520 446L700 470L836 452', tag: [228, 372] },
+        s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M92 312L140 560L200 716L420 680L620 625L716 598', tag: [420, 742] }
       };
+      /* Перспективные объекты стоят на подходящих участках снимка и повёрнуты под сетку улиц квартала (около −15°):
+         жильё — на месте ряда старых домов северного квартала (реновация), школа с садом — на участке со стадионом,
+         больница — во внутриквартальной зоне, транспортный узел — у широкой магистрали, технопарк — вдоль южной улицы.
+         c — центр участка, r — ширина и высота, b — план зданий от угла участка, lab — где поставить подпись */
+      const ROT = -15;
       const items = [
-        { name: 'Жилой микрорайон', mw: 9, cat: 'II', zone: 'n', r: [592, 142, 190, 122], on: true, tap: 'M660 121V142', b: [[14, 14, 22, 94], [50, 14, 22, 94], [86, 14, 22, 94], [124, 14, 52, 20], [124, 51, 52, 20], [124, 88, 52, 20]] },
-        { name: 'Школа и детский сад', mw: 0.8, cat: 'II', zone: 'n', r: [456, 236, 124, 86], on: false, tap: 'M504 165V236', b: [[12, 12, 60, 16], [12, 54, 60, 16], [34, 12, 16, 58], [82, 14, 30, 26, 'green'], [84, 50, 28, 22]] },
-        { name: 'Больница', mw: 4, cat: 'I', dgu: true, zone: 'c', r: [700, 424, 156, 116], on: false, tap: 'M700 470', first: true, b: [[16, 46, 96, 24], [52, 14, 24, 88], [120, 78, 24, 24], [132, 26, 11, 0, 'pad']] },
-        { name: 'Транспортный узел', mw: 6, cat: 'I', zone: 'c', r: [262, 430, 136, 78], on: false, tap: 'M330 396V430', b: [[12, 12, 112, 22], [12, 42, 112, 8], [12, 56, 112, 8], [52, 8, 32, 62]] },
-        { name: 'Технопарк', mw: 12, cat: 'II', zone: 's', r: [660, 584, 240, 132], on: false, tap: 'M660 614', b: [[16, 16, 96, 42], [126, 16, 98, 42], [16, 74, 142, 42], [172, 74, 52, 42]] }
+        { name: 'Жилой микрорайон', mw: 9, cat: 'II', zone: 'n', c: [704, 206], r: [230, 130], on: true, tap: 'M672 118L680 136', lab: [878, 258],
+          b: [[14, 14, 26, 102], [54, 14, 26, 102], [94, 14, 26, 102], [134, 14, 82, 24], [134, 53, 82, 24], [134, 92, 82, 24]] },
+        { name: 'Школа и детский сад', mw: 0.8, cat: 'II', zone: 'n', c: [506, 330], r: [190, 116], on: false, tap: 'M478 174L490 272', lab: [468, 220],
+          b: [[14, 14, 84, 18], [14, 56, 84, 18], [46, 14, 20, 60], [112, 14, 64, 42, 'green'], [116, 66, 56, 34]] },
+        { name: 'Больница', mw: 4, cat: 'I', dgu: true, zone: 'c', c: [330, 492], r: [180, 126], on: false, tap: 'M330 396L336 422', first: true,
+          b: [[18, 50, 110, 26], [60, 14, 26, 98], [140, 84, 26, 28], [152, 30, 11, 0, 'pad']] },
+        { name: 'Транспортный узел', mw: 6, cat: 'I', zone: 'c', c: [906, 452], r: [120, 150], on: false, tap: 'M836 452',
+          b: [[14, 16, 92, 34], [14, 62, 92, 8], [14, 78, 92, 8], [14, 94, 92, 8], [30, 112, 60, 24]] },
+        { name: 'Технопарк', mw: 12, cat: 'II', zone: 's', c: [824, 654], r: [240, 100], on: false, tap: 'M716 598L722 632',
+          b: [[14, 14, 100, 32], [126, 14, 100, 32], [14, 56, 140, 30], [166, 56, 60, 30]] }
       ];
       const SX = 24, SY = 226; // левый верхний угол значка ПС 110 кВ
       const KEYS = ['src', 'n', 'c', 's', 'tp'];
@@ -958,29 +995,34 @@
             '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (sel ? '#0b0f17' : (over ? AMBER : '#C5CEDB')) + ';font-size:13px;font-weight:600;text-anchor:middle">2 ЛЭП 10 кВ · ' + fmt(m[k].load) + ' из ' + z.cap + ' МВт</text>';
         });
 
+        const rad = ROT * Math.PI / 180;
         items.forEach((it) => {
-          const x = it.r[0], y = it.r[1], w = it.r[2], h = it.r[3], cx = x + w / 2;
-          if (it.on && it.tap.length > 9) o += '<path d="' + it.tap + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3"></path>';
+          const w = it.r[0], h = it.r[1], cx = it.c[0], cy = it.c[1], x = 0, y = 0;
+          if (it.on && it.tap.length > 9) o += '<path d="' + it.tap + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3;stroke-linecap:round"></path>';
+          o += '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + ROT + ') translate(' + (-w / 2) + ' ' + (-h / 2) + ')">';
           if (it.on) {
             // участок расчищен под застройку, на нём появляются новые здания (вид сверху, как на снимке)
             const fresh = it === justOn, an = (cls, i) => fresh ? ' class="' + cls + '" style="animation-delay:' + (0.3 + i * 0.13).toFixed(2) + 's"' : '';
-            o += '<g' + (fresh ? ' class="pl-site"' : '') + '><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:#27313f;stroke:#5FD6A2;stroke-width:2.5;filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))"></rect>' +
-              '<rect x="' + (x + 5) + '" y="' + (y + 5) + '" width="' + (w - 10) + '" height="' + (h - 10) + '" rx="6" style="fill:none;stroke:rgba(255,255,255,0.14);stroke-dasharray:3 5"></rect></g>';
+            o += '<g' + (fresh ? ' class="pl-site"' : '') + '><rect x="0" y="0" width="' + w + '" height="' + h + '" rx="8" style="fill:#27313f;stroke:#5FD6A2;stroke-width:2.5;filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))"></rect>' +
+              '<rect x="5" y="5" width="' + (w - 10) + '" height="' + (h - 10) + '" rx="5" style="fill:none;stroke:rgba(255,255,255,0.14);stroke-dasharray:3 5"></rect></g>';
             it.b.forEach((q, i) => {
               const bx = x + q[0], by = y + q[1];
               if (q[4] === 'pad') { o += '<g' + an('pl-build', i) + '><circle cx="' + bx + '" cy="' + by + '" r="' + q[2] + '" style="fill:#3b4757;stroke:#F2C24C;stroke-width:1.6"></circle><text x="' + bx + '" y="' + (by + 4) + '" style="fill:#F2C24C;font-size:11px;font-weight:800;text-anchor:middle">H</text></g>'; return; }
-              if (q[4] === 'green') { o += '<rect' + an('pl-build', i) + ' x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="5" style="fill:#2f5a3f;stroke:#4d8a63;stroke-width:1"></rect>'; return; }
+              if (q[4] === 'green') { o += '<rect' + an('pl-build', i) + ' x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="' + Math.min(q[2], q[3]) / 2.4 + '" style="fill:#2f5a3f;stroke:#7fbf95;stroke-width:1.2"></rect>'; return; }
               o += '<g' + an('pl-build', i) + '><rect x="' + (bx + 4) + '" y="' + (by + 5) + '" width="' + q[2] + '" height="' + q[3] + '" rx="2" style="fill:rgba(0,0,0,0.5)"></rect>' +
                 '<rect x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="2" style="fill:#d3dde9;stroke:#ffffff;stroke-width:1"></rect>' +
                 '<rect x="' + (bx + 3) + '" y="' + (by + 3) + '" width="' + (q[2] - 6) + '" height="' + (q[3] - 6) + '" rx="1" style="fill:none;stroke:rgba(70,90,115,0.55);stroke-width:1"></rect></g>';
             });
           } else {
-            o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:rgba(6,11,19,0.35);stroke:#aab5c4;stroke-width:2;stroke-dasharray:7 6"></rect>';
+            o += '<rect x="0" y="0" width="' + w + '" height="' + h + '" rx="8" style="fill:rgba(6,11,19,0.35);stroke:#c3ccd8;stroke-width:2;stroke-dasharray:7 6"></rect>';
           }
-          // подпись — плашкой под участком, чтобы не закрывать здания
+          o += '</g>';
+          // подпись — плашкой под участком (или в заданном месте), без поворота
+          const ext = Math.abs(w / 2 * Math.sin(rad)) + Math.abs(h / 2 * Math.cos(rad));
+          const lx = it.lab ? it.lab[0] : cx, ly = it.lab ? it.lab[1] : cy + ext + 8;
           const txt = it.name + ' · ' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран'), tw = Math.round(txt.length * 7.5 + 26);
-          o += '<rect x="' + (cx - tw / 2) + '" y="' + (y + h + 5) + '" width="' + tw + '" height="26" rx="13" style="fill:rgba(8,13,22,0.92);stroke:' + (it.on ? '#5FD6A2' : '#5B677A') + ';stroke-width:1.2"></rect>' +
-            '<text x="' + cx + '" y="' + (y + h + 23) + '" style="fill:' + (it.on ? '#ffffff' : '#C5CEDB') + ';font-size:13.5px;font-weight:700;text-anchor:middle">' + txt + '</text>';
+          o += '<rect x="' + (lx - tw / 2) + '" y="' + ly + '" width="' + tw + '" height="26" rx="13" style="fill:rgba(8,13,22,0.92);stroke:' + (it.on ? '#5FD6A2' : '#5B677A') + ';stroke-width:1.2"></rect>' +
+            '<text x="' + lx + '" y="' + (ly + 18) + '" style="fill:' + (it.on ? '#ffffff' : '#C5CEDB') + ';font-size:13.5px;font-weight:700;text-anchor:middle">' + txt + '</text>';
         });
         justOn = null;
 
