@@ -390,3 +390,9 @@ button { font-family: inherit; cursor: pointer; }
 .pl-flow { fill: none; stroke: #ffffff; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 22; filter: drop-shadow(0 0 4px #ffffff); animation: pl-flow 0.8s linear infinite; }
 @keyframes pl-flow { to { stroke-dashoffset: -23; } }
 @media (prefers-reduced-motion: reduce) { .pl-flow { animation: none; } }
+/* стройка: участок расчищается, затем здания «вырастают» по одному */
+.pl-site { animation: pl-site .5s ease-out both; }
+@keyframes pl-site { 0% { opacity: 0; } 40% { opacity: 1; filter: brightness(2.2); } 100% { opacity: 1; filter: none; } }
+.pl-build { transform-box: fill-box; transform-origin: 50% 50%; animation: pl-build .55s cubic-bezier(.2,1.5,.4,1) both; }
+@keyframes pl-build { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .pl-site, .pl-build { animation: none; } }
