@@ -385,3 +385,8 @@ button { font-family: inherit; cursor: pointer; }
 .slide.is-active .task-card { animation: deck-left .7s cubic-bezier(.2,.7,.2,1) both; }
 .slide.is-active .task-card:nth-child(2) { animation-delay: .1s; } .slide.is-active .task-card:nth-child(3) { animation-delay: .2s; }
 @media (prefers-reduced-motion: reduce) { .slide.is-active .deck-body > *, .slide.is-active [data-src], .slide.is-active [data-kpi], .slide.is-active [data-kpi] ~ *, .slide.is-active .task-card, .deck-bgmap, .ab-hero::after, #data svg circle, #data img { animation: none !important; } }
+
+/* слайд 4, «Планирование застройки»: бегущие точки по ЛЭП, к которым подключают новые объекты */
+.pl-flow { fill: none; stroke: #ffffff; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 22; filter: drop-shadow(0 0 4px #ffffff); animation: pl-flow 0.8s linear infinite; }
+@keyframes pl-flow { to { stroke-dashoffset: -23; } }
+@media (prefers-reduced-motion: reduce) { .pl-flow { animation: none; } }

@@ -768,42 +768,30 @@
       /* условные расценки, млн ₽ */
       const PRICE = { klKm: 12, rp: 90, tp: 14, feed: 25, trafo: 480, center: 2500 };
       const AMBER = '#F5A04A', GREEN = '#59C27A';
+      /* район — аэроснимок квартала; трассы ЛЭП идут по его улицам и проездам, перспективные объекты стоят на реальных участках */
       const zones = {
-        n: { name: 'север', cap: 12, base: 6, km: 2.4, d: 'M170 410V250H520V150H600', tag: [300, 238] },
-        c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M170 430H600', tag: [400, 418] },
-        s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M170 450V630H640', tag: [400, 618] }
+        n: { name: 'север', cap: 12, base: 6, km: 2.4, d: 'M194 268L300 232L520 160L700 110L840 72', tag: [372, 196] },
+        c: { name: 'центр', cap: 10, base: 5, km: 1.6, d: 'M110 312L126 384L330 396L520 446L700 470', tag: [228, 372] },
+        s: { name: 'юг', cap: 10, base: 4, km: 3.1, d: 'M92 312L140 560L200 716L420 680L620 625L660 614', tag: [420, 742] }
       };
       const items = [
-        { name: 'Жилой микрорайон', mw: 9, zone: 'n', r: [600, 70, 270, 150], on: true, tap: 'M600 150' },
-        { name: 'Школа и детский сад', mw: 1.5, zone: 'n', r: [400, 96, 104, 84], on: false, tap: 'M520 180H504' },
-        { name: 'Больница', mw: 4, zone: 'c', r: [600, 330, 160, 130], on: false, tap: 'M600 430', first: true },
-        { name: 'Транспортный узел', mw: 6, zone: 'c', r: [384, 474, 136, 76], on: false, tap: 'M450 430V474' },
-        { name: 'Технопарк', mw: 12, zone: 's', r: [640, 560, 250, 130], on: false, tap: 'M640 630' }
+        { name: 'Жилой микрорайон', mw: 9, zone: 'n', r: [592, 142, 190, 122], on: true, tap: 'M660 121V142' },
+        { name: 'Школа и детский сад', mw: 1.5, zone: 'n', r: [456, 236, 124, 86], on: false, tap: 'M504 165V236' },
+        { name: 'Больница', mw: 4, zone: 'c', r: [700, 424, 156, 116], on: false, tap: 'M700 470', first: true },
+        { name: 'Транспортный узел', mw: 6, zone: 'c', r: [262, 430, 136, 78], on: false, tap: 'M330 396V430' },
+        { name: 'Технопарк', mw: 12, zone: 's', r: [660, 584, 240, 132], on: false, tap: 'M660 614' }
       ];
+      const SX = 24, SY = 226; // левый верхний угол значка ПС 110 кВ
       const KEYS = ['src', 'n', 'c', 's', 'tp'];
       let card = null;
       const fmt = (v) => String(Math.round(v * 10) / 10).replace('.', ',');
       const money = (v) => !v ? '—' : (v >= 1000 ? String(Math.round(v / 10) / 100).replace('.', ',') + ' млрд ₽' : Math.round(v) + ' млн ₽');
       const plural = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11) ? a : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? b : c);
 
-      /* подложка района: улицы, река, парк, существующая застройка */
-      let bg = '<rect width="1040" height="776" style="fill:#0b0f17"></rect>';
-      bg += '<path d="M-20 740C140 700 240 760 400 735S700 700 1060 750V800H-20Z" style="fill:#12283a"></path>';
-      bg += '<path d="M905 285c50-30 120-10 125 45s-40 95-95 90-80-95-30-135z" style="fill:#12241c"></path>';
-      bg += '<path d="M0 250H1040M0 430H1040M0 630H1040M170 0V776M520 0V776M880 0V776M0 40L1040 110" style="fill:none;stroke:#1a2231;stroke-width:22"></path>';
-      bg += '<path d="M0 560L1040 500" style="fill:none;stroke:#222c3d;stroke-width:3;stroke-dasharray:14 8"></path>';
-      const free = (x, y) => !items.some((it) => x > it.r[0] - 34 && x < it.r[0] + it.r[2] + 6 && y > it.r[1] - 24 && y < it.r[1] + it.r[3] + 6) &&
-        !(x > 880 && y > 260 && y < 440) && y < 690 && !(x < 250 && y > 360 && y < 500);
-      let seed = 7;
-      const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
-      [[30, 150], [190, 500], [540, 860], [900, 1020]].forEach((cx) => {
-        [[70, 230], [270, 410], [450, 610], [650, 700]].forEach((cy) => {
-          for (let x = cx[0]; x + 28 <= cx[1]; x += 42) for (let y = cy[0]; y + 16 <= cy[1]; y += 30) {
-            const keep = rnd() > 0.22;
-            if (keep && free(x, y)) bg += '<rect x="' + x + '" y="' + y + '" width="28" height="16" rx="2" style="fill:#161e2c"></rect>';
-          }
-        });
-      });
+      /* подложка: аэроснимок квартала, притемнённый, чтобы сети и объекты читались поверх */
+      let bg = '<rect width="1040" height="776" style="fill:#0b0f17"></rect>' +
+        '<image href="img/quarter.jpg" x="0" y="0" width="1040" height="776" preserveAspectRatio="xMidYMid slice"></image>' +
+        '<rect width="1040" height="776" style="fill:#050d17;opacity:0.5"></rect>';
 
       const stage = $('#planning-stage');
       const svgBox = document.createElement('div');
@@ -818,7 +806,7 @@
         b.addEventListener('click', () => { card = key; render(); $('#planning-card-back').focus(); });
         stage.appendChild(b);
       };
-      hit('src', 'ПС 110 кВ', 80, 380, 180, 100);
+      hit('src', 'ПС 110 кВ', SX, SY, 170, 88);
       Object.keys(zones).forEach((k) => hit(k, 'ЛЭП 10 кВ, ' + zones[k].name, zones[k].tag[0] - 90, zones[k].tag[1] - 40, 180, 44));
 
       const tg = $('#planning-toggles');
@@ -894,10 +882,11 @@
 
         Object.keys(zones).forEach((k) => {
           const z = zones[k], over = m[k].over, sel = card === k;
-          o += '<path d="' + z.d + '" style="fill:none;stroke:' + (sel ? '#ffffff' : GREEN) + ';stroke-width:' + (sel ? 4.5 : 3) + ';stroke-linejoin:round;filter:drop-shadow(0 0 5px ' + (sel ? 'rgba(255,255,255,0.9)' : 'rgba(89,194,122,0.7)') + ')"></path>';
-          if (over) o += '<path d="' + z.d + '" transform="translate(9 9)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
+          o += '<path d="' + z.d + '" style="fill:none;stroke:' + (sel ? '#ffffff' : GREEN) + ';stroke-width:' + (sel ? 5 : 3.6) + ';stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px ' + (sel ? 'rgba(255,255,255,0.9)' : 'rgba(89,194,122,0.7)') + ')"></path>';
+          if (R.add[k]) o += '<path class="pl-flow" d="' + z.d + '"></path>';
+          if (over) o += '<path d="' + z.d + '" transform="translate(7 7)" style="fill:none;stroke:' + AMBER + ';stroke-width:3;stroke-dasharray:10 7;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,160,74,0.8))"></path>';
           const tw = 182;
-          o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:' + (sel ? '#ffffff' : '#0b0f17') + ';stroke:' + (sel ? '#ffffff' : (over ? AMBER : '#5B677A')) + ';stroke-width:1.2"></rect>' +
+          o += '<rect x="' + (z.tag[0] - tw / 2) + '" y="' + (z.tag[1] - 30) + '" width="' + tw + '" height="24" rx="12" style="fill:' + (sel ? '#ffffff' : 'rgba(8,13,22,0.92)') + ';stroke:' + (sel ? '#ffffff' : (over ? AMBER : '#5B677A')) + ';stroke-width:1.2"></rect>' +
             '<text x="' + z.tag[0] + '" y="' + (z.tag[1] - 13) + '" style="fill:' + (sel ? '#0b0f17' : (over ? AMBER : '#C5CEDB')) + ';font-size:13px;font-weight:600;text-anchor:middle">ЛЭП 10 кВ · ' + fmt(m[k].load) + ' из ' + z.cap + ' МВт</text>';
         });
 
@@ -905,9 +894,8 @@
           const x = it.r[0], y = it.r[1], w = it.r[2], h = it.r[3], cx = x + w / 2;
           const c = it.on ? '#5FD6A2' : '#5B677A';
           if (it.on && it.tap.length > 9) o += '<path d="' + it.tap + '" style="fill:none;stroke:' + GREEN + ';stroke-width:3"></path>';
-          o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" style="fill:' + (it.on ? 'rgba(95,214,162,0.13)' : 'rgba(11,15,23,0.7)') + ';stroke:' + c + ';stroke-width:2;' + (it.on ? '' : 'stroke-dasharray:7 6') + '"></rect>';
-          if (it.on) for (let i = 0; i < Math.floor((w - 20) / 42); i++) for (let j = 0; j < Math.floor((h - 62) / 26); j++)
-            o += '<rect x="' + (x + 14 + i * 42) + '" y="' + (y + 54 + j * 26) + '" width="28" height="14" rx="2" style="fill:rgba(95,214,162,0.35)"></rect>';
+          o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:' + (it.on ? 'rgba(95,214,162,0.24)' : 'rgba(6,11,19,0.55)') + ';stroke:' + c + ';stroke-width:' + (it.on ? 2.5 : 2) + ';' + (it.on ? 'filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))' : 'stroke-dasharray:7 6') + '"></rect>';
+          o += '<rect x="' + (cx - Math.min(w - 12, 164) / 2) + '" y="' + (y + 8) + '" width="' + Math.min(w - 12, 164) + '" height="' + (w < 140 ? 62 : 44) + '" rx="8" style="fill:rgba(6,11,19,0.78)"></rect>';
           const words = it.name.split(' '), two = w < 140 && words.length > 1;
           const l1 = two ? words.slice(0, Math.ceil(words.length / 2)).join(' ') : it.name, l2 = two ? words.slice(Math.ceil(words.length / 2)).join(' ') : '';
           o += '<text x="' + cx + '" y="' + (y + 24) + '" style="fill:' + (it.on ? '#ffffff' : '#A7B2C2') + ';font-size:15px;font-weight:600;text-anchor:middle">' + l1 + '</text>';
@@ -915,13 +903,13 @@
           o += '<text x="' + cx + '" y="' + (y + (l2 ? 62 : 44)) + '" style="fill:' + (it.on ? '#5FD6A2' : '#A7B2C2') + ';font-size:14px;font-weight:700;text-anchor:middle">' + (it.on ? '+' + fmt(it.mw) + ' МВт' : 'не выбран') + '</text>';
         });
 
-        const srcSel = card === 'src', sc = srcSel ? '#ffffff' : (srcOver ? AMBER : '#8b95a3');
-        o += '<rect x="80" y="380" width="180" height="100" style="fill:#05070b;stroke:' + sc + ';stroke-width:' + ((srcOver || srcSel) ? 2.5 : 1.5) + ';stroke-dasharray:5 4' + (srcSel ? ';filter:drop-shadow(0 0 10px rgba(255,255,255,0.7))' : (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '')) + '"></rect>' +
-          '<path d="M96 430H244" style="stroke:#56B4E9;stroke-width:5;stroke-linecap:round"></path>' +
-          '<circle cx="140" cy="452" r="9" style="fill:none;stroke:#56B4E9;stroke-width:2"></circle><circle cx="152" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
-          '<circle cx="188" cy="452" r="9" style="fill:none;stroke:#56B4E9;stroke-width:2"></circle><circle cx="200" cy="452" r="9" style="fill:none;stroke:' + GREEN + ';stroke-width:2"></circle>' +
-          '<text x="170" y="408" style="fill:#ffffff;font-size:16px;font-weight:700;text-anchor:middle">ПС 110 кВ</text>' +
-          '<rect x="74" y="350" width="192" height="24" rx="12" style="fill:#0b0f17"></rect><text x="170" y="367" style="fill:' + (srcOver ? AMBER : '#C5CEDB') + ';font-size:14px;font-weight:600;text-anchor:middle">' + (srcOver ? 'требуется реконструкция' : 'источник питания района') + '</text>';
+        const srcSel = card === 'src', sc = srcSel ? '#ffffff' : (srcOver ? AMBER : '#aeb8c6');
+        o += '<rect x="' + SX + '" y="' + SY + '" width="170" height="88" rx="6" style="fill:rgba(5,8,13,0.9);stroke:' + sc + ';stroke-width:' + ((srcOver || srcSel) ? 2.5 : 1.6) + ';stroke-dasharray:5 4' + (srcSel ? ';filter:drop-shadow(0 0 10px rgba(255,255,255,0.7))' : (srcOver ? ';filter:drop-shadow(0 0 10px rgba(245,160,74,0.7))' : '')) + '"></rect>' +
+          '<path d="M' + (SX + 16) + ' ' + (SY + 44) + 'H' + (SX + 154) + '" style="stroke:#56B4E9;stroke-width:5;stroke-linecap:round"></path>' +
+          [56, 68, 102, 114].map((dx, i) => '<circle cx="' + (SX + dx) + '" cy="' + (SY + 66) + '" r="9" style="fill:none;stroke:' + (i % 2 ? GREEN : '#56B4E9') + ';stroke-width:2"></circle>').join('') +
+          '<text x="' + (SX + 85) + '" y="' + (SY + 26) + '" style="fill:#ffffff;font-size:16px;font-weight:700;text-anchor:middle">ПС 110 кВ</text>' +
+          '<rect x="' + (SX - 6) + '" y="' + (SY - 30) + '" width="194" height="24" rx="12" style="fill:rgba(8,13,22,0.92)"></rect><text x="' + (SX + 91) + '" y="' + (SY - 13) + '" style="fill:' + (srcOver ? AMBER : '#C5CEDB') + ';font-size:14px;font-weight:600;text-anchor:middle">' + (srcOver ? 'требуется реконструкция' : 'источник питания района') + '</text>';
+        o += '<rect x="16" y="14" width="250" height="28" rx="14" style="fill:rgba(8,13,22,0.85)"></rect>';
         o += '<text x="28" y="34" style="fill:#A7B2C2;font-size:14px;font-weight:700;letter-spacing:0.06em">ДЕМОНСТРАЦИОННЫЙ РАЙОН</text>';
         svgBox.innerHTML = o + '</svg>';
 
