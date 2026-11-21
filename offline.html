@@ -1589,10 +1589,10 @@ button { font-family: inherit; cursor: pointer; }
       const LINES = [ // источник, приёмник, трасса, точка выключателя у источника и у приёмника
         { s: 0, t: 0, d: 'M140 164V378', a: [140, 190], b: [140, 356] },
         { s: 0, t: 0, d: 'M200 164V378', a: [200, 190], b: [200, 356] },
-        { s: 0, t: 1, d: 'M360 164V262H470V378', a: [360, 190], b: [470, 356] },
+        { s: 0, t: 1, d: 'M330 164V262H470V378', a: [330, 190], b: [470, 356] },
         { s: 1, t: 1, d: 'M700 164V262H570V378', a: [700, 190], b: [570, 356], tie: true },
-        { s: 1, t: 2, d: 'M830 164V378', a: [830, 190], b: [830, 356] },
-        { s: 1, t: 2, d: 'M910 164V378', a: [910, 190], b: [910, 356] }
+        { s: 1, t: 2, d: 'M800 164V262H830V378', a: [800, 190], b: [830, 356] },
+        { s: 1, t: 2, d: 'M870 164V230H910V378', a: [870, 190], b: [910, 356] }
       ];
       let step = 0;
       const texts = [
@@ -1613,9 +1613,8 @@ button { font-family: inherit; cursor: pointer; }
         const subLive = [step === 0, step !== 1, true], viaTie = [false, step === 2, false];
         let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="Однолинейная схема участка сети 220/110/10 кВ: две подстанции 220 кВ, три подстанции 110 кВ, линии 110 кВ и потребители">';
         o += '<rect width="1040" height="776" style="fill:#05070b"></rect>';
-        o += '<text x="28" y="34" style="fill:' + MUTED + ';font-size:14px;font-weight:700;letter-spacing:0.06em">ОДНОЛИНЕЙНАЯ СХЕМА · 220 / 110 / 10 кВ</text>';
         // условные обозначения
-        o += '<g style="font-size:13px;fill:#C5CEDB">' + br([500, 30], 'on', B) + '<text x="514" y="35">включён</text>' + br([594, 30], 'off', B) + '<text x="608" y="35">отключён</text>' + br([696, 30], 'trip', B) + '<text x="710" y="35">отключён защитой</text>' + tr(868, 20, Y, B, true) + '<text x="886" y="35">трансформатор</text></g>';
+        o += '<g style="font-size:14px;fill:#C5CEDB">' + br([420, 742], 'on', B) + '<text x="436" y="747">выключатель включён</text>' + br([618, 742], 'off', B) + '<text x="634" y="747">отключён</text>' + br([730, 742], 'trip', B) + '<text x="746" y="747">отключён защитой</text>' + tr(906, 730, Y, B, true) + '<text x="924" y="747">трансформатор</text></g>';
         // ВЛ 110 кВ
         LINES.forEach((l) => {
           const fromLive = srcLive[l.s];
@@ -1628,8 +1627,8 @@ button { font-family: inherit; cursor: pointer; }
           o += br(l.a, srcLive[l.s] ? 'on' : 'trip', B);
           o += br(l.b, !closedB ? 'off' : (subLive[l.t] ? 'on' : 'dead'), l.tie && step === 2 ? AMB : B);
         });
-        o += '<text x="415" y="254" style="fill:' + MUTED + ';font-size:12.5px;text-anchor:middle">ВЛ 110 кВ</text><text x="635" y="254" style="fill:' + MUTED + ';font-size:12.5px;text-anchor:middle">ВЛ 110 кВ · транзит</text>';
-        o += pill(590, 332, step === 2 ? 'транзит замкнут' : 'нормальный разрыв', step === 2 ? AMB : '#C5CEDB', 'l');
+        o += '<text x="415" y="286" style="fill:' + MUTED + ';font-size:14px;text-anchor:middle">ВЛ 110 кВ</text><text x="635" y="286" style="fill:' + MUTED + ';font-size:14px;text-anchor:middle">транзит 110 кВ</text>';
+        o += pill(590, 322, step === 2 ? 'транзит замкнут' : 'нормальный разрыв', step === 2 ? AMB : '#C5CEDB', 'l');
         // ПС 220 кВ: шины 220 кВ, два автотрансформатора, шины 110 кВ
         SRC.forEach((s, i) => {
           const lv = srcLive[i], x = s.x;
@@ -1637,16 +1636,16 @@ button { font-family: inherit; cursor: pointer; }
           o += '<text x="' + (x - 150) + '" y="50" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:16px;font-weight:700">ПС 220 кВ № ' + (i + 1) + '</text>';
           if (!lv) o += pill(x + 96, 50, 'ПОГАШЕНА', RED);
           [-70, 70].forEach((dx) => { o += seg('M' + (x + dx) + ' 62V88', Y, lv, 2.4) + '<path d="M' + (x + dx - 5) + ' 70L' + (x + dx) + ' 78L' + (x + dx + 5) + ' 70" style="fill:none;stroke:' + (lv ? Y : GRAY) + ';stroke-width:2"></path>'; });
-          o += seg('M' + (x - 120) + ' 88H' + (x + 120), Y, lv, 5);
+          o += seg('M' + (x - 130) + ' 88H' + (x + 84), Y, lv, 5);
           [-40, 40].forEach((dx) => { o += seg('M' + (x + dx) + ' 88V104', Y, lv, 2.2) + seg('M' + (x + dx) + ' 139V164', B, lv, 2.2) + tr(x + dx, 112, Y, B, lv); });
-          o += '<text x="' + (x + 62) + '" y="126" style="fill:' + MUTED + ';font-size:12.5px">АТ 220/110 кВ</text><text x="' + (x - 134) + '" y="82" style="fill:' + MUTED + ';font-size:12px">220 кВ</text><text x="' + (x - 134) + '" y="158" style="fill:' + MUTED + ';font-size:12px">110 кВ</text>';
-          o += seg('M' + (x - 130) + ' 164H' + (x + 130), B, lv, 5);
+          o += '<text x="' + (x + 64) + '" y="130" style="fill:' + MUTED + ';font-size:14px">2 × АТ</text><text x="' + (x + 142) + '" y="82" style="fill:' + (lv ? Y : MUTED) + ';font-size:13px;font-weight:700;text-anchor:end">220 кВ</text><text x="' + (x + 142) + '" y="156" style="fill:' + (lv ? B : MUTED) + ';font-size:13px;font-weight:700;text-anchor:end">110 кВ</text>';
+          o += seg('M' + (x - 130) + ' 164H' + (x + 84), B, lv, 5);
         });
         // ПС 110 кВ: две секции 110 кВ, два трансформатора, две секции 10 кВ с секционным выключателем, потребители
         SUB.forEach((s, i) => {
           const lv = subLive[i], x = s.x, acc = viaTie[i] ? AMB : null, frame = !lv ? RED : (acc || '#8b95a3');
           o += '<rect x="' + (x - 108) + '" y="346" width="216" height="158" style="fill:none;stroke:' + frame + ';stroke-width:' + (lv && !acc ? 1.5 : 2) + ';stroke-dasharray:5 4"></rect>';
-          o += '<text x="' + (x - 108) + '" y="338" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:16px;font-weight:700">ПС 110 кВ № ' + (i + 1) + '</text>';
+          o += '<text x="' + x + '" y="420" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:15px;font-weight:700;text-anchor:middle">ПС 110 кВ</text><text x="' + x + '" y="440" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:15px;font-weight:700;text-anchor:middle">№ ' + (i + 1) + '</text>';
           [-1, 1].forEach((k) => {
             o += seg('M' + (x + k * 10) + ' 378H' + (x + k * 94), B, lv, 5) + seg('M' + (x + k * 10) + ' 472H' + (x + k * 94), G10, lv, 5);
             o += seg('M' + (x + k * 56) + ' 378V394', B, lv, 2.2) + seg('M' + (x + k * 56) + ' 429V472', G10, lv, 2.2) + tr(x + k * 56, 402, B, G10, lv);
@@ -1654,13 +1653,13 @@ button { font-family: inherit; cursor: pointer; }
             if (lv) o += '<path class="pl-flow" d="M' + (x + k * 56) + ' 472V540"></path>';
           });
           o += br([x, 378], lv ? 'on' : 'dead', B) + br([x, 472], 'off', G10);   // секционный 110 кВ включён; секционный 10 кВ отключён, включается АВР
-          o += '<text x="' + x + '" y="496" style="fill:' + MUTED + ';font-size:11.5px;text-anchor:middle">СВ 10 кВ · АВР</text>';
+          o += '<text x="' + x + '" y="497" style="fill:' + MUTED + ';font-size:13px;text-anchor:middle">АВР</text>';
           o += '<rect x="' + (x - 112) + '" y="540" width="224" height="146" rx="12" style="fill:' + (lv ? '#141c2a' : 'rgba(255,45,70,0.12)') + ';stroke:' + (lv ? (acc || '#2d394d') : RED) + ';stroke-width:1.6"></rect>';
           ['Жилые дома', 'Соцобъекты', 'Промышленность'].forEach((name, k) => {
             const y = 580 + k * 38;
             o += '<text x="' + (x - 92) + '" y="' + y + '" style="fill:#C5CEDB;font-size:17px">' + name + '</text><text x="' + (x + 92) + '" y="' + y + '" style="fill:' + (lv ? '#ffffff' : '#FF8A99') + ';font-size:19px;font-weight:700;text-anchor:end">' + s.n[k] + '</text>';
           });
-          o += pill(x, 718, lv ? (acc ? 'питание по транзиту' : 'под напряжением') : 'без питания', lv ? (acc || '#5FD6A2') : '#FF8A99');
+          o += pill(x, 712, lv ? (acc ? 'питание по транзиту' : 'под напряжением') : 'без питания', lv ? (acc || '#5FD6A2') : '#FF8A99');
         });
         $('#outage-stage').innerHTML = o + '</svg>';
         const sum = [0, 1, 2].map((k) => SUB.reduce((a, s, i) => a + (subLive[i] ? 0 : s.n[k]), 0));
@@ -1781,6 +1780,22 @@ button { font-family: inherit; cursor: pointer; }
         { name: 'Технопарк', mw: 12, cat: 'II', zone: 's', c: [824, 654], r: [240, 100], on: false, tap: 'M716 598L722 632',
           b: [[14, 14, 100, 32], [126, 14, 100, 32], [14, 56, 140, 30], [166, 56, 60, 30]] }
       ];
+      // деревья на участках: случайно, но одинаково при каждом открытии; не под зданиями и не на проездах
+      (function () {
+        let s = 23; const rnd = () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
+        items.forEach((it) => {
+          it.trees = [];
+          for (let k = 0; k < Math.round(it.r[0] * it.r[1] / 520); k++) {
+            const x = 14 + rnd() * (it.r[0] - 28), y = 14 + rnd() * (it.r[1] - 28), rr = 3.2 + rnd() * 2.6;
+            const hit = it.b.some((q) => q[4] === 'pad' ? Math.hypot(x - q[0], y - q[1]) < q[2] + rr + 2 : (x > q[0] - rr - 3 && x < q[0] + q[2] + rr + 6 && y > q[1] - rr - 3 && y < q[1] + q[3] + rr + 8));
+            if (!hit) it.trees.push([+x.toFixed(1), +y.toFixed(1), +rr.toFixed(1)]);
+          }
+        });
+      })();
+      const DEFS = '<defs><linearGradient id="pl-roof" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#aebbca"></stop><stop offset="1" stop-color="#7f8da0"></stop></linearGradient>' +
+        '<radialGradient id="pl-tree" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#4f9a5c"></stop><stop offset="0.6" stop-color="#2c6a3c"></stop><stop offset="1" stop-color="#173d24"></stop></radialGradient>' +
+        '<linearGradient id="pl-lawn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#27402f"></stop><stop offset="1" stop-color="#1c3024"></stop></linearGradient>' +
+        '<filter id="pl-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"></feGaussianBlur></filter></defs>';
       const SX = 24, SY = 226; // левый верхний угол значка ПС 110 кВ
       const KEYS = ['src', 'n', 'c', 's', 'tp'];
       let card = null, justOn = null; // justOn — объект, который только что включили: его стройка анимируется
@@ -1881,7 +1896,7 @@ button { font-family: inherit; cursor: pointer; }
 
       function render() {
         const R = model(), m = R.m, srcOver = m.src.over;
-        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, линии электропередачи и перспективные объекты">' + bg;
+        let o = '<svg viewBox="0 0 1040 776" width="1040" height="776" role="img" aria-label="План района: подстанция, линии электропередачи и перспективные объекты">' + DEFS + bg;
 
         Object.keys(zones).forEach((k) => {
           const z = zones[k], over = m[k].over, sel = card === k;
@@ -1901,15 +1916,31 @@ button { font-family: inherit; cursor: pointer; }
           if (it.on) {
             // участок расчищен под застройку, на нём появляются новые здания (вид сверху, как на снимке)
             const fresh = it === justOn, an = (cls, i) => fresh ? ' class="' + cls + '" style="animation-delay:' + (0.3 + i * 0.13).toFixed(2) + 's"' : '';
-            o += '<g' + (fresh ? ' class="pl-site"' : '') + '><rect x="0" y="0" width="' + w + '" height="' + h + '" rx="8" style="fill:#27313f;stroke:#5FD6A2;stroke-width:2.5;filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))"></rect>' +
-              '<rect x="5" y="5" width="' + (w - 10) + '" height="' + (h - 10) + '" rx="5" style="fill:none;stroke:rgba(255,255,255,0.14);stroke-dasharray:3 5"></rect></g>';
+            // участок: газон, проезды, деревья — как на снимке; контур участка светится
+            o += '<g' + (fresh ? ' class="pl-site"' : '') + '><rect x="0" y="0" width="' + w + '" height="' + h + '" rx="8" style="fill:url(#pl-lawn);stroke:#5FD6A2;stroke-width:2.5;filter:drop-shadow(0 0 10px rgba(95,214,162,0.75))"></rect>' +
+              '<rect x="7" y="7" width="' + (w - 14) + '" height="' + (h - 14) + '" rx="5" style="fill:none;stroke:#3e4856;stroke-width:5"></rect>' +
+              '<rect x="7" y="7" width="' + (w - 14) + '" height="' + (h - 14) + '" rx="5" style="fill:none;stroke:rgba(210,220,232,0.35);stroke-width:0.8;stroke-dasharray:5 6"></rect>' +
+              it.trees.map((t) => '<circle cx="' + (t[0] + 1.5) + '" cy="' + (t[1] + 2) + '" r="' + t[2] + '" style="fill:rgba(0,0,0,0.45)"></circle><circle cx="' + t[0] + '" cy="' + t[1] + '" r="' + t[2] + '" style="fill:url(#pl-tree)"></circle>').join('') + '</g>';
             it.b.forEach((q, i) => {
-              const bx = x + q[0], by = y + q[1];
-              if (q[4] === 'pad') { o += '<g' + an('pl-build', i) + '><circle cx="' + bx + '" cy="' + by + '" r="' + q[2] + '" style="fill:#3b4757;stroke:#F2C24C;stroke-width:1.6"></circle><text x="' + bx + '" y="' + (by + 4) + '" style="fill:#F2C24C;font-size:11px;font-weight:800;text-anchor:middle">H</text></g>'; return; }
-              if (q[4] === 'green') { o += '<rect' + an('pl-build', i) + ' x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="' + Math.min(q[2], q[3]) / 2.4 + '" style="fill:#2f5a3f;stroke:#7fbf95;stroke-width:1.2"></rect>'; return; }
-              o += '<g' + an('pl-build', i) + '><rect x="' + (bx + 4) + '" y="' + (by + 5) + '" width="' + q[2] + '" height="' + q[3] + '" rx="2" style="fill:rgba(0,0,0,0.5)"></rect>' +
-                '<rect x="' + bx + '" y="' + by + '" width="' + q[2] + '" height="' + q[3] + '" rx="2" style="fill:#d3dde9;stroke:#ffffff;stroke-width:1"></rect>' +
-                '<rect x="' + (bx + 3) + '" y="' + (by + 3) + '" width="' + (q[2] - 6) + '" height="' + (q[3] - 6) + '" rx="1" style="fill:none;stroke:rgba(70,90,115,0.55);stroke-width:1"></rect></g>';
+              const bx = q[0], by = q[1], bw = q[2], bh = q[3];
+              if (q[4] === 'pad') { o += '<g' + an('pl-build', i) + '><circle cx="' + bx + '" cy="' + by + '" r="' + bw + '" style="fill:#4a5565;stroke:#e9eef5;stroke-width:1.4"></circle><circle cx="' + bx + '" cy="' + by + '" r="' + (bw - 3.5) + '" style="fill:none;stroke:#F2C24C;stroke-width:1.2"></circle><text x="' + bx + '" y="' + (by + 3.5) + '" style="fill:#F2C24C;font-size:9px;font-weight:800;text-anchor:middle">H</text></g>'; return; }
+              if (q[4] === 'green') { // стадион: поле, беговая дорожка, разметка
+                o += '<g' + an('pl-build', i) + '><rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="' + bh / 2.2 + '" style="fill:#8a5a4a;stroke:#b98b78;stroke-width:1"></rect>' +
+                  '<rect x="' + (bx + 5) + '" y="' + (by + 5) + '" width="' + (bw - 10) + '" height="' + (bh - 10) + '" rx="' + (bh - 10) / 2.4 + '" style="fill:#3f7f4c;stroke:rgba(255,255,255,0.75);stroke-width:0.9"></rect>' +
+                  '<path d="M' + (bx + bw / 2) + ' ' + (by + 5) + 'V' + (by + bh - 5) + '" style="stroke:rgba(255,255,255,0.7);stroke-width:0.8"></path><circle cx="' + (bx + bw / 2) + '" cy="' + (by + bh / 2) + '" r="5" style="fill:none;stroke:rgba(255,255,255,0.7);stroke-width:0.8"></circle></g>';
+                return;
+              }
+              // здание: мягкая тень, плоская кровля с парапетом, оборудование на крыше
+              const long = bw >= bh, n = Math.max(1, Math.floor((long ? bw : bh) / 26));
+              let units = '';
+              for (let u = 0; u < n; u++) {
+                const k = (u + 0.5) / n, ux = long ? bx + bw * k - 3 : bx + bw / 2 - 3, uy = long ? by + bh / 2 - 2.5 : by + bh * k - 2.5;
+                units += '<rect x="' + ux.toFixed(1) + '" y="' + uy.toFixed(1) + '" width="6" height="5" rx="0.8" style="fill:#5d6a7b;stroke:#c4cedb;stroke-width:0.5"></rect>';
+              }
+              o += '<g' + an('pl-build', i) + '><rect x="' + (bx + 5) + '" y="' + (by + 7) + '" width="' + bw + '" height="' + bh + '" rx="1.5" style="fill:#000;opacity:0.55;filter:url(#pl-blur)"></rect>' +
+                '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="1.5" style="fill:url(#pl-roof);stroke:#dbe3ec;stroke-width:1.1"></rect>' +
+                '<rect x="' + (bx + 2.5) + '" y="' + (by + 2.5) + '" width="' + (bw - 5) + '" height="' + (bh - 5) + '" rx="1" style="fill:none;stroke:rgba(60,74,92,0.7);stroke-width:0.8"></rect>' +
+                '<path d="' + (long ? 'M' + (bx + 4) + ' ' + (by + bh / 2) + 'H' + (bx + bw - 4) : 'M' + (bx + bw / 2) + ' ' + (by + 4) + 'V' + (by + bh - 4)) + '" style="stroke:rgba(60,74,92,0.45);stroke-width:0.7"></path>' + units + '</g>';
             });
           } else {
             o += '<rect x="0" y="0" width="' + w + '" height="' + h + '" rx="8" style="fill:rgba(6,11,19,0.35);stroke:#c3ccd8;stroke-width:2;stroke-dasharray:7 6"></rect>';
